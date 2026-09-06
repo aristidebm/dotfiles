@@ -2,7 +2,7 @@
 # for more informations on some of the config here, check
 # https://jvns.ca/blog/2024/02/16/popular-git-config-options/#push-default-simple-push-default-current-push-autosetupremote-true
 [user]
-  email = aristide.bamazi@imsp-uac.org
+  email = bamaziaristide@gmail.com
   name = Aristide
 
 [alias]

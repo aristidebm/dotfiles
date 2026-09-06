@@ -65,7 +65,7 @@ if command -v atuin >/dev/null 2>&1; then
 fi
 
 # kilo
-export PATH=/home/aristide/.kilo/bin:$PATH
+export PATH=$HOME/.kilo/bin:$PATH
 
 # dcg: warn if hook was silently removed from Claude Code settings
 if command -v dcg &>/dev/null && command -v jq &>/dev/null; then

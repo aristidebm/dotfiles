@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 TRACKED=(
- "/home/aristide/Documents/REST-in-Practice.pdf"
- "/home/aristide/Documents/Surrounded by idiots - the four types of human behavior and -- Thomas Erikson -- ( WeLib.org ).pdf"
+ "$HOME/Documents/REST-in-Practice.pdf"
+ "$HOME/Documents/Surrounded by idiots - the four types of human behavior and -- Thomas Erikson -- ( WeLib.org ).pdf"
 )
 
 in_tracked() {

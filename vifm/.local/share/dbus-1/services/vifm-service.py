@@ -24,7 +24,7 @@ def open_file_manager(uri, select=False):
     # This uses the vifmrun wrapper from vifmimg (which support image previews).
     # If this is not desired, vifm can be used directly instead.
     args = ['st', '-e', 'vifm']
-    # args = ['st', '-e', '/home/aristide/.nix-profile/bin/vifm']
+    # args = ['st', '-e', '$HOME/.nix-profile/bin/vifm']
     if select:
         args.append('--select')
 

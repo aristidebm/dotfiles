@@ -9,7 +9,7 @@
       enable = true;
       keyboards = {
           default = {
-              configFile = "/home/aristide/.config/kanata/keymaps.kbd";
+              configFile = "$HOME/.config/kanata/keymaps.kbd";
           };
       };
   };
