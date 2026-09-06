@@ -1,0 +1,117 @@
+# vim:ft=ini
+# for more informations on some of the config here, check
+# https://jvns.ca/blog/2024/02/16/popular-git-config-options/#push-default-simple-push-default-current-push-autosetupremote-true
+[user]
+  email = aristide.bamazi@imsp-uac.org
+  name = Aristide
+
+[alias]
+    st = status -s
+    ls = ls-files
+    first = "!f() { git show --stat $(git rev-list --max-parents=0 HEAD); }; f"
+    last = log -1 HEAD --stat
+    # graph = log --graph --pretty=format:'"%C(#BF616A)%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold #CA870D)[%an]%Creset"' --date=short
+    logs = log --all --graph --pretty=format:'"%C(#BF616A)%h %C(auto) %C(bold #CA870D)%an%Creset %ar%C(bold #CA870D) %D%n%s%n"' --date=short
+    search = !git rev-list --all | xargs git grep -P
+    view = log --follow --stat -p
+    aliases = config --get-regexp alias
+    undo = revert HEAD
+    amend =commit --amend --no-edit --date=now
+    unamend = reset --soft HEAD@{1}
+
+    # Show local branches that have been merged into master
+    # merged = branch --merged
+    # merged = !git branch --all --merged origin/develop | cut -c3- | grep -v develop
+    ignore = !git-ignore
+    rename = !git-rename
+    merge-fix = !git-merge-fix
+    resolve = !git-resolve
+    conflicts = !git --no-pager diff --name-only --diff-filter=U
+    ours = !"f() { git checkout --ours \"$@\" && git add \"$@\"; }; f"
+    theirs = !"f() { git checkout --theirs \"$@\" && git add \"$@\"; }; f"
+    bare-clone = !bare-clone
+    bare-init = !bare-init
+    contributor = !git log --all --format='%aN [%aE]' | sort -u
+	contribution = "!git-contribution"
+	show-contribution = "!git-show-contribution"
+    split = add -p
+    # repo = "!$BROWSER $(git remote get-url origin | sed -E \"s|git@([^:]+):|https://\\1/|; s|\\.git$||\")"
+    open = "!com.brave.Browser $(git remote get-url origin | sed -E \"s|git@([^:]+):|https://\\1/|; s|\\.git$||\") 2> /dev/null"
+    mr = ""
+	delta = !git diff | delta
+    ; review = !sh -c 'git diff -U10 "$@" | git-hunk-review > review-$(date +%Y%m%d-%H%M%S).diff' -
+    review = !tuicr
+	whitespace = "!f() {\n    git diff --check > /tmp/git-ws.$$;\n    if [ -s /tmp/git-ws.$$ ]; then\n        vim -q /tmp/git-ws.$$;\n    else\n        echo \"✔ No whitespace errors\";\n    fi;\n    rm -f /tmp/git-ws.$$;\n}; f"
+	task = "!f() { wt switch --no-cd \"$@\"; }; f"
+	flog = !git --no-pager log --oneline | fzf --reverse \\\n  --preview \"git show {1} | bat --style=numbers --color=always --paging=never -l diff\" \\\n  --preview-window=right:70% \\\n  --bind \"ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down\" \\\n  --bind \"enter:execute(git show {1} > /tmp/commit.diff && vim /tmp/commit.diff)\"
+	fstash = !git stash list | fzf --reverse \\\n  --preview \"git stash show -p \\$(echo {} | cut -d: -f1) | bat --style=numbers --color=always --paging=never -l diff\" \\\n  --preview-window=right:70% \\\n  --bind \"ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down\" \\\n  --bind \"ctrl-x:execute(git stash drop \\$(echo {} | cut -d: -f1))+reload(git stash list)\" \\\n  --bind \"enter:execute(git stash pop \\$(echo {} | cut -d: -f1))+abort\"
+
+[core]
+	editor = nvim
+    # please warn me when trying to commit
+    # trailling spaces
+    whitespace = error
+
+[merge]
+    # use for better user experience,
+    # here is good article that show the difference between
+    # conflict merge style https://ductile.systems/zdiff3/
+    # for more information check man git-config
+	conflictStyle = zdiff3
+	tool = vimdiff
+
+[init]
+	defaultBranch = main
+
+[diff]
+    renames = copies
+    algorithm = histogram
+
+[push]
+    autoSetupRemote = true
+    default = current
+    followTags = true
+
+[pull]
+    default = current
+    rebase = true
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+    missingCommitsCheck = warn
+
+[log]
+    abbrevCommit = true
+
+[branch]
+    sort = -committerdate
+
+[tag]
+    sort = -taggerdate
+
+[commit]
+    # Add the commit diff to editor while editing
+    # the commit message in it, please
+    verbose = true
+
+[pager]
+    # tag = false
+    # branch = false
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    side-by-side = true
+    dark = true
+
+# repos urls shortcuts
+
+[url "git@github.com:"]
+    insteadOf = "gh:"
+
+[jump]
+	grepCmd = rg --smart-case --engine=auto
+[color]
+	ui = true
+[fetch]
+	auto = true

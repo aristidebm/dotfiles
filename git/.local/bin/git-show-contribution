@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+function show_contribution() {
+    if [[ $# -lt 1 ]]; then
+        echo "You have to provide an author"
+        exit 1
+    fi
+
+    selected=$(git contribution $1 | fzf --delimiter=" " --prompt="Commits ($1) > " --multi --preview 'git show --color=always {2}')
+
+    if [[ -z $selected ]]; then
+        # Nothing has been selected by the user, so there is nothing to do
+        exit 0
+    fi
+
+    # Extract commit hashes (assuming second word is hash)
+    hashes=$(echo "$selected" | awk '{print $2}')
+
+    # Get diffs for selected commits
+    git show --unified=0 $hashes | nvim -MR --clean -c "setlocal ft=diff"
+}
+
+show_contribution $@

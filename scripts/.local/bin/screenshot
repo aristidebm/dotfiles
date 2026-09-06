@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+ANNOTATE=false
+
+if [[ "$1" == "--annotate" ]]; then
+    ANNOTATE=true
+fi
+
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    if $ANNOTATE && command -v satty >/dev/null 2>&1; then
+        grim -g "$(slurp -d)" - | satty \
+            --filename - \
+            --copy-command wl-copy \
+            --output-filename "$HOME/Pictures/Screenshots/satty-$(date +%Y%m%d-%H%M%S).png"
+    else
+        grim -g "$(slurp -d)" - | wl-copy
+    fi
+else
+      /usr/bin/flameshot gui -c
+fi

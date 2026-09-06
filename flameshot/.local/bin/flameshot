@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+#/usr/bin/flameshot gui --raw | xclip -sel clip -t image/png
+/home/aristide/.nix-profile/bin/flameshot gui -c

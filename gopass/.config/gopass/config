@@ -1,0 +1,5 @@
+[mounts]
+	path = /home/aristide/.password-store
+
+[show]
+	safecontent = true

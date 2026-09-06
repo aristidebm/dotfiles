@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# vim: ft=sh
+
+function wifi_toggle() {
+    local line="$*"
+    local ssid=$(echo "$line" | sed 's/^[* ]*//' | grep -oP '^.*?(?=\s{2,})')
+
+    if [[ "$line" == \** ]]; then
+        nmcli connection down "$ssid"
+    else
+        nmcli device wifi connect --ask "$ssid"
+    fi
+}
+
+export -f wifi_toggle
+
+function wifi() {
+    local state=$(nmcli radio wifi)
+
+    if [ "$state" != "enabled" ]; then
+        nmcli radio wifi on
+    else
+        nmcli device wifi rescan &>/dev/null
+    fi
+
+    nmcli -f IN-USE,SSID,FREQ,RATE,SIGNAL,BARS,SECURITY device wifi list \
+        | fzf --reverse --scroll-off=8 --prompt='Wi-Fi > ' \
+            --bind 'enter:execute(bash -c "wifi_toggle \"\$@\"" -- {})+reload(nmcli -f IN-USE,SSID,FREQ,RATE,SIGNAL,BARS,SECURITY device wifi list)' \
+            --bind 'ctrl-y:execute-silent(bash -c "ssid=\$(echo \"\$@\" | sed \"s/^[* ]*//\" | grep -oP \"^.*?(?=\\\\s{2,})\"); echo -n \"\$ssid\" | wl-copy 2>/dev/null || echo -n \"\$ssid\" | xclip -selection clipboard" -- {})'
+}
+
+wifi

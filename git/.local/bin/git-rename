@@ -1,0 +1,101 @@
+#!/usr/bin/env sh
+
+usage() {
+  cat << EOF # remove the space between << and EOF, this is due to web plugin issue
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] [--no-remote] [-o name] name
+
+Rename
+
+Available options:
+
+-h, --help      Print this help and exit
+-v, --verbose   Print script debug info
+--no-remote     Whether to rename the remote branch (by default the remote branch get renamed)
+-o, --old       Current name of the branch (default: current branch name)
+EOF
+  exit
+}
+
+parse_params() {
+
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -o|--old)
+      OLD="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -h|--help)
+      usage
+      shift # past argument
+      shift # past value
+      ;;
+    -v|--verbose)
+      set -x
+      shift # past argument
+      ;;
+    --no-remote)
+        NO_REMOTE=1
+        shift # past argument
+        ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+return 0
+}
+
+die() {
+  local msg=$1
+  local code=${2-1} # default exit status 1
+  msg "$msg"
+  exit "$code"
+}
+
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+function rename() {
+
+    # print the usage if no arguments
+    # are provided
+    if [ $# -eq 0 ]
+    then
+        usage
+        return 0
+    fi
+
+    parse_params "$@"
+
+    # consider the old name to be the current
+    # branch name if the old branch is not specified
+    if [ -z "$OLD" ] ; then
+        OLD=$(git branch --show-current)
+    fi
+
+    if [ -z "$OLD" ] ; then
+        die "Cannot get the current branch name"
+    fi
+
+    git branch -M "${OLD}" "${POSITIONAL_ARGS}"
+
+    # If No remote is set ignore renaming
+    # the remote branch otherwise, rename the remote
+    if [[ -z "${NO_REMOTE-}" ]]; then
+        git push origin :"${OLD}" "${POSITIONAL_ARGS}"
+        git push origin -u "${POSITIONAL_ARGS}"
+    fi
+
+    return 0
+}
+
+rename $@

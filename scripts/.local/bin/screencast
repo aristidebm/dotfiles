@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+FILENAME=""
+
+function main() {
+    FILENAME=$(get_filename "$1")
+
+    if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
+        local geometry
+        geometry=$(slurp)
+        if [[ -z "$geometry" ]]; then
+            echo "No region selected, aborting."
+            exit 1
+        fi
+
+        echo "Recording to $FILENAME (Press Ctrl+C to stop)"
+        wf-recorder -g "$geometry" -f "$FILENAME.mp4" \
+            -D \
+            --codec libx264 \
+            --codec-param crf=23 \
+            --codec-param preset=medium
+    else
+        echo "Recording to $FILENAME (Press Ctrl+C to stop)"
+        ffmpeg \
+            -video_size 1920x1080 \
+            -framerate 30 \
+            -f x11grab \
+            -i :0.0+0,0 \
+            -vcodec libx264 \
+            -preset medium \
+            -crf 23 \
+            -movflags +faststart \
+            "$FILENAME.mp4"
+    fi
+
+    cleanup
+}
+
+function get_filename() {
+    local filename=/tmp/demo-$(date +%s)
+    if [ -n "$1" ]; then
+        filename=/tmp/"$1"
+    fi
+    echo "$filename"
+}
+
+function cleanup() {
+    echo -e "\033[1;32mSaved at $FILENAME\033[0m"
+    exit 0
+}
+
+main "$@"

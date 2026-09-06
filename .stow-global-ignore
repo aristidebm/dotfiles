@@ -1,0 +1,9 @@
+devshells
+opencode
+sql
+mk
+nvim-nix
+st
+modules
+profiles
+.*\.(nix|md|mk|lock|git.*)

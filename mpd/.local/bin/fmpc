@@ -1,0 +1,87 @@
+#!/usr/bin/env sh
+
+function list_queue() {
+    # Function to list queue songs formatted as "[pos] artist - title"
+    mpc -f "\[%position%\] %artist% - %title%" playlist
+}
+
+function list_library() {
+    # mpc rescan
+    mpc update &> /dev/null && mpc -f "%file%" listall
+}
+
+function play() {
+    # extract the song id from the bracket and play it
+    echo $1 | cut -d' ' -f1 | sed 's/.*\[\(.*\)\].*/\1/' | mpc play
+    notify-send -t 5000 -u normal "Playing $1"
+}
+
+function remove() {
+    # extract the song id from the bracket and remove it from the queue
+    echo $1 | cut -d' ' -f1 | sed 's/.*\[\(.*\)\].*/\1/' | mpc del
+    notify-send -t 5000 -u normal "$1 removed from queue"
+}
+
+# source https://github.com/junegunn/fzf/discussions/4016#discussioncomment-10783713
+# we need to prepend the call of this functions inside fzf process with `sh -c` since when
+#  $SHELL is defined, fzf prefers $SHELL -c to `sh -c` but $SHELL can be something like /usr/bin/zsh
+export -f play
+export -f remove
+export -f list_queue
+export -f list_library
+
+function choose_songs_to_play() {
+    selection=$(list_library | \
+        fzf --multi \
+            --reverse \
+            --prompt="Songs > " \
+            --bind "ctrl-q:select-all+accept" \
+            --bind '?:toggle-header' \
+            --header "
+CTRL-Q: Add all songs to the queue
+CTRL-[: Escape
+ENTER:  Add selected song(s) to the queue
+ESC:    Escape
+?:      Toggle help
+"
+    )
+
+    # Exit if no selection or aborted
+    [ -z "$selection" ] && exit 0
+
+    # Add selected songs by file path (first column)
+    printf '%s\n' "$selection" | cut -f1 | xargs -d '\n' -r mpc add
+}
+
+export -f choose_songs_to_play
+
+function manage_songs_queue() {
+    # Queue not empty: show current queue with positions
+    current_song=$(mpc current)
+    list_queue | \
+        fzf --reverse \
+            --prompt="Queue > " \
+            --bind 'enter:become(sh -c play {})' \
+            --bind 'ctrl-d:execute-silent(sh -c remove {})+reload(sh -c list_queue)' \
+            --bind 'ctrl-l:execute-silent(mpc clear)+abort'  \
+            --bind 'ctrl-6:execute(sh -c choose_songs_to_play)' \
+            --bind 'ctrl-^:execute(sh -c choose_songs_to_play)+reload(sh -c list_queue)' \
+            --bind '?:toggle-header' \
+            --header "
+CTRL-D Remove song from queue
+CTRL-L Clear the queue
+CTRL-6 Goto songs view
+CTRL-^ Goto songs view
+ENTER  Play the current song
+?      Toggle help
+
+ $current_song
+
+"
+}
+
+function fmpc() {
+    [ -z "$(mpc playlist)" ] && choose_songs_to_play && manage_songs_queue || manage_songs_queue
+}
+
+fmpc

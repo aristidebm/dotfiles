@@ -1,0 +1,15 @@
+[Unit]
+# This file must be located at ~/.config/systemd/user/kanata.service
+# source https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md
+Description=Kanata keyboard remapper
+Documentation=https://github.com/jtroo/kanata
+
+[Service]
+Environment=PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin
+Type=simple
+ExecStart=%h/.nix-profile/bin/kanata --cfg %h/.config/kanata/keymaps.kbd
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

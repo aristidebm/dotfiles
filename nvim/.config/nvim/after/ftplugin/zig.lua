@@ -1,0 +1,6 @@
+-- vim.opt_local.makeprg = "zig run %"
+-- -- vim.opt_local.makeprg = "zig build-exe % -femit-bin=%<"
+-- vim.opt_local.errorformat =
+--   "%E%f:%l:%c: error: %m," ..
+--   "%W%f:%l:%c: warning: %m," ..
+--   "%Z%.%#"

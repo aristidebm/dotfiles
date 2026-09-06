@@ -1,0 +1,15 @@
+# vim: ft=sh
+
+function dkps-fn {
+    # we do not use this because is uses sub-shell and we will lost out changes when
+    # we do things like that
+    # docker ps --format '{{.ID}} {{.Names}}' | while IFS=' ' read -r id name; do
+    while IFS=' ' read -r id name ports container_status; do
+        ip=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' "$id")
+        out+="$id\t$name\t$ip\t$ports\t$container_status\n"
+    done < <(docker ps --format '{{.ID}} {{.Names}} {{.Ports}} {{.Status}}')
+    echo -e $out | column -t
+    unset out
+}
+
+alias dkps=dkps-fn

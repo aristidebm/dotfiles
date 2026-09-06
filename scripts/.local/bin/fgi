@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+# vim: ft=sh
+# (check :h modeline for more information)
+
+BASE_URL=https://www.toptal.com/developers/gitignore/api
+
+TECHNOS=(
+    java
+    go
+    python
+    rust
+    react
+    zig
+)
+
+function fetch() {
+    local BASE_DIR="$HOME/.local/bin/bsh"
+
+    local selected=$@
+
+    if [[ $# -eq 0 ]] ; then
+        # note: this endpoint (https://www.toptal.com/developers/gitignore/api/list?format=format
+        # where format in [default, json]) can be used to populate the list, but currently
+        # I don't want polluate the list with stuff that I don't even use
+        selected=$(printf "%s\n" "${TECHNOS[@]}" | fzf --reverse)
+    fi
+
+    # remove extra space
+    selected=$(echo $selected | tr -d '[:space:]')
+
+    if [[ -z $selected ]]; then
+        return
+    fi
+
+    curl -sL $BASE_URL/$selected
+}
+
+# Run resolve if the function is invoked  as a script
+if [[ "${#BASH_SOURCE[@]}" -eq 1 ]]; then
+    fetch $@
+fi

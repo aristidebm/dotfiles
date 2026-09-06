@@ -1,0 +1,35 @@
+{
+  "popup": {
+    "width": 380,
+    "margin": 12,
+    "maxVisible": 3,
+    "showWhenCenterOpen": true,
+    "position": "top-right"
+  },
+  "center": {
+    "width": 1500,
+    "maxNotifications": 50
+  },
+  "timeouts": {
+    "low": 5000,
+    "normal": 10000,
+    "critical": 0
+  },
+  "dnd": false,
+  "sound": {
+    "enabled": true,
+    "criticalPath": "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+  },
+  "theme": {
+    "background": "#1a1b26",
+    "foreground": "#a9b1d6",
+    "muted": "#444b6a",
+    "critical": "#f7768e",
+    "normal": "#7aa2f7",
+    "low": "#444b6a",
+    "border": "#292e42",
+    "cardRadius": 12,
+    "fontFamily": "JetBrainsMono Nerd Font",
+    "fontSize": 13
+  }
+}

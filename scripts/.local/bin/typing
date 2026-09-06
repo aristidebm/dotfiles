@@ -1,0 +1,8 @@
+#/usr/bin/env bash
+set -euo pipefail
+
+# Run the typing TUI
+ttyper -w 100 --language english1000
+
+# Track your habit
+habits track-up --date "$(date +%F)" Typing

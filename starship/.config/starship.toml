@@ -1,0 +1,78 @@
+# Remove some format
+format = """
+$username\
+$hostname\
+$directory\
+$fossil_branch\
+$fossil_metrics\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$nix_shell\
+$python\
+$custom\
+$sudo\
+$cmd_duration\
+$line_break\
+$jobs\
+$time\
+$status\
+$os\
+$character"""
+
+# right_format = """$cmd_duration"""
+
+# Replace the '❯' symbol in the prompt with '➜'
+[character] # The name of the module we are configuring is 'character'
+# success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+success_symbol = '➜'
+error_symbol = '➜'
+# error_symbol = '[✗](bold red) '
+vimcmd_symbol = '➜'
+vimcmd_replace_one_symbol = '➜'
+vimcmd_replace_symbol = '➜'
+vimcmd_visual_symbol = '➜'
+
+[status]
+format = '[$symbol$status]($style) '
+symbol = '✗ '
+disabled = false
+
+[python]
+format='[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = ''
+version_format = ''
+
+[git_commit]
+disabled = false
+
+[git_branch]
+disabled = false
+
+[git_state]
+disabled = false
+
+[git_metrics]
+disabled = false
+
+[git_status]
+disabled = false
+
+[nix_shell]
+symbol = "❄️"
+format = 'via [$symbol $state](bold cyan) '
+# Or if you want a cleaner look showing just the symbol:
+# format = '[$symbol](bold cyan) '
+
+# source: https://github.com/jj-vcs/jj/wiki/Starship
+# ${custom.jj}\
+# [custom.jj]
+# command = "prompt"
+# format = "$output"
+# ignore_timeout = true
+# shell = ["starship-jj", "--ignore-working-copy", "starship"]
+# use_stdin = false
+# when = true

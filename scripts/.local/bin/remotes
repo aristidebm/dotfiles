@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+selected=$1
+
+if [ -z "$selected" ]; then
+  echo "Usage: $(basename "$0") <remote_hostname>" >&2
+  exit 1
+fi
+
+ssh -t "$selected" "tmux new -A -s ${USER}@$selected \; set-option -t ${USER}@$selected mode-keys vi"

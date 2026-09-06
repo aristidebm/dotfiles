@@ -1,0 +1,31 @@
+theme = "rose_pine"
+
+[editor]
+line-number = "relative"
+mouse = false
+auto-info = false
+
+[editor.cursor-shape]
+insert = "block"
+normal = "block"
+select = "block"
+
+[editor.file-picker]
+hidden = false # stop treating dotfiles as hidden (.bashrc, .env, .eslintrc, etc.)
+# git-ignore = false   # stop respecting .gitignore rules
+# parents = false      # stop respecting ignore rules from parent directories
+# ignore = false       # stop respecting local .ignore files
+# git-global = false   # stop respecting your global gitignore (core.excludesfile)
+# git-exclude = false  # stop respecting .git/info/exclude
+
+
+[keys.normal.space.p]
+f = "file_picker"
+s = "global_search"
+g = "global_search"
+b = "buffer_picker"
+w = "@be*<space>/<ret>"    # <leader>pw -> grep_cword, auto-submits
+W = "@BE*<space>/<ret>"    # <leader>pW -> grep_cWORD, auto-submits
+
+[keys.select.space.p]
+w = "@*<space>/<ret>"      # <leader>pw in select mode -> grep_visual, auto-submits

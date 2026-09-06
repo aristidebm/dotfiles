@@ -1,0 +1,109 @@
+" vim: ft=vim
+" Here is a very good example of ideavim setting "https://www.cyberwizard.io/posts/the-ultimate-ideavim-setup/
+let mapleader=" "
+
+set scrolloff=0
+
+set nohlsearch
+
+" Do incremental searching.
+set incsearch
+set smartcase
+
+" ignore case
+set ignorecase
+set smartcase
+
+" numbering
+set number
+set relativenumber
+
+" Completely remove the annoying beep
+set visualbell
+
+"" Search in files
+nnoremap <leader>pg :action TextSearchAction<CR>
+
+"" Fuzzy find
+nnoremap <leader>pf :action GotoFile<CR>
+
+"" Search in files
+nnoremap <leader>ps :action GotoSymbol<CR>
+
+"" Reveal file in project view
+nnoremap <leader>pv :action SelectInProjectView<CR>
+
+"" Switch between buffers 
+nnoremap <leader>a :action HarpoonerAddFile<CR>
+nnoremap <C-e> :action HarpoonerQuickMenu<CR>
+nnoremap <C-j> :action HarpoonerOpenFile0<CR>
+nnoremap <C-k> :action HarpoonerOpenFile1<CR>
+nnoremap <C-l> :action HarpoonerOpenFile2<CR>
+nnoremap <C-;> :action HarpoonerOpenFile3<CR>
+
+" Accept Autocomplete
+inoremap <C-y> :action EditorChooseLookupItemReplace<CR>
+
+" Terminal
+" map <C-t> :actionActivateTerminalWindow<CR>
+
+"" Keep my cursor centered when scrolling vertically.
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+
+" Edition
+" Save my current buffer on the disk file.
+" nnoremap <leader>w :actionSaveAll<CR>
+
+"" Keep visual line/block selected after indentation.
+vnoremap < <gv
+vnoremap > >gv
+
+"" Use K and J to move selected line/block up and down.
+vnoremap <S-j> :m '>+1<CR>gv=gv
+vnoremap <S-k> :m '<-2<CR>gv=gv
+
+"" Join the line below without moving my cursor.
+nnoremap <S-j> mzJ`z
+
+"" Completion
+" map <C-Space> :action SmartTypeCompletion<CR>
+" inoremap <C-y> :action InsertInlineCompletionAction<CR>
+" inoremap <C-y> :action EditorChooseLookupItemReplace<CR>
+
+" Refactoring
+"" List all refactors a QuickList
+nnoremap <leader>rr :action Refactorings.QuickListPopupAction<CR>
+nnoremap grn :action RenameElement<CR>
+nnoremap gre :action ExtractMethod<CR>
+nnoremap grf :action Move<CR>
+
+" Debugging
+nnoremap <leader>d :action Debug<CR>
+nnoremap <leader>b :action ToggleLineBreakpoint<CR>
+
+" Misc
+"" Toggle distraction free mode
+nnoremap <leader>z :action ToggleDistractionFreeMode<CR>
+
+"" Quick documentation
+nnoremap <S-k> :action ShowHoverInfo<CR>
+
+" Yank to system clipboard
+vnoremap <leader>y \"+y
+
+" Yank from the cursor till the end of the line
+nnoremap <S-y> y$
+
+" Diagnostics
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]d :action GotoNextError<CR>
+
+" Plugins
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'machakann/vim-highlightedyank'
+Plug 'preservim/nerdtree'
+
+let g:highlightedyank_highlight_duration = "100"
+let g:highlightedyank_highlight_color = "rgba(160, 160, 160, 155)"

@@ -1,0 +1,24 @@
+# vscode file
+.vscode
+
+# jetbrains editors file
+.idea
+
+# Mise config files
+*mise.toml
+.mise/
+
+# Fnox config files
+*fnox.toml
+
+# Sqlite/DuckDB dbs
+*.db
+
+# Todos
+TODO.md
+Todo.md
+todo.md
+
+# Opencode stuffs
+.opencode
+*.diff

@@ -1,0 +1,82 @@
+;; Configuration guide at https://github.com/jtroo/kanata/blob/main/docs/config.adoc#required-configuration-entries
+(defcfg
+  log-layer-changes no
+)
+
+;; First up is the source (base) layer; this is used to set the default
+;; keys that will be overwritten later.  It is `not' a layer that will
+;; be used in the actual layout.
+(defsrc
+  esc f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12
+  grv  1    2    3    4    5    6    7    8    9    0    -     =        bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [     ]        ret
+  caps a    s    d    f    g    h    j    k    l    ;    '     \
+  lsft lsgt z    x    c    v    b    n    m    ,    .    /              rsft
+  wkup lctl lmet lalt           spc            ralt cmps rctl      pgup up  pgdn
+                                                                   lft down rght
+)
+
+(defalias
+    ;;col (layer-switch colemak-dh-angle)
+    ;;qwe (layer-switch qwerty-angle)
+    vimnav (layer-toggle vimnav)
+    num (layer-toggle num)
+    a (tap-hold-release 200 200 a @vimnav)
+)
+
+;; Qwerty
+;; Since this is the first layer, it's the layout Kanata starts in.
+(deflayer qwerty
+  esc f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12
+  grv  1    2    3    4    5    6    7    8    9    0    -     =        bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [     ]        ret
+  caps a    s    d    f    g    h    j    k    l    ;    '     \
+  lsft lsgt  z    x   c    v    b     n    m    ,    .    /              rsft
+  wkup lalt lmet  lctrl          spc            rctrl  ralt  cmps    pgup up  pgdn
+                                                                   lft down rght
+)
+
+;; Qwerty angle mode
+;; Since this is the first layer, it's the layout Kanata starts in.
+;;(deflayer qwerty-angle
+;;  esc f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12
+;;  grv  1    2    3    4    5    6    7    8    9    0    -     =        bspc
+;;  tab  q    w    e    r    t    y    u    i    o    p    [     ]        ret
+;;  caps @a    s    d    f    g    h    j    k    l    ;    '     \
+;;  lsft z    x    c    b    v    /     n    m    ,    .    /           rsft
+;;  wkup lalt lmet lctrl          spc            rctrl  ralt  prnt     pgup up  pgdn
+;;                                                                   lft down rght
+;;)
+
+;; Colemak angle mode
+;;(deflayer colemak-dh-angle
+;; esc f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   @qwe
+;; grv  1    2    3    4    5    6    7    8    9    0    -     =        bspc
+;; tab  q    w    f    p    b    j    l    u    y    ;    [     ]        ret
+;; caps @a    r    s    t    g    m    n    e    i    o    '     \
+;; lsft z    x    c    d    v    /    k    h    ,    .    /              rsft
+;; wkup lalt lmet lctrl          spc            rctrl prnt ralt     pgup up  pgdn
+;;                                                                  left down rght
+;; )
+
+;; Navigation layer
+(deflayer vimnav
+  XX    XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX     XX
+  XX    XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX     XX     XX
+  XX    XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX     XX     XX
+  XX    XX     XX     XX     XX     XX     lft   down     up       rght      XX     XX     XX
+  XX    XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX            XX
+  XX    XX     XX     XX                   XX             XX       XX         XX             XX    XX   XX
+                                                                                             XX    XX   XX
+)
+
+;; Num layer
+(deflayer num
+  XX     XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX     XX
+  XX     XX     XX     XX     XX     XX     XX     XX      XX       XX         XX     XX     XX     XX
+  XX     XX     XX     XX     XX     XX     =      7       8        9          +      XX     XX     XX
+  XX     XX     XX     XX     XX     XX     XX     4       5        6          -      XX     XX
+  XX     XX     XX     XX     XX     XX     XX     0       1        2          3      /             XX
+  XX     XX     XX     XX                   XX             XX       XX         XX              XX   XX   XX
+                                                                                               XX   XX   XX
+)

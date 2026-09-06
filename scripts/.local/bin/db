@@ -1,0 +1,790 @@
+#!/usr/bin/env sh
+
+DRIVERS=(
+    influx:
+    influxdb:
+    influxdbssl:
+    influxdbs:
+    influxs:
+    influxssl:
+    mysql:
+    mysqls:
+    mysqlssl:
+    ora:
+    oracle:
+    pg:
+    postgres:
+    postgresql:
+    pg:
+    pgsql:
+    postgresqlssl:
+    pgs:
+    pgsqlssl:
+    postgresssl:
+    pgssl:
+    postgresqls:
+    pgsqls:
+    postgress
+    sql:
+    sqlite:
+    sqlite2:
+    sqlite3:
+)
+
+function sanitize_source() {
+    if [ $# -eq 0 ]; then
+        return
+    fi
+    SOURCE=$(echo "$1" | sed -e 's/^://g' -e 's/^/:/g')
+    echo "$SOURCE"
+}
+export -f sanitize_source
+
+function edit_aliases() {
+    help=0
+
+    OPTIONS=$(getopt -o h: --long help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to config command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )); then
+        show_config_help
+        exit 0
+    fi
+
+  $EDITOR $HOME/.sql/aliases
+}
+
+function ping_database() {
+    help=0
+    retries=0
+
+    # r:, colon means this option requires an argument
+    OPTIONS=$(getopt --options r:h --long retries:,help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to ping command" >&2
+        exit $?
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+        case "$1" in
+            -r|--retries)
+                retries="$2";
+                shift 2;;
+            -v|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )); then
+        show_ping_help
+        exit 0
+    fi
+
+    connect_to_database --test --retries $retries "$@" 1>/dev/null
+}
+
+function run_query() {
+    help=0
+    passthrough=0
+    sep=""
+
+    OPTIONS=$(getopt -o s:h --long sep:,help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to source command" >&2
+        exit $?
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+        case "$1" in
+            -s|--sep)
+                sep="$2"
+                shift 2
+                ;;
+            -h|--help) help=1; shift ;;
+            --) passthrough=1; shift; break ;;
+        esac
+    done
+
+    if (( help )) then
+        show_run_help
+        exit 0
+    fi
+
+    if [ $# -eq 0 ]; then
+        echo -e "\e[31mYou have to specify the datasource\e[0m" >&2
+        exit 1
+    fi
+
+    FLAGS=()
+    if [ -n "$sep" ]; then
+        FLAGS+=("--sep" "$sep")
+    fi
+
+    POSITIONAL=()
+    PASSTROUGH=()
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -*=*)
+                # Handle -option=value format
+                local key="${1%%=*}"
+                local value="${1#*=}"
+                PASSTROUGH+=("$key=$value")
+                shift
+                ;;
+            -*)
+                # Check if next argument is a value (doesn't start with -)
+                if [[ $# -gt 1 && "$2" != -* ]]; then
+                    # This is -option value format
+                    local key="${1#}"  # Remove leading -
+                    PASSTROUGH+=("$key=$2")
+                    shift 2
+                else
+                    # This is just a flag
+                    local key="${1#}"  # Remove leading -
+                    PASSTROUGH+=("$key")
+                    shift
+                fi
+                ;;
+            *)
+                POSITIONAL+=("$1")
+                shift
+                ;;
+        esac
+    done
+
+    if [ "${#POSITIONAL[@]}" -lt 1 ]; then
+        echo -e "\e[31mdatasource is required\e[0m" >&2
+        exit 1
+    fi
+
+    SOURCE=$(sanitize_source ${POSITIONAL[0]})
+
+    if [ "${#PASSTROUGH[@]}" -ne 0 ]; then
+        FLAGS+=("--passthrough" "${PASSTROUGH[@]}")
+    fi
+
+    sql "${FLAGS[@]}" $SOURCE "${POSITIONAL[@]:1}"
+}
+
+function get_script_dir() {
+
+    if [ $# -ne 1 ]; then
+        echo -e "\e[31mYou have to specify the datasource\e[0m" >&2
+        exit 1
+    fi
+
+    datasource=$(echo "$1" | sed s'+:++' | xargs -I _ basename _ )
+
+    echo "/tmp/sql.$USER/${datasource}"
+}
+
+function create_script() {
+    # NOTE: It does not work with postgres
+    # there is a workaround here but works on bash
+    # For some reason, psql does not escape the first line of the file
+    # so we cannot use regular shebang like #!/usr/bin/sql
+    # more information on multiline shebang here
+    # https://rosettacode.org/wiki/Multiline_shebang#PostgreSQL
+    help=0
+
+    OPTIONS=$(getopt -o h --long help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to script command" >&2
+        exit 1
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+        case "$1" in
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) ; then
+        show_script_help
+        exit 0;
+    fi
+
+    # man sql or https://www.gnu.org/software/parallel/sql.html
+    # for more informations
+    # interesting link https://www.gnu.org/software/parallel/parallel_tutorial.html#saving-to-an-sql-base-advanced
+
+    tmpdir=$(get_script_dir $@)
+
+    if [ $? -ne 0 ]; then
+        return
+    fi
+
+    mkdir -p "$tmpdir"
+
+    # Get current timestamp (e.g., 20250719_004500)
+    ts=$(date +%Y%m%d_%H%M%S)
+
+    # Create the tempfile with mktemp, using the timestamp
+    tmpfile=$(mktemp "$tmpdir/query_${ts}.XXXXXX.sql")
+
+    if [ $? -ne 0 ]; then
+        echo -e "\e[1;31mWe cannot create the script file\e[0m"
+        exit $?
+    fi
+
+    echo "#!/usr/bin/sql -Y $1" > "$tmpfile"
+
+    chmod +x "$tmpfile" && echo "$tmpfile"
+}
+
+function list_scripts() {
+    help=0
+
+    OPTIONS=$(getopt -o h --long help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to scripts command" >&2
+        exit 1
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+        case "$1" in
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) ; then
+        show_scripts_help
+        exit 0;
+    fi
+
+    tmpdir=$(get_script_dir $1)
+
+    # --interactive mode
+    find "$tmpdir" -iname "*.SQL" | \
+        fzf --exact --scroll-off=8 \
+            --reverse \
+            --preview="bat --color=always --style=numbers --line-range=:500 {}" \
+            --prompt="Scripts > "\
+            --bind="enter:become({})" \
+            --bind="ctrl-a:execute(create_script $1)+reload(find '$tmpdir' -iname '*.SQL')" \
+            --bind="ctrl-e:execute(vim {})" \
+            --bind="ctrl-d:execute-silent(rm {})+reload(find '$tmpdir' -iname '*.SQL')" \
+            --bind="ctrl-y:execute-silent(echo \"{}\" | xclip -selection clipboard)" \
+            --bind='?:toggle-header' \
+            --header="enter: run ^a: add ^e: edit ^y: yank path ^d: remove ?: toggle help" \
+            2>/dev/tty
+}
+
+
+function show_drivers() {
+    for item in "${DRIVERS[@]}"; do
+        if [ "$item" == "sqlite3:" ] || [ "$item" == "pg:" ]; then
+            echo "$item///"
+        elif [ "$item" == "sql:" ]; then
+            # sql: is not really a driver it is just a prefix that can
+            # be append to the datasource name, we do not want to show it
+            continue
+        else
+            echo "$item//"
+        fi
+    done
+}
+
+function list_drivers() {
+    help=0
+    interactive=0
+
+    OPTIONS=$(getopt -o hi --long help,interactive -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to drivers command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -i|--interactive) interactive=1; shift ;;
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) ; then
+        show_drivers_help
+        exit 0;
+    fi
+
+    if ! (( interactive )); then
+        show_drivers
+        return
+    fi
+
+    # TODO: Add the possibility to create a source from this picker
+    show_drivers | \
+        fzf --exact --scroll-off=8 \
+            --reverse \
+            --prompt="Drivers > "\
+            --bind="ctrl-y:execute-silent(echo {} | xclip -selection clipboard)" \
+            --bind='?:toggle-header' \
+            --header="enter: run ^a: add ^e: edit ^y: yank path ?: toggle help" \
+            2>/dev/tty
+}
+
+# otherwise cannot use it :become(...)
+# source https://github.com/junegunn/fzf/discussions/4016#discussioncomment-10783713
+export -f edit_aliases
+export -f ping_database
+export -f create_script
+export -f list_scripts
+export -f get_script_dir
+export -f show_drivers
+
+function create_source() {
+    help=0
+    OPTIONS=$(getopt -o h --long help -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to source command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) || [ $# -eq 0 ] ; then
+        show_add_source_help
+        exit 0;
+    fi
+
+    # -e to enable readline keybings
+    read -e -p 'Source > ' result
+
+    fields=$(echo $result | awk -F ' ' '{print $1 " " $2}')
+
+    # remove leading and trailing colons (:)
+    name=$(echo "$fields" | awk -F ' ' '{print $1}' | sed 's/^:*//;s/:*$//')
+    datasource=$(echo "$fields" | awk -F ' ' '{print $2}')
+
+    if [ -z "$name" ] || [ -z "$datasource" ]; then
+        echo -e "\e[1;33mThe alias and the datasource are required\e[0m"
+        return
+    fi
+
+    driver_supported=0
+    for item in "${DRIVERS[@]}"; do
+        if [[ "$datasource" == $item* ]]; then
+            driver_supported=1
+            break
+        fi
+    done
+
+    if ! (( driver_supported )); then
+        echo -e "\e[1;33mThe driver used for $datasource is not supported yet\e[0m"
+        return
+    fi
+
+    echo ":$name $datasource"> $HOME/.sql/aliases
+}
+
+function show_sources() {
+    cat $HOME/.sql/aliases | sed -n '/^:/p' | sed s'/^://'
+}
+export -f show_sources
+
+function connect_to_database() {
+    help=0
+    retries=0
+    test=0
+
+    OPTIONS=$(getopt -o r:ht --long retries:,help,test -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to connect command" >&2
+        exit $?
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+        case "$1" in
+            -r|--retries)
+                retries="$2";
+                shift 2;;
+            -v|--help) help=1; shift ;;
+            -t|--test) test=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    SOURCE="$1"
+    if [ -z "$SOURCE" ]; then
+        SOURCE=$(list_sources | \
+            fzf --reverse \
+                --exact \
+                --scroll-off=8 \
+                --delimiter=" " \
+                --bind="enter:become(echo :{1})" \
+                --bind="ctrl-y:execute-silent(echo {} | xclip -selection clipboard)" \
+                --bind='?:toggle-header' \
+                --header="enter: run ^a: add ^e: edit ^y: yank path ^d: remove ?: toggle help" \
+        )
+    fi
+
+    SOURCE=$(sanitize_source $SOURCE)
+    if [ -z "$SOURCE" ]; then
+        return
+    fi
+
+    QUERY=""
+    FALGS=()
+    if [ "$retries" -ne 0 ]; then
+        FALGS+=(--retries "$retries")
+    fi
+
+    if (( test )); then
+        QUERY="SELECT 1;"
+    fi
+
+    sql $SOURCE "${FALGS[@]}" $QUERY
+
+    if [ $? -eq 0 ] ; then
+       (( test )) && echo -e "\e[1;32mpong\e[0m" >&2
+       return
+    fi
+
+   # -e to enable readline keybings
+   read -e -p $'\e[1;33mconnection to source '"$SOURCE"$' has failed, do you want to update the config (yes/no)?\e[0m ' result
+
+   if [ $result == "yes" ]; then
+
+       edit_aliases
+
+       sql "${FALGS[@]}" $SOURCE $QUERY
+
+       if (( test )) && [ $? -eq 0 ]; then
+           echo -e "\e[1;32mpong\e[0m" >&2
+           return
+       fi
+   fi
+}
+export -f connect_to_database
+
+function list_sources() {
+    interactive=0
+    help=0
+    # Parse options for `sources`
+    # Accepts: -a/--all   -v/--verbose
+    OPTIONS=$(getopt -o hi --long help,interactive -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to sources command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -i|--interactive) interactive=1; shift ;;
+            -v|--verbose) verbose=1; shift ;;
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )); then
+        show_sources_help
+        exit 0
+    fi
+
+    if (( interactive )); then
+        cat $HOME/.sql/aliases | sed -n '/^:/p' | sed s'/^://' | \
+            fzf --exact --scroll-off=8 --multi \
+                --reverse \
+                --prompt="Sources > "\
+                --delimiter="\s+" \
+                --bind="ctrl-a:execute(create_script $1)+reload(find '$tmpdir' -iname '*.SQL')" \
+                --bind="ctrl-y:execute-silent(echo \"{2}\" | xclip -selection clipboard)" \
+                --bind="enter:execute(connect_to_database {1})+reload(show_sources)" \
+                --bind '?:toggle-header' \
+                --header "^y: yank source url enter: connect ?: toggle help" \
+                2>/dev/tty
+    else
+       show_sources
+    fi
+}
+
+function list_databases() {
+    help=0
+    OPTIONS=$(getopt -o hi --long help,interactive -- "$@")
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to source command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -i|--interactive) interactive=1; shift ;;
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) || [ $# -eq 0 ] ; then
+        show_add_source_help
+        exit 0;
+    fi
+
+    if ! (( interactive )); then
+        sql --list-databases $1
+        return
+    fi
+}
+
+function list_tables() {
+    help=0
+    interactive=0
+
+    OPTIONS=$(getopt -o h --long help -- "$@")
+
+    if [ $? -ne 0 ]; then
+        echo "Incorrect options provided to source command" >&2
+        exit 1
+    fi
+    eval set -- "$OPTIONS"
+    while true; do
+        case "$1" in
+            -i|--interactive) interactive=1; shift ;;
+            -h|--help) help=1; shift ;;
+            --) shift; break ;;
+        esac
+    done
+
+    if (( help )) ; then
+        show_add_source_help
+        exit 0;
+    fi
+
+    sql --list-tables $1
+}
+
+function show_general_help() {
+    cat <<EOF
+Usage: $(basename "$0")  [OPTIONS] [COMMAND]
+
+Commands:
+  add             Add source
+  sources         List all available data sources
+  script          Create script for the specified source
+  scripts         List scripts created for the specified source
+  drivers         List currently supported drivers
+  tables          List tables inside the specified source
+  databases       List databases inside the specified source
+  ping            Ping datasource
+  connect         Connect to datasource
+  run             Run query against the specified source
+  config          Edit the configuration
+
+Options:
+  -h|--help          Show this help message and exit
+
+Use "$(basename "$0") <COMMAND> --help" for more information on a command.
+EOF
+}
+
+function show_sources_help() {
+    cat <<EOF
+Usage: $(basename "$0") sources [OPTIONS]
+
+Options:
+  -i|--interactive   Start interactive mode for choosing sources
+  -h|--help          Show this help message and exit
+
+Description:
+  Lists all available sources.
+EOF
+}
+
+function show_add_source_help() {
+    cat <<EOF
+Usage: $(basename "$0") add [OPTIONS] <NAME> <DATASOURCE-URL>
+
+Options:
+  -h|--help          Show this help message and exit
+
+Description:
+  Add a source to the config file
+EOF
+}
+
+function show_drivers_help() {
+    cat <<EOF
+Usage: $(basename "$0") drivers [OPTIONS]
+
+Options:
+  -i|--interactive   Start interactive mode for choosing drivers
+  -h|--help          Show this help message and exit
+
+Description:
+  Lists all available drivers.
+EOF
+}
+
+function show_scripts_help() {
+    cat <<EOF
+Usage: $(basename "$0") scripts [OPTIONS] <SOURCE>
+
+Options:
+  -i|--interactive   Start interactive mode for choosing scripts
+  -h|--help          Show this help message and exit
+
+Description:
+  Lists all available drivers.
+EOF
+}
+
+function show_script_help() {
+    cat <<EOF
+Usage: $(basename "$0") script [OPTIONS] <SOURCE>
+
+Options:
+  -h|--help          Show this help message and exit
+
+Description:
+  Create a script for the specified <name> and open it the configured "EDITOR"
+EOF
+}
+
+function show_ping_help() {
+    cat <<EOF
+Usage: $(basename "$0") ping [OPTIONS] [SOURCE]
+
+Options:
+  -r|--retries N     Retries the ping command N times if it fails
+  -h|--help          Show this help message and exit
+
+Description:
+  An alias of $(basename "$0") connect --test
+EOF
+}
+
+function show_connect_help() {
+    cat <<EOF
+Usage: $(basename "$0") connect [OPTIONS] [SOURCE]
+
+Options:
+  -r|--retries N  Retries the ping command N times if it fails
+  -t|--test       Test connexion
+  -h|--help       Show this help message and exit
+
+Description:
+  Connect to a datasource.
+EOF
+}
+
+function show_run_help() {
+    cat <<EOF
+Usage: $(basename "$0") run [OPTIONS] <name> [QUERY]
+
+Options:
+  -s|--sep           Column separator
+  -h|--help          Show this help message and exit
+  --                 Pass the options provided after this one to the actual client
+
+Description:
+  Connect to the specified source and run the query if provided
+EOF
+}
+
+function show_sources_help() {
+    cat <<EOF
+Usage: $(basename "$0") sources [OPTIONS]
+
+Options:
+  -i|--interactive   Start interactive mode for choosing sources
+  -h|--help          Show this help message and exit
+
+Description:
+  Lists all available sources.
+EOF
+}
+
+
+function show_config_help() {
+    cat <<EOF
+Usage: $(basename "$0") config [OPTIONS]
+
+Options:
+  -h|--help          Show this help message and exit
+
+Description:
+  Edit the configuration file.
+EOF
+}
+
+
+function main() {
+
+    if ! command -v sql &> /dev/null; then
+        echo "You have to install [GNU Parrel](https://www.gnu.org/software/parallel/)"
+        exit 0
+    fi
+
+    command=$1
+    # shift arguments to the right
+    shift
+    case "$command" in
+        add)
+            create_source "$@"
+            ;;
+        sources)
+            list_sources "$@"
+            ;;
+        script)
+            create_script "$@"
+            ;;
+        scripts)
+            list_scripts "$@"
+            ;;
+        drivers)
+            list_drivers "$@"
+            ;;
+        tables)
+            list_tables "$@"
+            ;;
+        databases)
+            list_databases "$@"
+            ;;
+        config)
+            edit_aliases "$@"
+            ;;
+        ping)
+            ping_database "$@"
+            ;;
+        connect)
+            connect_to_database "$@"
+            ;;
+        run)
+            run_query "$@"
+            ;;
+        *)
+            show_general_help
+            ;;
+    esac
+}
+
+main "$@"

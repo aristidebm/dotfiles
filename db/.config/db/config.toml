@@ -1,0 +1,25 @@
+[sources]
+  [sources.cd]
+    url = "postgres://postgres:@127.0.0.1:5432/concretedispatch"
+    interactive = "pgcli"
+    format = ""
+  [sources.pg]
+    url = "postgres://postgres:@127.0.0.1:5432/postgres"
+    interactive = "pgcli"
+    format = ""
+  [sources.redis]
+    url = "redis://127.0.0.1:6379"
+    interactive = ""
+    format = ""
+  [sources.sakila]
+    url = "sqlite3:////home/aristide/Projects/personal/sql/datasets/sakila.db"
+    interactive = "sqlite3"
+    format = ""
+  [sources.habits]
+    url = "sqlite3:////home/aristide/.local/state/habits/habits.db"
+    interactive = "sqlite3"
+    format = ""
+
+[schemes]
+  [schemes.postgres]
+    format = "unaligned"

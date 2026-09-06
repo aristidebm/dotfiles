@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+## Arg list version
+
+function resolve() {
+    # Initialize an empty array to hold conflicted filenames
+    local files=()
+
+    # Read NULL-separated filenames from git diff output safely into the array
+    while IFS= read -r -d '' file; do
+        files+=("$file")  # Append each filename to the array
+    done < <(git diff --name-only --diff-filter=U -z)
+
+    # Check if the array is not empty (i.e., there are conflicted files)
+    if (( ${#files[@]} )); then
+        # Open all conflicted files in Neovim, passing each as a separate argument
+        nvim --clean "${files[@]}"
+    fi
+}
+
+# Run resolve if the function is invoked  as a script
+if [[ "${#BASH_SOURCE[@]}" -eq 1 ]]; then
+    resolve
+fi

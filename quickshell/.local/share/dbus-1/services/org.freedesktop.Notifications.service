@@ -1,0 +1,6 @@
+# vim:ft=ini
+# This does not launch anything for real, it just help
+# quickshell NotificationServer to be the preferred notification daemon
+[D-BUS Service]
+Name=org.freedesktop.Notifications
+Exec=/bin/true

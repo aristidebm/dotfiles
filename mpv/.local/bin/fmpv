@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+# FIXME: For are reason I don't understand this online solution does not work because the & a the end
+# rg --files ~/Videos/ | fzf --multi --reverse --prompt="Videos > " | fzf --multi | xargs -d "\n" mpv --volume=70 --loop-playlist=inf &> /dev/null &
+function fmpv() {
+    DIRS=$@
+    [[ -z "$DIRS" ]] && DIRS=~/Videos/
+    local selection=$(rg -g '*.{mp4,webm,mkv,opus}' --files $DIRS |
+        fzf \
+        --multi \
+        --reverse \
+        --prompt="Videos > " \
+        --bind "ctrl-q:select-all+accept" \
+    )
+    [[ -z "$selection" ]] && exit 0
+    printf '%s\n' "$selection" | xargs -d '\n' mpv --volume=70 --loop-playlist=inf &> /dev/null &
+}
+
+fmpv $@

@@ -1,0 +1,4 @@
+# vim:ft=ini
+[D-BUS Service]
+Name=org.freedesktop.FileManager1
+Exec=/home/aristide/.local/share/dbus-1/services/vifm-service.py

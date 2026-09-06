@@ -1,0 +1,408 @@
+#!/usr/bin/env sh
+#
+# gpg-offline-primary.sh
+#
+# Moves a GPG primary (certify) secret key to offline storage, leaving only
+# the subkeys' secret material on the current ("daily driver") machine.
+# Optionally also produces a printable QR-code paper backup of the primary
+# key (public + secret, self-contained) via base64 + qrencode.
+#
+# What it does:
+#   1. Exports primary + subkeys secret material (for offline storage)
+#   2. Exports subkeys-only secret material (to reimport locally after)
+#   3. Generates a revocation certificate (for offline storage)
+#   4. Exports the public key (for offline storage / restore convenience)
+#   5. [optional] Builds a QR-code paper backup:
+#        - base64-encodes the raw secret key export (public+secret packets)
+#        - splits it into chunks and QR-encodes each, montaged into a
+#          printable sheet
+#   6. Removes the primary secret key from the local keyring
+#   7. Reimports the subkeys-only secret material so daily operations keep working
+#
+# Nothing is uploaded or moved anywhere automatically: everything meant for
+# offline storage is written to $OUTDIR, and it's on you to copy/print that
+# directory and then wipe it from this disk (the script offers to do the
+# wipe at the end).
+#
+# Dependencies for the QR step (optional, script degrades gracefully without them):
+#   qrencode, imagemagick (montage), zbar-tools (zbarimg, for restore only)
+#   Debian/Ubuntu: sudo apt install qrencode imagemagick zbar-tools
+#   Arch:          sudo pacman -S qrencode imagemagick zbar
+#
+# Usage:
+#   ./gpg-offline-primary.sh [--no-qr] <KEYID_OR_FINGERPRINT>
+#
+# Example:
+#   ./gpg-offline-primary.sh 0xA1B2C3D4E5F6A7B8
+#   ./gpg-offline-primary.sh --no-qr 1234567890ABCDEF1234567890ABCDEF12345678
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Args & sanity checks
+# ---------------------------------------------------------------------------
+
+WANT_QR=1
+KEYID=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --no-qr)
+            WANT_QR=0
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--no-qr] <KEYID_OR_FINGERPRINT>" >&2
+            exit 0
+            ;;
+        *)
+            KEYID="$1"
+            shift
+            ;;
+    esac
+done
+
+if [[ -z "$KEYID" ]]; then
+    echo "Usage: $0 [--no-qr] <KEYID_OR_FINGERPRINT>" >&2
+    exit 1
+fi
+
+if ! command -v gpg >/dev/null 2>&1; then
+    echo "Error: gpg not found in PATH." >&2
+    exit 1
+fi
+
+if ! command -v qrencode >/dev/null 2>&1; then
+    echo "Error: qrencode not found in PATH." >&2
+    exit 1
+fi
+
+if ! command -v shred >/dev/null 2>&1; then
+    echo "Error: shred not found in PATH." >&2
+fi
+
+HAVE_QR_TOOLS=1
+for tool in qrencode montage; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        HAVE_QR_TOOLS=0
+    fi
+done
+
+if [[ "$WANT_QR" -eq 1 && "$HAVE_QR_TOOLS" -eq 0 ]]; then
+    echo "Note: QR paper backup requested but one of qrencode/montage is" >&2
+    echo "      missing. Install them or pass --no-qr. Skipping QR step." >&2
+    WANT_QR=0
+fi
+
+# Confirm the key exists and actually has a usable secret primary key present.
+if ! gpg --list-secret-keys "$KEYID" >/dev/null 2>&1; then
+    echo "Error: no secret key found for '$KEYID'." >&2
+    exit 1
+fi
+
+SEC_LINE="$(gpg --list-secret-keys --with-colons "$KEYID" | awk -F: '$1=="sec"{print; exit}')"
+if [[ -z "$SEC_LINE" ]]; then
+    echo "Error: '$KEYID' does not resolve to a primary secret key (sec)." >&2
+    exit 1
+fi
+
+# Column 15 of a --with-colons 'sec' line holds token flags; a stub-only key
+# ('#') means the real primary secret material is already absent here.
+TOKEN_FLAGS="$(echo "$SEC_LINE" | awk -F: '{print $15}')"
+if [[ "$TOKEN_FLAGS" == *"#"* ]]; then
+    echo "The primary secret key for '$KEYID' is already a stub on this machine (nothing to move)." >&2
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Setup
+# ---------------------------------------------------------------------------
+
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+OUTDIR="${PWD}/gpg-offline-export-${TIMESTAMP}"
+mkdir -m 700 -p "$OUTDIR"
+
+PRIMARY_AND_SUB_ASC="${OUTDIR}/primary-and-subkeys-secret.asc"
+PRIMARY_AND_SUB_BIN="${OUTDIR}/primary-and-subkeys-secret.gpg"
+SUBKEYS_ONLY_FILE="${OUTDIR}/subkeys-secret.asc"
+REVOKE_FILE="${OUTDIR}/revoke-cert.asc"
+PUBKEY_ASC="${OUTDIR}/pubkey.asc"
+PUBKEY_BIN="${OUTDIR}/pubkey.gpg"
+
+QRDIR="${OUTDIR}/qr-backup"
+QR_BASE64_FILE="${QRDIR}/primary-keyring-base64.txt"
+README_FILE="${QRDIR}/README.txt"
+
+TOTAL_STEPS=7
+[[ "$WANT_QR" -eq 0 ]] && TOTAL_STEPS=6
+
+echo "== GPG offline primary-key extraction for: ${KEYID} =="
+echo "Output directory: ${OUTDIR}"
+echo
+
+# ---------------------------------------------------------------------------
+# 1. Export primary + subkeys secret material (destined for offline storage)
+# ---------------------------------------------------------------------------
+
+echo "[1/${TOTAL_STEPS}] Exporting primary + subkeys secret material..."
+gpg --export-secret-keys --armor "$KEYID" > "$PRIMARY_AND_SUB_ASC"
+chmod 600 "$PRIMARY_AND_SUB_ASC"
+# Raw binary copy too: used as the source for the QR paper backup (base64
+# of the raw export is more compact than base64-of-armor).
+gpg --export-secret-keys "$KEYID" > "$PRIMARY_AND_SUB_BIN"
+chmod 600 "$PRIMARY_AND_SUB_BIN"
+
+# ---------------------------------------------------------------------------
+# 2. Export subkeys-only secret material (to reimport locally afterwards)
+# ---------------------------------------------------------------------------
+
+echo "[2/${TOTAL_STEPS}] Exporting subkeys-only secret material..."
+gpg --export-secret-subkeys --armor "$KEYID" > "$SUBKEYS_ONLY_FILE"
+chmod 600 "$SUBKEYS_ONLY_FILE"
+
+# ---------------------------------------------------------------------------
+# 3. Generate a revocation certificate while the primary key is still present
+# ---------------------------------------------------------------------------
+
+echo "[3/${TOTAL_STEPS}] Generating revocation certificate..."
+echo "      (gpg will prompt you to confirm and pick a revocation reason)"
+gpg --output "$REVOKE_FILE" --gen-revoke "$KEYID"
+chmod 600 "$REVOKE_FILE"
+
+# ---------------------------------------------------------------------------
+# 4. Export the public key too (needed to reconstruct from the paperkey backup,
+#    and generally handy to have alongside the offline copy)
+# ---------------------------------------------------------------------------
+
+echo "[4/${TOTAL_STEPS}] Exporting public key..."
+gpg --export --armor "$KEYID" > "$PUBKEY_ASC"
+chmod 600 "$PUBKEY_ASC"
+gpg --export "$KEYID" > "$PUBKEY_BIN"
+chmod 600 "$PUBKEY_BIN"
+
+# ---------------------------------------------------------------------------
+# 5. [optional] QR-code paper backup
+# ---------------------------------------------------------------------------
+
+qr_encode_file() {
+    # qr_encode_file <input_file> <chunk_size_bytes> <label> <workdir>
+    #
+    # Splits input into chunks and QR-encodes each one, with a small
+    # "CHUNK i/N" header embedded in every chunk's own payload. This matters
+    # because tools like zbarimg do NOT guarantee returning multiple QR
+    # codes from one scanned sheet in left-to-right/top-to-bottom order —
+    # embedding the index lets restoration re-sort chunks correctly
+    # regardless of scan order.
+    local input="$1" chunk_size="$2" label="$3" workdir="$4"
+    local raw_prefix="${workdir}/.${label}-raw-"
+    local prefix="${workdir}/${label}-chunk-"
+
+    split -d -a 4 -C "$chunk_size" "$input" "$raw_prefix"
+
+    local raw_chunks=("${raw_prefix}"*)
+    local total="${#raw_chunks[@]}"
+    local i chunk_file pngs=()
+
+    for i in "${!raw_chunks[@]}"; do
+        chunk_file="${prefix}$(printf '%04d' "$i")"
+        printf 'CHUNK %04d/%04d\n' "$((i + 1))" "$total" > "$chunk_file"
+        cat "${raw_chunks[$i]}" >> "$chunk_file"
+        qrencode -r "$chunk_file" -o "${chunk_file}.png" -8 -l H -s 6
+        pngs+=("${chunk_file}.png")
+    done
+    rm -f "${raw_prefix}"*
+
+    if [[ "${#pngs[@]}" -eq 1 ]]; then
+        cp "${pngs[0]}" "${workdir}/${label}-qr-sheet.png"
+    else
+        montage -mode Concatenate -tile 2x -geometry +10+10 \
+            "${pngs[@]}" "${workdir}/${label}-qr-sheet.png"
+    fi
+
+    echo "      -> ${total} QR code(s), sheet: ${workdir}/${label}-qr-sheet.png"
+}
+
+if [[ "$WANT_QR" -eq 1 ]]; then
+    echo "[5/${TOTAL_STEPS}] Building QR-code paper backup..."
+    mkdir -m 700 -p "$QRDIR"
+
+    # Base64-encode the raw secret key export. This keyring already contains
+    # both the public and secret packets, so this one QR set is self-contained
+    # for restore (no separate public-key backup needed).
+    echo "      Base64-encoding the keyring..."
+    base64 "$PRIMARY_AND_SUB_BIN" > "$QR_BASE64_FILE"
+    chmod 600 "$QR_BASE64_FILE"
+
+    echo "      Encoding QR codes..."
+    qr_encode_file "$QR_BASE64_FILE" 800 "primary-keyring" "$QRDIR"
+
+    # Clean up intermediate (non-QR) chunk files, keep only the final sheet
+    # and the source base64 file for reference.
+    find "$QRDIR" -maxdepth 1 -name 'primary-keyring-chunk-*' ! -name '*.png' -delete
+    find "$QRDIR" -maxdepth 1 -name 'primary-keyring-chunk-*.png' -delete
+
+    cat > "${QRDIR}/reassemble-qr-backup.py" <<'PYEOF'
+#!/usr/bin/env python3
+"""
+Reassemble a gpg-offline-primary.sh QR paper backup.
+
+Usage:
+    zbarimg --raw -q primary-keyring-qr-sheet.png > decoded.txt
+    python3 reassemble-qr-backup.py decoded.txt restored-keyring.gpg
+
+Each QR code's payload starts with a "CHUNK i/N" header line, so chunks are
+re-sorted by that index here rather than relying on scan order (zbarimg does
+not guarantee returning multiple codes from one image in a fixed order).
+Stray blank lines that scanning sometimes introduces between chunks are
+ignored.
+"""
+import base64
+import re
+import sys
+
+def main():
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <decoded.txt> <output-file>", file=sys.stderr)
+        sys.exit(1)
+
+    decoded_path, output_path = sys.argv[1], sys.argv[2]
+    with open(decoded_path, "r") as f:
+        data = f.read()
+
+    pattern = re.compile(r"CHUNK (\d+)/(\d+)\n")
+    pieces = pattern.split(data)
+    # re.split with capture groups yields: [pre, idx, total, body, idx, total, body, ...]
+    chunks = {}
+    total = None
+    for i in range(1, len(pieces), 3):
+        idx = int(pieces[i])
+        total = int(pieces[i + 1])
+        body = pieces[i + 2]
+        chunks[idx] = body
+
+    if total is None or sorted(chunks) != list(range(1, total + 1)):
+        missing = sorted(set(range(1, (total or 0) + 1)) - set(chunks))
+        print(f"Error: incomplete or malformed scan. Expected {total} chunks, "
+              f"missing: {missing or 'unknown'}.", file=sys.stderr)
+        sys.exit(1)
+
+    ordered_b64 = "".join(chunks[i] for i in range(1, total + 1))
+    # Drop blank lines a scan may have introduced between chunks.
+    ordered_b64 = "\n".join(line for line in ordered_b64.splitlines() if line.strip())
+
+    raw = base64.b64decode(ordered_b64)
+    with open(output_path, "wb") as f:
+        f.write(raw)
+
+    print(f"Reassembled {total} chunk(s) -> {output_path}")
+
+if __name__ == "__main__":
+    main()
+PYEOF
+    chmod 700 "${QRDIR}/reassemble-qr-backup.py"
+
+    cat > "$README_FILE" <<EOF
+GPG paper backup — restore instructions
+========================================
+
+Files in this directory:
+  primary-keyring-qr-sheet.png   QR codes: base64 of the primary key's raw
+                                  secret key export (public + secret packets),
+                                  split into chunks, each chunk labeled with
+                                  its position so restore works regardless of
+                                  the order a scanner reads the codes back in
+  primary-keyring-base64.txt     Same data as plain base64 text (keep this
+                                  OFFLINE too, it is not printed, just here in
+                                  case OCR/scanning fails and you need to
+                                  retype from a photo of the sheet instead)
+  reassemble-qr-backup.py        Restore helper (stdlib only, no dependencies)
+
+Print primary-keyring-qr-sheet.png. Store the printout like you would a
+passport or a will (fireproof safe, safety deposit box, etc.). Consider two
+copies in two separate locations. It's also fine to keep a copy of
+reassemble-qr-backup.py alongside the printout, or even print it too — it
+contains no secret material, just restore logic.
+
+To restore, from a scan or photo of the sheet:
+  1. Decode the QR codes back to text with zbarimg:
+       zbarimg --raw -q primary-keyring-qr-sheet.png > decoded.txt
+
+  2. Reassemble and decode back to the raw keyring (this script sorts chunks
+     by their embedded index, so it does not matter what order zbarimg
+     happened to read the codes in):
+       python3 reassemble-qr-backup.py decoded.txt restored-keyring.gpg
+
+  3. Import it:
+       gpg --import restored-keyring.gpg
+       gpg --list-secret-keys --keyid-format LONG
+
+  4. Verify the restored primary secret key's fingerprint matches what you
+     expect before trusting it for anything.
+
+This backup only covers the PRIMARY secret key (certify-only). Day-to-day
+subkeys are backed up separately (subkeys-secret.asc in the parent export
+directory) and are not included on paper, since they should be rotated
+periodically rather than kept long-term.
+EOF
+    chmod 600 "$README_FILE"
+    echo "      QR backup + restore instructions written to: ${QRDIR}"
+else
+    echo "[5/${TOTAL_STEPS}] Skipping QR paper backup."
+fi
+
+# ---------------------------------------------------------------------------
+# 6. Remove the primary secret key from the local keyring
+# ---------------------------------------------------------------------------
+
+echo
+echo "About to delete the PRIMARY secret key from this machine's keyring."
+echo "It has been exported to: ${PRIMARY_AND_SUB_ASC}"
+[[ "$WANT_QR" -eq 1 ]] && echo "A QR paper backup was also written to: ${QRDIR}"
+echo "Make sure everything in ${OUTDIR} is copied to offline storage / printed"
+echo "BEFORE you continue, or you will lose access to your primary key."
+read -r -p "Type 'yes' to proceed with deletion: " CONFIRM
+if [[ "$CONFIRM" != "yes" ]]; then
+    echo "Aborted. No changes made to your keyring. Exported files remain in ${OUTDIR}."
+    exit 1
+fi
+
+echo "[6/${TOTAL_STEPS}] Removing primary secret key from local keyring..."
+gpg --delete-secret-key "$KEYID"
+
+# ---------------------------------------------------------------------------
+# 7. Reimport subkeys-only secret material
+# ---------------------------------------------------------------------------
+
+echo "[7/${TOTAL_STEPS}] Reimporting subkeys-only secret material..."
+gpg --import "$SUBKEYS_ONLY_FILE"
+
+# ---------------------------------------------------------------------------
+# Verify resulting state
+# ---------------------------------------------------------------------------
+
+echo
+echo "Resulting secret key listing:"
+gpg --list-secret-keys --keyid-format LONG "$KEYID" || true
+
+echo
+echo "Done. Expected result above: 'sec#' (stub) for the primary key and normal"
+echo "'ssb' entries for each subkey."
+echo
+echo "Remaining manual steps:"
+echo "  1. Copy/print everything in ${OUTDIR} to offline storage."
+if [[ "$WANT_QR" -eq 1 ]]; then
+    echo "     - Print ${QRDIR}/primary-keyring-qr-sheet.png"
+    echo "     - Store the printout securely (safe, deposit box, etc.)"
+fi
+echo "  2. Verify the offline copy/printout is complete and readable."
+echo "  3. Securely wipe the local copy of these exported files."
+
+echo
+read -r -p "Securely wipe ${OUTDIR} now with 'shred'? [y/N] " WIPE
+if [[ "$WIPE" =~ ^[Yy]$ ]]; then
+    find "$OUTDIR" -type f -exec shred -u {} \;
+    find "$OUTDIR" -depth -type d -exec rmdir {} \; 2>/dev/null || true
+    echo "Wiped ${OUTDIR}."
+else
+    echo "Leaving ${OUTDIR} in place. Remember to move it offline and wipe it yourself."
+fi

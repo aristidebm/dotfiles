@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+function clip {
+    if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
+        wl-copy $@
+    else
+        xclip -sel clip $@
+    fi
+}
+export -f clip
+
+function fpdf() {
+    DIRS=$@
+    [[ -z "$DIRS" ]] && DIRS=~/Documents/
+    local selection=$(rg -g '*.{pdf,epub,djvu}' --files $DIRS |
+        fzf \
+        --multi \
+        --reverse \
+        --prompt="Documents > " \
+        --bind "ctrl-q:select-all+accept" \
+        --bind="ctrl-y:execute-silent(echo \"{}\" | clip)" \
+    )
+    [[ -z "$selection" ]] && exit 0
+    printf '%s\n' "$selection" | xargs -d '\n' zathura &> /dev/null &
+}
+
+fpdf $@

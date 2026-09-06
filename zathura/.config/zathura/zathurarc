@@ -1,0 +1,55 @@
+# zathura configuration file. 
+
+######################################################################################
+#                                                                                    #
+#   Date:   08/03/2022                                                               #
+#   Path:   $XDG_CONFIG_HOME/zathura/zathurarc                                       #
+#   Author: Godmind                                                                  #
+#   Source: https://www.systutorials.com/docs/linux/man/5-zathurarc/ (man zathurarc) #
+#                                                                                    #
+######################################################################################
+
+# set fonts  set font "inconsolata 12"
+set font 'monospace normal 12'
+
+# Enable copy to clipboard
+set selection-clipboard clipboard
+
+# set background-color
+set default-bg "#282C34"
+
+# set input-bar background 
+set inputbar-bg "#282C34"
+
+# set status-bar background
+set statusbar-bg "#282C34"
+
+# recolor colors configuration
+set recolor-darkcolor "#FFFFFF"
+set recolor-lightcolor "#282C34"
+set recolor-reverse-video "true"
+set recolor-keephue "true"
+
+# Notifications
+set notification-bg "#282C34"
+set notification-fg "#626771"
+set notification-error-bg "#282C34"
+set notification-fg "#282C34"
+
+# set tabbar
+set index-bg "#282C34"
+
+# set tabbar focus 
+set index-active-bg "#007BFF"
+
+# set highlight color
+# set highlight-color "#3B4252" 
+
+# set highlight active color
+# set highlight-active-color "#3B4252"
+
+# set highlight transparency opacity
+# set highlight-transparency 0.3
+
+# set the amount of percent that is zoomed in or out on each command 
+set zoom-step 20

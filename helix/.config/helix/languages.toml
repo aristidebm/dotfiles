@@ -1,0 +1,8 @@
+[[language]]
+name = "python"
+language-servers = ["ty"]
+# language-servers = ["pyrefly", "lsp"]
+
+[language-server.ty]
+command = "ty"
+args = ["server"]

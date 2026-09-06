@@ -1,0 +1,101 @@
+# According to this commit in lightdm, we need to rename the .profile into .xprofile
+# in order to get it sourced after login https://gitlab.archlinux.org/archlinux/packaging/packages/lightdm/-/blob/75c048cabfe9693749f5f363ab6257400d954ffa/Xsession
+# Default editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# Default terminal
+# export TERM=xterm-256color
+
+# Browser
+export BROWSER=firefox
+
+# Tex configuration
+export PATH=/usr/local/texlive/2023/bin/x86_64-linux:$PATH
+export MANPATH=/usr/local/texlive/2023/texmf-dist/doc/man:$MANPATH
+export INFOPATH=/usr/local/texlive/2023/texmf-dist/doc/info:$INFOPATH
+
+## use "neovim" as manapager
+export MANPAGER='nvim +Man!'
+
+# Use "bat" as infopager
+export INFOPAGER="sh -c 'col -bx | bat -l man -p'"
+
+# Fix blank screens in Java apps
+
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Use a dark theme in Qt apps
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+# Add custom script bin directory
+export PATH=$HOME/.local/bin:$PATH
+
+# Add rust-lang bin directory
+export PATH=$HOME/.cargo/bin:$PATH
+
+# Add go-lang bin directory
+export PATH=$HOME/go/bin:$PATH
+
+# Add flatpak applications directories to the path
+export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS
+export XDG_DATA_DIRS=/var/lib/flatpak/exports/share:$XDG_DATA_DIRS
+
+# Set the default python debugger to ipdb
+# export PYTHONBREAKPOINT=ipdb.set_trace
+
+# Set default folder uv should check when looking of project environment
+# UV_PROJECT_ENVIRONMENT=venv
+
+# Change history format
+export HISTTIMEFORMAT="%F %T : "
+___MY_VMOPTIONS_SHELL_FILE="${HOME}/.jetbrains.vmoptions.sh"; if [ -f "${___MY_VMOPTIONS_SHELL_FILE}" ]; then . "${___MY_VMOPTIONS_SHELL_FILE}"; fi
+
+# Golang binaries
+export PATH=$HOME/go/bin/:$PATH
+
+# Doom binaries
+export PATH=$HOME/.config/emacs/bin:$PATH
+
+# Rust binaries
+export PATH=$HOME/.cargo/bin/:$PATH
+
+# Intellij Idea path
+export IDEA_HOME="/opt/idea"
+export PATH=$IDEA_HOME/bin:$PATH
+
+# Pycharm path
+export PYCHARM_HOME="/opt/pycharm-community-2024.1.4"
+export PATH=$PYCHARM_HOME/bin:$PATH
+
+export XDG_DATA_DIRS="/usr/local/share:/usr/share:$XDG_DATA_DIRS"
+
+# Useful for pastel command line
+export COLORTERM=truecolor
+
+# opencode
+export PATH=$HOME/.opencode/bin:$PATH
+
+# My custom binaries
+export PATH=$HOME/.local/bin:$PATH
+
+# Neovim version management
+export PATH="$PATH:$HOME/.local/share/bob/nvim-bin"
+
+# Path used by the cd command
+#export CDPATH=$HOME/Projects/:$HOME/.config
+
+# set fzf theme to catpuccin frappe
+export FZF_DEFAULT_OPTS="--color=bg+:-1,gutter:-1"
+
+# Customize ctrl-r
+# --bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'
+export FZF_CTRL_R_OPTS="
+    --reverse
+    --preview-window=hidden
+    --preview 'echo {2..} | bat --color=always -pl sh'
+    --preview-window right:wrap
+    --bind 'ctrl-/:toggle-preview'
+    --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)'
+    --color header:italic
+    --header 'Press CTRL-Y to copy command into clipboard'"

@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+# Battery monitoring script with dunst notifications
+
+# Track if low battery warning has been shown
+LOW_BATTERY_WARNED=false
+FULL_BATTERY_NOTIFIED=false
+
+while true; do
+    # Get battery percentage
+    BATTERY_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
+
+    # Get charging status (Charging, Discharging, Full, etc.)
+    BATTERY_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+
+    # Low battery warning (15% and discharging)
+    if [ "$BATTERY_LEVEL" -le 15 ] && [ "$BATTERY_STATUS" = "Discharging" ]; then
+        if [ "$LOW_BATTERY_WARNED" = false ]; then
+            # Critical notification in red that persists (0 = never expires)
+            notify-send -u critical -t 0 "🔋 Low Battery" "Battery level is at ${BATTERY_LEVEL}%\nPlease connect charger!"
+            LOW_BATTERY_WARNED=true
+        fi
+    fi
+
+    # Reset warning flag when battery is above 15% or charging
+    if [ "$BATTERY_LEVEL" -gt 15 ] || [ "$BATTERY_STATUS" = "Charging" ]; then
+        LOW_BATTERY_WARNED=false
+    fi
+
+    # Full battery notification (100% and charging/full)
+    if [ "$BATTERY_LEVEL" -eq 100 ] && [ "$BATTERY_STATUS" != "Discharging" ]; then
+        if [ "$FULL_BATTERY_NOTIFIED" = false ]; then
+            # Low urgency notification (usually green in dunst) for 3 seconds
+            notify-send -u low -t 3000 "🔋 Battery Full" "Battery is fully charged at 100%"
+            FULL_BATTERY_NOTIFIED=true
+        fi
+    fi
+
+    # Reset full battery notification flag when unplugged
+    if [ "$BATTERY_LEVEL" -lt 100 ]; then
+        FULL_BATTERY_NOTIFIED=false
+    fi
+
+    # Check every 30 seconds
+    sleep 30
+done
