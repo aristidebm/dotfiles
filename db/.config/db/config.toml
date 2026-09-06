@@ -12,11 +12,11 @@
     interactive = ""
     format = ""
   [sources.sakila]
-    url = "sqlite3://$HOME/Projects/personal/sql/datasets/sakila.db"
+    url = "sqlite3:////home/aristide/Projects/personal/sql/datasets/sakila.db"
     interactive = "sqlite3"
     format = ""
   [sources.habits]
-    url = "sqlite3://$HOME/.local/state/habits/habits.db"
+    url = "sqlite3:////home/aristide/.local/state/habits/habits.db"
     interactive = "sqlite3"
     format = ""
 
