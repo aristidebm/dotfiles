@@ -3,16 +3,17 @@ set -euo pipefail
 
 # Define your target system hostname as declared in your flake.nix outputs
 HOSTNAME="workstation"
+DEFAULT_USER="aristide"
 
 echo "=========================================="
-echo " NixOS Flake Reinstallation via Disko     "
+echo " NixOS Flake Installation via Disko     "
 echo "=========================================="
 
 # 1. Run Disko to partition, format, and mount root & boot partitions
 echo "Running Disko to safe-format and mount OS partitions..."
 sudo nix --experimental-features "nix-command flakes" \
   run github:nix-community/disko/latest -- \
-  --mode format,mount ./nixos/modules/disko.nix
+  --mode format,mount ./dotfiles/nixos/modules/disko.nix
 
 # 2. Mount your untouched, pre-existing home partition
 echo "Mounting your preserved home directory..."
@@ -22,7 +23,7 @@ sudo mount /dev/nvme0n1p4 /mnt/home
 # 3. Copy the entire repository into the system configuration path
 echo "Staging NixOS Flake repository files..."
 sudo mkdir -p /mnt/etc/nixos
-sudo cp -r dotfiles/nixos /mnt/etc/nixos/
+sudo cp -r ./dotfiles/nixos /mnt/etc/nixos/
 
 # 4. Trigger the Flake-based installation process
 echo "Executing Flake system installation..."
@@ -31,10 +32,13 @@ sudo nixos-install \
   --no-root-passwd
 
 # 5. Copy the dotfiles inside under Projects/
-if test ! -d /mnt/home/Projects/dotfiles; then
-  mkdir -p /mnt/home/Projects/
-  cp -r dotfiles /mnt/home/Projects/
+if test ! -d /mnt/home/"${DEFAULT_USER}"/Projects/personal/dotfiles; then
+  mkdir -p /mnt/home/"${DEFAULT_USER}"/Projects/personal
+  cp -r ./dotfiles /mnt/home/"${DEFAULT_USER}"/Projects/personal
 fi
+
+# 6. Stowing the application configuration (I don't care if doen't succeed, I will rerun it manually)
+stow --dir /mnt/home/"${DEFAULT_USER}"/Projects/personal --target /mnt/home/"${DEFAULT_USER}"/ &> /dev/null
 
 echo "=========================================="
 echo " Done! Remove installation media & reboot."

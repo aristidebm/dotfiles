@@ -2,7 +2,7 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 # Browser
-export BROWSER=com.brave.Browser
+export BROWSER=firefox
 
 # virt for virtual system management
 export LIBVIRT_DEFAULT_URI="qemu:///system"
@@ -18,14 +18,18 @@ export MANPAGER='nvim +Man!'
 # Use "bat" as infopager
 export INFOPAGER="sh -c 'col -bx | bat -l man -p'"
 
-# Fix blank screens in Java apps
-export _JAVA_AWT_WM_NONREPARENTING=1
-
 # Use a dark theme in Qt apps
 export QT_QPA_PLATFORMTHEME=qt5ct
 
-# Add flatpak applications directories to the path
+# Fix blank screens in Java apps
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Comply to XDG directories specification
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_DATA_HOME=$HOME/.local/share
+export XDG_STATE_HOME=$HOME/.local/state
 export XDG_DATA_DIRS=/usr/local/share:/usr/share:$XDG_DATA_DIRS
+# Add flatpak applications directories to the path
 export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS
 export XDG_DATA_DIRS=/var/lib/flatpak/exports/share:$XDG_DATA_DIRS
 
@@ -34,29 +38,14 @@ export HISTTIMEFORMAT="%F %T : "
 
 ___MY_VMOPTIONS_SHELL_FILE="${HOME}/.jetbrains.vmoptions.sh"; if [ -f "${___MY_VMOPTIONS_SHELL_FILE}" ]; then . "${___MY_VMOPTIONS_SHELL_FILE}"; fi
 
-# Pycharm path
-export PYCHARM_HOME="/opt/pycharm-community-2024.1.4"
-
 # Add custom script bin directory
 export PATH=$HOME/.local/bin:$PATH
-
-# Add rust-lang bin directory
-export PATH=$HOME/.cargo/bin:$PATH
-
-# Add go-lang bin directory
-export PATH=$HOME/go/bin:$PATH
-
-# Golang binaries
-export PATH=$HOME/go/bin/:$PATH
-
-# Doom binaries
-export PATH=$HOME/.config/emacs/bin:$PATH
 
 # Rust binaries
 export PATH=$HOME/.cargo/bin/:$PATH
 
-# opencode
-export PATH=$HOME/.opencode/bin:$PATH
+# Golang binaries
+export PATH=$HOME/go/bin/:$PATH
 
 # My custom binaries
 export PATH=$HOME/.local/bin:$PATH
@@ -64,6 +53,8 @@ export PATH=$HOME/.local/bin:$PATH
 # Neovim version management
 export PATH=$PATH:$HOME/.local/share/bob/nvim-bin
 
+# Jetbrains suite configuration
+export PYCHARM_HOME="/opt/pycharm-community-2024.1.4"
 export PATH=$IDEA_HOME/bin:$PATH
 export PATH=$PYCHARM_HOME/bin:$PATH
 
@@ -72,18 +63,6 @@ export COLORTERM=truecolor
 
 # remove fzf gutter
 export FZF_DEFAULT_OPTS="--color=bg+:-1,gutter:-1 --bind 'change:top'"
-
-# Customize ctrl-r
-# --bind 'ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'
-export FZF_CTRL_R_OPTS="
-    --reverse
-    --preview-window=hidden
-    --preview 'echo {2..} | bat --color=always -pl sh'
-    --preview-window right:wrap
-    --bind 'ctrl-/:toggle-preview'
-    --bind 'ctrl-y:execute-silent(echo -n {2..} | wl-copy)'
-    --color header:italic
-    --header 'Press CTRL-Y to copy command into clipboard'"
 
 # Usefull for electron apps to work
 export ELECTRON_OZONE_PLATFORM_HINT=auto
