@@ -25,7 +25,7 @@ Credit to Emacs From Scratch for this one!"
 (add-hook 'emacs-startup-hook #'start/display-startup-time)
 
 (require 'use-package-ensure) ; Load use-package-always-ensure
-(setq use-package-always-ensure nil) ; Always ensures that a package is installed
+(setq use-package-always-ensure t) ; Always ensures that a package is installed
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/") ; Sets default package repositories
                          ("elpa" . "https://elpa.gnu.org/packages/")

@@ -20,46 +20,59 @@ in
         glibc
       ];
     };
-    users.users.aristide.packages = with pkgs; [
-      tree
-      fd
-      lsd
-      direnv
-      nix-direnv
-      atuin
-      sqlite-interactive
-      pgcli
-      stow
-      starship
-      ttyper
-      figlet
-      fastfetch
-      tokei
-      ncdu
-      habits
-      dbcli
-      typer
-      pomodoro
-      apic
-      jujutsu
-      cloudflared
-      glow
-      gum
-    ];
-    environment.systemPackages = with pkgs; [
-      git
-      wezterm
-      tmux
-      zoxide
-      sesh
-      vifm
-      btop
-      tor-browser
-      inxi
-      wl-copy
-      unzip
-      ncdu
-      gopass
-      brotli
-   ];
+    users.users.aristide.packages = builtins.attrValues {
+      inherit (pkgs)
+        tree
+        fd
+        lsd
+        direnv
+        nix-direnv
+        atuin
+        sqlite-interactive
+        pgcli
+        stow
+        starship
+        ttyper
+        figlet
+        fastfetch
+        tokei
+        ncdu
+        habits
+        dbcli
+        typer
+        pomodoro
+        apic
+        jujutsu
+        cloudflared
+        glow
+        gum
+      ;
+    };
+
+    environment.systemPackages = builtins.attrValues ({
+      inherit (pkgs)
+        git
+        wezterm
+        tmux
+        zoxide
+        sesh
+        vifm
+        btop
+        tor-browser
+        inxi
+        wl-copy
+        unzip
+        ncdu
+        gopass
+        brotli
+      ;
+    } // {
+      inherit
+        habits
+        dbcli
+        typer
+        pomodoro
+        apic
+      ;
+    });
 }

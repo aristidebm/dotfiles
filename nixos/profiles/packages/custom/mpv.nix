@@ -1,14 +1,16 @@
 { pkgs }:
 
 pkgs.mpv.override {
-  scripts = with pkgs.mpvScripts; [
-    mpris
-    autoload
-    mpv-cheatsheet-ng
-    memo
-    reload
-    uosc
-    thumbfast
-    sponsorblock
-  ];
+  scripts = builtins.attrValues {
+    inherit (pkgs.mpvScripts)
+      mpris
+      autoload
+      mpv-cheatsheet-ng
+      memo
+      reload
+      uosc
+      thumbfast
+      sponsorblock
+    ;
+  };
 }

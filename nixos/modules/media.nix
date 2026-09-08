@@ -16,25 +16,31 @@ in
       enable = true;
   };
 
-  users.users.aristide.packages = with pkgs; [
+  users.users.aristide.packages = builtins.attrValues {
+    inherit (pkgs)
       pastel
-  ];
+      ;
+  };
 
-  environment.systemPackages = (with pkgs; [
-     ffmpeg
-     nsxiv
-     mpc
-     mpd
-     mpd-mpris
-     playerctl
-     brightnessctl
-     yt-dlp
-     satty
-     grim
-     slurp
-     libnotify
-  ]) ++ [
-    mpv
-    zathura-full
-  ];
+  environment.systemPackages = builtins.attrValues ({
+    inherit (pkgs)
+       ffmpeg
+       nsxiv
+       mpc
+       mpd
+       mpd-mpris
+       playerctl
+       brightnessctl
+       yt-dlp
+       satty
+       grim
+       slurp
+       libnotify
+    ;
+  } // {
+    inherit
+      mpv
+      zathura-full
+      ;
+  });
 }

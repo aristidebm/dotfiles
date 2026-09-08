@@ -1,7 +1,8 @@
 {pkgs, ...}:
 
 {
-  users.users.aristide.packages = with pkgs; [
+  users.users.aristide.packages = builtins.attrValues {
+    inherit (pkgs)
      ast-grep
      ripgrep
      dasel
@@ -9,12 +10,15 @@
      tabiew
      bat
      qpdf
-  ];
+    ;
+  };
 
-  environment.systemPackages = with pkgs; [
-     gnugrep
-     fzf
-     fx
-     jq
-  ];
+  environment.systemPackages = builtins.attrValues {
+    inherit (pkgs)
+       gnugrep
+       fzf
+       fx
+       jq
+    ;
+  };
 }

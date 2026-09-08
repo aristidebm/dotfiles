@@ -8,45 +8,50 @@ let
   zathura-full = pkgs.callPackage ./custom/zathura-full.nix { };
 in
 
-with pkgs; [
-  git
-  gh
-  glab
-  jujutsu
-  curl
-  bat
-  vifm
-  fd
-  lsd
-  zoxide
-  tmux
-  sesh
-  starship
-  btop
-  direnv
-  nix-direnv
-  just
-  stow
-  steel
-  steelix
-  atuin
-  ttyper
-  tokei
-  ncdu
-  inxi
-  gopass
-  fastfetch
-  zrok
-  kanata
-  cloudflared
-  glow
-  brotli
-  tabiew
-  figlet
-  habits
-  dbcli
-  typer
-  pomodoro
-  apic
-  zathura-full
-]
+builtins.attrValues ({
+  inherit (pkgs)
+    git
+    gh
+    glab
+    jujutsu
+    curl
+    bat
+    vifm
+    fd
+    lsd
+    zoxide
+    tmux
+    sesh
+    starship
+    btop
+    direnv
+    nix-direnv
+    just
+    stow
+    steel
+    steelix
+    atuin
+    ttyper
+    tokei
+    ncdu
+    inxi
+    gopass
+    fastfetch
+    zrok
+    kanata
+    cloudflared
+    glow
+    brotli
+    tabiew
+    figlet
+  ;
+} // {
+  inherit
+    habits
+    dbcli
+    typer
+    pomodoro
+    apic
+    zathura-full
+  ;
+})

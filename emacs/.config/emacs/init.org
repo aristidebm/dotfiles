@@ -284,7 +284,7 @@ This code eliminates the need to type :ensure t for each package download.
 Instead, you'll only need to use :ensure nil when you want to explicitly prevent a package from being downloaded.
 #+begin_src emacs-lisp
     (require 'use-package-ensure) ; Load use-package-always-ensure
-    (setq use-package-always-ensure nil) ; Always ensures that a package is installed
+    (setq use-package-always-ensure t) ; Always ensures that a package is installed
 #+end_src
 
 **** Most used parts of use-package

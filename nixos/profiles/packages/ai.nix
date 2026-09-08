@@ -1,5 +1,8 @@
 { pkgs }:
 
-with pkgs; [
-  fabric-ai
-]
+builtins.attrValues {
+  inherit (pkgs)
+    fabric-ai
+    opencode
+  ;
+}

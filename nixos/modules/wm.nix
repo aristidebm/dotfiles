@@ -1,7 +1,6 @@
 { pkgs, lib, ...}:
 
 {
-
   # # Enable the X11 windowing system.
   # services.xserver = {
   #   enable = true;
@@ -25,7 +24,9 @@
     addLoginEntry = false;
   };
 
-  environment.systemPackages = with pkgs; [
-    quickshell
-  ];
+  environment.systemPackages = builtins.attrValues {
+    inherit (pkgs)
+      quickshell
+      ;
+  };
 }

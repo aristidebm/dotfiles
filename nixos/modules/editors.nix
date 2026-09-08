@@ -1,18 +1,22 @@
 {pkgs, ...}:
 
 {
-  environment.systemPackages = with pkgs; [
-    vim
-    gnused
-    gawk
-  ];
+  environment.systemPackages = builtins.attrValues {
+    inherit (pkgs)
+      vim
+      gnused
+      gawk
+    ;
+  };
 
-  users.users.aristide.packages = with pkgs; [
-    neovim
-    steelix
-    zed-editor
-    emacs
-  ];
+  users.users.aristide.packages = builtins.attrValues {
+    inherit (pkgs)
+      neovim
+      steelix
+      zed-editor
+      emacs
+    ;
+  };
 
   services.emacs = {
     enable = true;
