@@ -1,0 +1,22 @@
+# vim: ft=ini
+[Unit]
+Description=PostgreSQL database
+
+[Container]
+Image=docker.io/library/postgres:17-alpine
+ContainerName=postgres
+Network=workstation.network
+Volume=postgres.volume:/var/lib/postgresql/data
+
+Environment=POSTGRES_USER=appuser
+Environment=POSTGRES_DB=appdb
+# Don't put POSTGRES_PASSWORD directly here — see note below
+EnvironmentFile=%h/.config/containers/secrets/postgres.env
+
+PublishPort=127.0.0.1:5432:5432
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

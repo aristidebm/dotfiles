@@ -1,0 +1,6 @@
+# vim: ft=ini
+[Volume]
+# Quadlet will create/manage a named volume "systemd-postgres"
+# Driver=image
+# Label=backup=daily
+# Copy=true

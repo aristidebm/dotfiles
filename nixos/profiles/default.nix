@@ -12,6 +12,6 @@ let
 in
 
 pkgs.buildEnv {
-  name = "Working Envrionment";
+  name = "Non NixOS Working Envrionment";
   paths = cli ++ media ++ languages ++ ai ++ processors;
 }

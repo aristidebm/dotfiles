@@ -28,7 +28,10 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
+export XDG_MUSIC_DIR=$HOME/Music
+export XDG_RUNTIME_DIR=/run/user/$UID
 export XDG_DATA_DIRS=/usr/local/share:/usr/share:$XDG_DATA_DIRS
+
 # Add flatpak applications directories to the path
 export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS
 export XDG_DATA_DIRS=/var/lib/flatpak/exports/share:$XDG_DATA_DIRS

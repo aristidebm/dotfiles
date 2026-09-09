@@ -1,0 +1,5 @@
+# vim: ft=ini
+[Network]
+# Quadlet will create/manage a Podman network named "systemd-workstation"
+# Referenced from containers via Network=workstation.network
+Driver=bridge

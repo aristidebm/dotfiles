@@ -1,0 +1,15 @@
+# vim: ft=ini
+[Unit]
+Description=Valkey (Redis-compatible cache)
+
+[Container]
+Image=docker.io/valkey/valkey:8-alpine
+ContainerName=valkey
+Network=workstation.network
+PublishPort=127.0.0.1:6379:6379
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
