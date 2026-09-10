@@ -30,14 +30,14 @@
   };
 
   environment.etc."${quadletDir}/valkey.container".source =
-  ./quadlets/valkey.container;
+    ../../containers/systemd/valkey.container;
 
   environment.etc."${quadletDir}/workstation.network".source =
-    ./quadlets/workstation.network;
+    ../../containers/systemd/workstation.network;
 
   environment.etc."${quadletDir}/postgres.container".source =
-    ./quadlets/postgres.container;
+    ../../containers/systemd/postgres.container;
 
   environment.etc."${quadletDir}/postgres.volume".source =
-    ./quadlets/postgres.volume;
+    ../../containers/systemd/postgres.volume;
 }
