@@ -10,7 +10,12 @@
 {
   virtualisation = {
     docker.enable = lib.mkForce false;
-    podman.enable = true;
+    podman = {
+      enable = true;
+      defaultNetwork.settings = {
+        dns_enabled = true;
+      };
+    };
     libvirtd = {
       enable = true;
       qemu = {
