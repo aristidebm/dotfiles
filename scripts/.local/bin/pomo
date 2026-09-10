@@ -4,7 +4,7 @@ function pomo {
     duration="${1:-25m}"
     while true
     do
-        sleep "$duration"; mpg123 $HOME/Music/alerts/mixkit-happy-bells-notification-937.mp3 2> /dev/null
+        sleep "$duration"; paplay $HOME/Music/alerts/mixkit-happy-bells-notification-937.mp3 2> /dev/null
         read -p "Next duration (default $1): " duration
         duration="${duration:-$1}"
     done
