@@ -23,7 +23,7 @@ function zed_grep() {
   fi
 
   rg --color=always --column --hidden --glob '!.git/'  --smart-case "$text" | fzf --reverse --ansi --multi \
-      --bind "enter:become:zeditor {1}:{2}" \
+      --bind "enter:become:zed {1}:{2}" \
       --delimiter :
 }
 

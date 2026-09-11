@@ -5,7 +5,7 @@ function zed_files() {
   local selected=$(rg --files --hidden --glob '!.git/' | fzf --reverse --ansi --multi \
       --prompt="Files > ")
   if [[ -n "$selected" ]]; then
-      zeditor $selected 
+      zed $selected
   fi
 }
 

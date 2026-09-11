@@ -40,23 +40,23 @@
       // "space p v": "workspace::ToggleRightDock",
       // "space p v": "project_panel::ToggleFocus",
       // "space p f": "file_finder::Toggle",
-      "space p f": [
+      "space f f": [
         "task::Spawn",
         { "task_name": "project_files", "reveal_target": "center" },
       ],
       "space p s": "pane::DeploySearch",
-      "space p d": "outline::Toggle",
-      "space p g": [
+      "space s o": "outline::Toggle",
+      "space s f": [
         "task::Spawn",
         { "task_name": "project_grep", "reveal_target": "center" },
       ],
-      "space p w": [
+      "space s w": [
         "task::Spawn",
         { "task_name": "project_words", "reveal_target": "center" },
       ],
       "-": "pane::RevealInProjectPanel",
       "space p v": "pane::RevealInProjectPanel",
-      "space p b": "git::Blame",
+      "space g b": "git::Blame",
       // "space d s": "outline::Toggle",
       "]d": "editor::GoToDiagnostic",
       "[d": "editor::GoToPreviousDiagnostic",
@@ -69,7 +69,7 @@
     "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
     "bindings": {
       "space y": ["workspace::SendKeystrokes", "\" + y enter escape"],
-      "space p w": [
+      "space s w": [
         "task::Spawn",
         { "task_name": "project_visual_words", "reveal_target": "center" },
       ],

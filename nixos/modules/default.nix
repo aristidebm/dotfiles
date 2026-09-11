@@ -6,7 +6,7 @@
       ./boot.nix
       ./fonts.nix
       ./locales.nix
-      ./mountpoints.nix
+      ./fs.nix
       ./network.nix
       ./packages.nix
       ./editors.nix

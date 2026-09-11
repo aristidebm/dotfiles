@@ -5,7 +5,7 @@ function zed_live_grep() {
   fzf --disabled --ansi --multi \
       --prompt='Grep > ' \
       --bind "start:$RELOAD" --bind "change:$RELOAD" \
-      --bind "enter:become:zeditor {1}:{2}" \
+      --bind "enter:become:zed {1}:{2}" \
       --delimiter : \
       --query "$*"
 }

@@ -44,6 +44,9 @@ builtins.attrValues ({
     brotli
     tabiew
     figlet
+    aria2
+    rsync
+    remind
   ;
 } // {
   inherit

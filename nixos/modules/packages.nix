@@ -65,6 +65,9 @@ in
         ncdu
         gopass
         brotli
+        aria2
+        rsync
+        remind
       ;
     } // {
       inherit
