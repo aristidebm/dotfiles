@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+
+# inspired from https://github.com/ibhagwan/fzf-lua/blob/c8876889dc09755f6c950c0745f0ba2b8e59eece/lua/fzf-lua/utils.lua#L212
+function rg_escape() {
+  local str="$*"
+  if [ -z "$*" ]; then
+    echo "$str"
+    return
+  fi
+
+  # Escape characters: ~ $ ? * | { [ ( ) ^ - . +
+  # We add backslash before these characters
+  echo "$str" | sed -E 's/([~\$?\*\|\{\[\(\)\^\-\.\+])/\\\1/g'
+}
+
+
+# source of inspiration https://github.com/junegunn/fzf/blob/master/ADVANCED.md
+function zed_grep() {
+  text=$(rg_escape "$*")
+  if [[ "$#" -eq 0 ]]; then
+      read -p 'Grep for > ' text
+  fi
+
+  rg --color=always --column --hidden --glob '!.git/'  --smart-case "$text" | fzf --reverse --ansi --multi \
+      --bind "enter:become:zeditor {1}:{2}" \
+      --delimiter :
+}
+
+zed_grep "$*"

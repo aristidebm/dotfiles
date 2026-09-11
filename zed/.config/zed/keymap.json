@@ -1,0 +1,114 @@
+[
+  // todo(linux): Review the editor bindings
+  // Standard Linux bindings
+  {
+    "bindings": {
+      "ctrl-[": ["workspace::SendKeystrokes", "escape"],
+      "ctrl-`": "workspace::ToggleRightDock",
+    },
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      // this is useful so I can use ctrl-p and ctrl-n
+      // to navigate the fuzzy finders for example in terminals
+      "ctrl-p": null,
+      "ctrl-n": null,
+    },
+  },
+  {
+    // check here for all vim related stuffs
+    "context": "VimControl && !menu",
+    "bindings": {
+      "ctrl-u": ["workspace::SendKeystrokes", "ctrl-u z z"],
+      "ctrl-d": ["workspace::SendKeystrokes", "ctrl-d z z"],
+      "ctrl-p": "editor::MoveUp",
+      "ctrl-n": "editor::MoveDown",
+      // "shift-space": "editor::OpenExcerpts"
+    },
+  },
+  {
+    // source of inspiration https://gist.github.com/ryanwinchester/71421ce0a984ae7b72e8b8b39ac88627
+    // NORMAL and VISUAL modes
+    "context": "Editor && vim_mode == normal && vim_operator == none && !VimWaiting && !menu",
+    "bindings": {
+      // Tab navigation. Almost as good as harpoon.
+      "shift-y": ["workspace::SendKeystrokes", "y $"],
+      "g r r": "editor::FindAllReferences",
+      "g r n": "editor::Rename",
+      "g r a": "editor::ToggleCodeActions",
+      // "space p v": "workspace::ToggleRightDock",
+      // "space p v": "project_panel::ToggleFocus",
+      // "space p f": "file_finder::Toggle",
+      "space p f": [
+        "task::Spawn",
+        { "task_name": "project_files", "reveal_target": "center" },
+      ],
+      "space p s": "pane::DeploySearch",
+      "space p d": "outline::Toggle",
+      "space p g": [
+        "task::Spawn",
+        { "task_name": "project_grep", "reveal_target": "center" },
+      ],
+      "space p w": [
+        "task::Spawn",
+        { "task_name": "project_words", "reveal_target": "center" },
+      ],
+      "-": "pane::RevealInProjectPanel",
+      "space p v": "pane::RevealInProjectPanel",
+      "space p b": "git::Blame",
+      // "space d s": "outline::Toggle",
+      "]d": "editor::GoToDiagnostic",
+      "[d": "editor::GoToPreviousDiagnostic",
+      "space a": ["task::Spawn", { "task_name": "Add bookmark" }],
+      "ctrl+e": ["task::Spawn", { "task_name": "Show bookmarks" }],
+      "ctrl+j": ["task::Spawn", { "task_name": "Open bookmark 1" }],
+    },
+  },
+  {
+    "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
+    "bindings": {
+      "space y": ["workspace::SendKeystrokes", "\" + y enter escape"],
+      "space p w": [
+        "task::Spawn",
+        { "task_name": "project_visual_words", "reveal_target": "center" },
+      ],
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert && !VimWaiting && !menu",
+    "bindings": {
+      // use for snippets placeholders navigations
+      "ctrl-j": "editor::Tab",
+      "ctrl-k": "editor::Backtab",
+    },
+  },
+  {
+    "context": "Editor && showing_completions",
+    "use_key_equivalents": true,
+    "bindings": {
+      // I don't want to use enter for completion
+      // confimation, I am used to <ctrl-y> for that
+      // so rebind enter to newline and I find it more
+      // convenient like that
+      "enter": "editor::Newline",
+      "ctrl-y": "editor::ConfirmCompletion",
+      "tab": "editor::ComposeCompletion",
+    },
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      // this is currently only useful to be able to use
+      // cltr-j and ctrl-k to navigate snippets place holders
+      "ctrl-j": "editor::Tab",
+    },
+  },
+  {
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      // Put key bindings here (in addition to the context above) if you want them to
+      // work when no editor exists.
+    },
+  },
+]

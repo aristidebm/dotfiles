@@ -1,0 +1,124 @@
+{
+  "agent_servers": {
+    "mistral-vibe": {
+      "type": "registry"
+    },
+    "opencode": {
+      "type": "registry"
+    }
+  },
+  "icon_theme": "Zed (Default)",
+  "diff_view_style": "split",
+  "outline_panel": {
+    "dock": "left",
+  },
+  "collaboration_panel": {
+    "dock": "left",
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": [],
+  },
+  "git_panel": {
+    "dock": "left",
+  },
+  "ui_font_size": 12.0,
+  "ssh_connections": [
+    {
+      "host": "essunCemex",
+      "projects": [
+        {
+          "paths": ["/home/deployer"],
+        },
+      ],
+    },
+  ],
+  "base_keymap": "SublimeText",
+  "project_panel": {
+    "dock": "right",
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "gutter": {
+    // "line_numbers": false,
+    "runnables": false,
+    "folds": false,
+    // "code_actions": false
+  },
+  // auto-close brackets are annoying
+  "use_autoclose": false,
+  "use_system_path_prompts": false,
+  "use_smartcase_search": true,
+  "current_line_highlight": "gutter",
+  "selection_highlight": false,
+  // Disable autocompletion
+  // "show_completions_on_input": false,
+  "theme": {
+    "mode": "light",
+    "light": "One Dark",
+    "dark": "One Dark",
+  },
+  // not available yet but announced in this post https://zed.dev/blog/disable-ai-features
+  "disable_ai": false,
+  "vim_mode": true,
+  "relative_line_numbers": "enabled",
+  "ensure_final_newline_on_save": false,
+  // do not highlight the word under cursor please
+  "lsp_highlight_debounce": 999999999999999,
+  // the maximum number of tabs should be 4
+  "max_tabs": 4,
+  // place snippets at the top of the completion list
+  "snippet_sort_order": "top",
+  "vim": {
+    "use_smartcase_find": true,
+    "use_system_clipboard": "never",
+  },
+  "scrollbar": {
+    "show": "never",
+  },
+  "vertical_scroll_margin": 0,
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": false,
+  },
+  "tab_bar": {
+    "show": false,
+  },
+  "double_click_in_multibuffer": "open",
+  "cursor_blink": false,
+  "cursor_shape": "bar",
+  "buffer_font_size": 14.0,
+  "buffer_font_family": "Iosevka",
+  // "buffer_font_family": "VictorMono Nerd Font",
+  "buffer_font_weight": 500,
+  // "buffer_font_weight": 400,
+  "buffer_font_features": {
+    "calt": true,
+  },
+  "languages": {
+    "Go": {
+      "tab_size": 4,
+      "hard_tabs": true,
+      "code_actions_on_format": { "source.organizeImports": false },
+    },
+    "Python": {
+      "language_servers": ["pyrefly"],
+    },
+  },
+  "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "usePlaceholders": false,
+      },
+    },
+    "pyrefly": {},
+  },
+  "terminal": {
+    "font_family": "Iosevka",
+    "dock": "right",
+    "shell": "system",
+  },
+}

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+function zed_live_grep() {
+  RELOAD='reload:rg --column --color=always --smart-case {q} || :'
+  fzf --disabled --ansi --multi \
+      --prompt='Grep > ' \
+      --bind "start:$RELOAD" --bind "change:$RELOAD" \
+      --bind "enter:become:zeditor {1}:{2}" \
+      --delimiter : \
+      --query "$*"
+}
+
+zed_live_grep

@@ -1,0 +1,73 @@
+[
+  {
+    "label": "project_files",
+    "command": "zed-files",
+    "hide": "always",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false,
+    "shell": {
+      "program": "sh"
+    }
+  },
+  {
+    "label": "project_grep",
+    "command": "zed-grep",
+    "hide": "always",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false,
+    "shell": {
+      "program": "sh"
+    }
+  },
+  {
+    "label": "project_visual_words",
+    // for all available variables, check this
+    // https://zed.dev/docs/tasks
+    "command": "zed-grep \"$ZED_SELECTED_TEXT\"",
+    "hide": "always",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false,
+    "shell": {
+      "program": "sh"
+    }
+  },
+  {
+    "label": "project_words",
+    // for all available variables, check this
+    // https://zed.dev/docs/tasks
+    "command": "zed-grep \"$ZED_SYMBOL\"",
+    "hide": "always",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false,
+    "shell": {
+      "program": "sh"
+    }
+  },
+  {
+    "label": "Show bookmarks",
+    "command": "zigzag show $ZED_WORKTREE_ROOT",
+    "hide": "always",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Add bookmark",
+    "hide": "always",
+    "use_new_terminal": false,
+    "command": "zigzag add \"$ZED_WORKTREE_ROOT\" \"$ZED_RELATIVE_FILE\"",
+    // "args": [, ],
+    "shell": {
+      "program": "sh"
+    }
+  },
+  {
+    "label": "Open bookmark 1",
+    "command": "zigzag open",
+    "args": [
+      "$ZED_WORKTREE_ROOT",
+      "0",
+      "--filePath $ZED_RELATIVE_FILE",
+      "--line $ZED_ROW",
+      "--col $ZED_COLUMN"
+    ]
+  }
+]
