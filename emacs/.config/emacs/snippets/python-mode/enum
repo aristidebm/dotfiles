@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: enum
+# key: enum
+# --
+
+class ${1:classname}($2enum.Enum):
+      ${3:...}
+$0

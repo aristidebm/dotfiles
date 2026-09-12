@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: classmethod
+# key: classmethod
+# --
+
+@classmethod
+def ${1:method}(cls$2)$3:
+      ${4:...}
+$0

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: dataclass
+# key: dataclass
+# --
+
+@dataclass
+class ${1:classname}:
+      ${2:...}
+$0

@@ -51,7 +51,7 @@ Credit to Emacs From Scratch for this one!"
 
   (inhibit-startup-screen t)  ; Disable welcome screen
   (delete-selection-mode t)   ; Select text and delete it by typing.
-  (electric-indent-mode nil)  ; Turn off the weird indenting that Emacs does by default.
+  (electric-indent-mode t)  ; Turn off the weird indenting that Emacs does by default.
   (confirm-kill-emacs nil) ; No need for a confirmation when killing emacs
   ;; (initial-buffer-choice ) ;
 

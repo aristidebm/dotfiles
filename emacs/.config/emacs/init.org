@@ -30,7 +30,6 @@
 - [[#development][Development]]
   - [[#projectile][Projectile]]
   - [[#eglot][Eglot]]
-  - [[#masonel][Mason.el]]
   - [[#sideline-flymake][Sideline-flymake]]
   - [[#yasnippet][Yasnippet]]
   - [[#snippy][Snippy]]
@@ -373,7 +372,7 @@ Only works with package.el.
 
       (inhibit-startup-screen t)  ; Disable welcome screen
       (delete-selection-mode t)   ; Select text and delete it by typing.
-      (electric-indent-mode nil)  ; Turn off the weird indenting that Emacs does by default.
+      (electric-indent-mode t)  ; Turn off the weird indenting that Emacs does by default.
       (confirm-kill-emacs nil) ; No need for a confirmation when killing emacs
       ;; (initial-buffer-choice ) ;
 
@@ -432,6 +431,11 @@ Only works with package.el.
       ;; (prog-mode . display-fill-column-indicator-mode) ; Display line length indicator
       (prog-mode . whitespace-mode)
       :config
+      ;; Disable lockfiles entirely (Doom Emacs default style)
+      (setq create-lockfiles nil)
+     ;; Mimic Doom by organizing other backups into a central cache folder
+      (setq backup-directory-alist `(("." . ,(concat user-emacs-directory ".local/cache/backups/")))
+         auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory ".local/cache/autosave/") t)))
       ;; Move customization variables to a separate file and load it, avoid filling up init.el with unnecessary variables
       (setq custom-file (locate-user-emacs-file "custom-vars.el"))
       (load custom-file 'noerror 'nomessage)
@@ -849,15 +853,6 @@ If you want to use LSP mode check out their [[https://emacs-lsp.github.io/lsp-mo
             (add-to-list 'eglot-server-programs entry)))
 #+end_src
 
-** Mason.el
-Package manager for LSP, DAP, linters, and more for the Emacs Operating System.
-I waited so long for a package like this.
-If you plan to use something like LSP-mode don't forget to remove this.
-#+begin_src emacs-lisp  :tangle no
-    (use-package mason
-      :hook (after-init . mason-ensure))
-#+end_src
-
 ** Sideline-flymake
 Show flymake errors with sideline.
 #+begin_src emacs-lisp
@@ -884,6 +879,7 @@ To use it write out the full keyword (or use autocompletion) and press Tab.
       (if (> corfu--index -1)
           (corfu-complete)
         (yas-next-field-or-maybe-expand)))
+
     (use-package emacs
       :after (yasnippet corfu)
       :bind
