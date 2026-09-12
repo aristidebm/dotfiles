@@ -34,6 +34,7 @@
    extraGroups = [ "libvirtd" ];
   };
 
+  # Podman containers
   environment.etc."${quadletDir}/valkey.container".source =
     ../../containers/systemd/valkey.container;
 

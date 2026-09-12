@@ -27,46 +27,46 @@ in
 
     users.users.aristide.packages = builtins.attrValues ({
       inherit (pkgs)
-        neovim
-        steelix
-        zed-editor
-        emacs
-        tree
-        fd
-        lsd
-        direnv
-        nix-direnv
+        ast-grep
         atuin
-        sqlite-interactive
-        pgcli
-        stow
-        starship
-        ttyper
-        figlet
-        fastfetch
-        tokei
-        ncdu
-        jujutsu
+        bat
         cloudflared
+        dasel
+        direnv
+        emacs
+        fastfetch
+        fd
+        figlet
         glow
         gum
-        ast-grep
-        ripgrep
-        dasel
+        jujutsu
+        lsd
+        ncdu
+        neovim
+        nix-direnv
         pandoc
-        tabiew
-        bat
-        qpdf
-        yt-dlp
         pastel
+        pgcli
+        qpdf
+        ripgrep
+        sqlite-interactive
+        starship
+        steelix
+        stow
+        tabiew
+        tokei
+        tree
+        ttyper
+        yt-dlp
+        zed-editor
       ;
     } // {
       inherit
-        habits
-        dbcli
-        typer
-        pomodoro
         apic
+        dbcli
+        habits
+        pomodoro
+        typer
       ;
   });
 
@@ -77,7 +77,7 @@ in
         brotli
         btop
         curl
-        ffmpeg
+        ffmpeg-full
         fx
         fzf
         gawk
@@ -95,6 +95,7 @@ in
         ncdu
         nsxiv
         playerctl
+        quickshell
         remind
         rsync
         satty
@@ -111,7 +112,6 @@ in
         wl-copy
         zoxide
         zrok
-        quickshell
       ;
     } // {
     inherit

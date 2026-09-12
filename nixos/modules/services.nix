@@ -5,20 +5,15 @@
   services.openssh = {
     enable = true;
   };
+
   # Declared in nioxs/modules/services/hardware/kanata.nix
   # Needed by kanata
   users.users.aristide.extraGroups = [ "input" "uinput" ];
-  systemd.services.kanata-default.serviceConfig = {
-    User = "aristide";
-    # This line is important, without sudo nixos-rebuild switch cannot
-    # start the service
-    ProtectHome = lib.mkForce false;
-  };
   services.kanata = {
       enable = true;
       keyboards = {
           default = {
-              configFile = "$HOME/.config/kanata/keymaps.kbd";
+              configFile = "../../kanata/.config/kanata/keymaps.kbd";
           };
       };
   };
@@ -36,6 +31,8 @@
       enable = true;
       support32Bit = true;
     };
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
   };
 
   services.mpd = {
