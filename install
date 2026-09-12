@@ -2,78 +2,61 @@
 set -euo pipefail
 
 HOSTNAME="workstation"
-DEFAULT_USER="aristide"
-DISK="/dev/nvme0n1"
-HOME_PART="${DISK}p4"
+USER="aristide"
+DEVICE="/dev/nvme0n1"
+HOMEPART="${DEVICE}p4"
 
 echo "=========================================="
-echo " NixOS Flake Installation (fdisk-based)   "
+echo " NixOS Flake Installation (sfdisk-based)  "
 echo "=========================================="
 
 # 0. Record home partition's exact size BEFORE touching anything.
 #    This is the safety net for the whole script — if this number changes
 #    after partitioning, something went wrong and we abort immediately.
-echo "Recording pre-flight size of ${HOME_PART}..."
-HOME_SIZE_BEFORE=$(lsblk -b -no SIZE "${HOME_PART}")
-echo "  -> ${HOME_PART} size: ${HOME_SIZE_BEFORE} bytes"
+echo "Recording pre-flight size of ${HOMEPART}..."
+HOME_SIZE_BEFORE=$(lsblk -b -no SIZE "${HOMEPART}")
+echo "  -> ${HOMEPART} size: ${HOME_SIZE_BEFORE} bytes"
 
 # 1. Delete only partitions 1, 2, 3 by number (leaves p4's table entry untouched)
-#    and recreate them at the same sizes as before.
-#    NOTE: test this exact heredoc against a loopback device first before
-#    running it against the real disk.
-echo "Repartitioning boot/swap/root via fdisk (p4 is never referenced below)..."
-sudo fdisk "$DISK" <<EOF
-d
-1
-d
-2
-d
-3
-n
-1
+#    and recreate them at the same sizes as before, using sfdisk (non-interactive,
+#    no prompt-sequence guessing).
+#    NOTE: test this against a loopback device first before running on the real DEVICE.
+echo "Repartitioning boot/swap/root via sfdisk (p4 is never referenced below)..."
+sudo sfdisk --delete "$DEVICE" 1
+sudo sfdisk --delete "$DEVICE" 2
+sudo sfdisk --delete "$DEVICE" 3
 
-+1G
-t
-1
-1
-n
-2
-
-+5G
-t
-2
-19
-n
-3
-
-+230G
-w
+sudo sfdisk "$DEVICE" <<EOF
+label: gpt
+${DEVICE}p1 : size=1G, type=uefi
+${DEVICE}p2 : size=5G, type=swap
+${DEVICE}p3 : size=230G, type=linux
 EOF
 
 # 2. Hard safety check: home partition must be byte-for-byte unchanged.
 #    If this fails, STOP — do not format anything.
-echo "Verifying ${HOME_PART} was not altered..."
-HOME_SIZE_AFTER=$(lsblk -b -no SIZE "${HOME_PART}")
+echo "Verifying ${HOMEPART} was not altered..."
+HOME_SIZE_AFTER=$(lsblk -b -no SIZE "${HOMEPART}")
 if [ "$HOME_SIZE_BEFORE" != "$HOME_SIZE_AFTER" ]; then
-  echo "ABORT: ${HOME_PART} size changed (${HOME_SIZE_BEFORE} -> ${HOME_SIZE_AFTER})."
+  echo "ABORT: ${HOMEPART} size changed (${HOME_SIZE_BEFORE} -> ${HOME_SIZE_AFTER})."
   echo "Refusing to continue — home partition may have been altered."
   exit 1
 fi
-echo "  -> OK, ${HOME_PART} unchanged."
+echo "  -> OK, ${HOMEPART} unchanged."
 
 # 3. Re-read partition table and format ONLY the new partitions.
 #    (p4 is never referenced here either.)
-sudo partprobe "$DISK"
-sudo mkfs.vfat -F32 "${DISK}p1"
-sudo mkswap "${DISK}p2"
-sudo mkfs.ext4 "${DISK}p3"
+sudo partprobe "$DEVICE"
+sudo mkfs.vfat -F32 "${DEVICE}p1"
+sudo mkswap "${DEVICE}p2"
+sudo mkfs.ext4 "${DEVICE}p3"
 
 # 4. Mount everything, including the untouched home partition.
-sudo mount "${DISK}p3" /mnt
+sudo mount "${DEVICE}p3" /mnt
 sudo mkdir -p /mnt/boot /mnt/home
-sudo mount "${DISK}p1" /mnt/boot
-sudo mount "${HOME_PART}" /mnt/home
-sudo swapon "${DISK}p2"
+sudo mount "${DEVICE}p1" /mnt/boot
+sudo mount "${HOMEPART}" /mnt/home
+sudo swapon "${DEVICE}p2"
 
 # 5. Generate hardware config into a SEPARATE scratch directory, not
 #    /mnt/etc/nixos directly — this avoids colliding with the flake's own
@@ -104,17 +87,17 @@ sudo nixos-install \
 #     declarative password mechanism (no hashedPassword/initialPassword/
 #     initialHashedPassword). Without this, the fresh install has no way
 #     to log in at all.
-echo "Setting a login password for ${DEFAULT_USER}..."
-sudo nixos-enter --root /mnt -c "passwd ${DEFAULT_USER}"
+echo "Setting a login password for ${USER}..."
+sudo nixos-enter --root /mnt -c "passwd ${USER}"
 
 # 9. Copy dotfiles under Projects/
-if test ! -d /mnt/home/"${DEFAULT_USER}"/Projects/personal/dotfiles; then
-  mkdir -p /mnt/home/"${DEFAULT_USER}"/Projects/personal
-  cp -r ./dotfiles /mnt/home/"${DEFAULT_USER}"/Projects/personal
+if test ! -d /mnt/home/"${USER}"/Projects/personal/dotfiles; then
+  mkdir -p /mnt/home/"${USER}"/Projects/personal
+  cp -r ./dotfiles /mnt/home/"${USER}"/Projects/personal
 fi
 
 # 10. Stow configs (best-effort).
-stow --dir /mnt/home/"${DEFAULT_USER}"/Projects/personal --target /mnt/home/"${DEFAULT_USER}"/ &> /dev/null || true
+stow --dir /mnt/home/"${USER}"/Projects/personal --target /mnt/home/"${USER}"/ &> /dev/null || true
 
 echo "=========================================="
 echo " Done! Remove installation media & reboot."
