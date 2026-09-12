@@ -17,6 +17,5 @@
       ./users.nix
       ./wm.nix
       ./virtualisation.nix
-      ./disko.nix
     ];
 }

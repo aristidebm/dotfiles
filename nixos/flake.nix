@@ -3,14 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
     self,
     nixpkgs,
-   disko,
    ...
   }:
 
@@ -22,7 +19,6 @@
     nixosConfigurations.workstation = nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
-         disko.nixosModules.disko
         ./configuration.nix
       ];
     };
