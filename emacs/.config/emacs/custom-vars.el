@@ -10,10 +10,10 @@
            evil-commentary evil-surround exec-path-from-shell general
            helpful hl-todo indent-guide magit marginalia mason
            nerd-icons-completion nerd-icons-corfu nerd-icons-dired
-           nerd-icons-ibuffer orderless org-modern org-superstar
-           org-tempo ox-pandoc projectile rainbow-delimiters
-           sideline-flymake toc-org vertico ws-butler yasnippet-capf
-           yasnippet-snippets))
+           nerd-icons-ibuffer nix-mode nix-ts-mode orderless
+           org-modern org-superstar org-tempo ox-pandoc projectile
+           rainbow-delimiters sideline-flymake toc-org vertico
+           ws-butler yasnippet-capf yasnippet-snippets))
  '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

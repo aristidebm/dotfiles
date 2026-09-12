@@ -6,6 +6,8 @@ let
   typer = pkgs.callPackage ../profiles/packages/custom/typer.nix { };
   pomodoro = pkgs.callPackage ../profiles/packages/custom/pomodoro.nix { };
   apic = pkgs.callPackage ../profiles/packages/custom/apic.nix { };
+  zathura-full = pkgs.callPackage ../profiles/packages/custom/zathura-full.nix { };
+  mpv = pkgs.callPackage ../profiles/packages/custom/mpv.nix { };
 in
 
 {
@@ -22,8 +24,13 @@ in
         glibc
       ];
     };
-    users.users.aristide.packages = builtins.attrValues {
+
+    users.users.aristide.packages = builtins.attrValues ({
       inherit (pkgs)
+        neovim
+        steelix
+        zed-editor
+        emacs
         tree
         fd
         lsd
@@ -39,37 +46,19 @@ in
         fastfetch
         tokei
         ncdu
-        habits
-        dbcli
-        typer
-        pomodoro
-        apic
         jujutsu
         cloudflared
         glow
         gum
-      ;
-    };
-
-    environment.systemPackages = builtins.attrValues ({
-      inherit (pkgs)
-        git
-        wezterm
-        tmux
-        zoxide
-        sesh
-        vifm
-        btop
-        tor-browser
-        inxi
-        wl-copy
-        unzip
-        ncdu
-        gopass
-        brotli
-        aria2
-        rsync
-        remind
+        ast-grep
+        ripgrep
+        dasel
+        pandoc
+        tabiew
+        bat
+        qpdf
+        yt-dlp
+        pastel
       ;
     } // {
       inherit
@@ -79,5 +68,55 @@ in
         pomodoro
         apic
       ;
-    });
+  });
+
+    environment.systemPackages = builtins.attrValues ({
+      inherit (pkgs)
+        aria2
+        brightnessctl
+        brotli
+        btop
+        curl
+        ffmpeg
+        fx
+        fzf
+        gawk
+        git
+        gnugrep
+        gnused
+        gopass
+        grim
+        inxi
+        jq
+        libnotify
+        mpc
+        mpd
+        mpd-mpris
+        ncdu
+        nsxiv
+        playerctl
+        remind
+        rsync
+        satty
+        sesh
+        slurp
+        tmux
+        tor-browser
+        unzip
+        vifm
+        vim
+        wezterm
+        wget
+        wireshark-cli
+        wl-copy
+        zoxide
+        zrok
+        quickshell
+      ;
+    } // {
+    inherit
+      mpv
+      zathura-full
+      ;
+  });
 }

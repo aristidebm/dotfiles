@@ -12,13 +12,4 @@
   # networking.firewall.enable = false;
   networking.networkmanager.enable = true;
   users.users.aristide.extraGroups = [ "networkmanager" ];
-
-  environment.systemPackages = builtins.attrValues {
-    inherit (pkgs)
-      wget
-      curl
-      wireshark-cli
-      zrok
-    ;
-  };
 }

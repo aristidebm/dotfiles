@@ -299,7 +299,7 @@ Credit to Emacs From Scratch for this one!"
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   :config
-  ;; (load-theme 'modus-operandi t) ; We need to add t to trust this package
+  (load-theme 'modus-operandi t) ; We need to add t to trust this package
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
@@ -439,15 +439,15 @@ Credit to Emacs From Scratch for this one!"
 
 (setq treesit-font-lock-level 3)
 
-    ;; Or if there is no built in mode
-    (use-package go-mod-ts-mode :ensure nil :mode "\\.mod\\'")
-    (use-package go-ts-mode :ensure nil :mode "\\.go\\'")
-    (use-package lua-ts-mode :ensure nil :mode "\\.lua\\'")
-    (use-package rust-ts-mode :ensure nil :mode "\\.rs\\'")
-    (use-package typescript-ts-mode :ensure nil :mode "\\.ts\\'")
-    (use-package tsx-ts-mode :ensure nil :mode "\\.tsx\\'")
-    (use-package yaml-ts-mode :ensure nil :mode ("\\.yaml\\'" "\\.yml\\'"))
-    (use-package nix-ts-mode :ensure nil :mode "\\.nix\\'")
+;; Or if there is no built in mode
+(use-package go-mod-ts-mode :ensure nil :mode "\\.mod\\'")
+(use-package go-ts-mode :ensure nil :mode "\\.go\\'")
+(use-package lua-ts-mode :ensure nil :mode "\\.lua\\'")
+(use-package rust-ts-mode :ensure nil :mode "\\.rs\\'")
+(use-package typescript-ts-mode :ensure nil :mode "\\.ts\\'")
+(use-package tsx-ts-mode :ensure nil :mode "\\.tsx\\'")
+(use-package yaml-ts-mode :ensure nil :mode ("\\.yaml\\'" "\\.yml\\'"))
+(use-package nix-ts-mode :ensure t :mode "\\.nix\\'")
 
 (use-package org
   :ensure nil

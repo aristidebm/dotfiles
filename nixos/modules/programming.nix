@@ -3,28 +3,28 @@
 {
   users.users.aristide.packages = builtins.attrValues {
     inherit (pkgs)
+       cargo
+       clippy
+       emmylua-ls
+       gcc
        gh
        glab
-       nodejs
-       gcc
-       uv
+       gnumake
        go
-       typst
-       rustc
-       cargo
-       rustfmt
-       clippy
-       sleek
+       gopls
        harper
        nil
-       emmylua-ls
-       tinymist
-       gopls
+       nodejs
        pyrefly
-       typescript-language-server
-       rust-analyzer
        python314
-       gnumake
+       rust-analyzer
+       rustc
+       rustfmt
+       sleek
+       tinymist
+       typescript-language-server
+       typst
+       uv
     ;
   };
 }

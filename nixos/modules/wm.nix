@@ -23,10 +23,4 @@
     # this option isn't really useful here, but yeah we will keep it
     addLoginEntry = false;
   };
-
-  environment.systemPackages = builtins.attrValues {
-    inherit (pkgs)
-      quickshell
-      ;
-  };
 }
