@@ -3,6 +3,7 @@
 {
   users.users.aristide.packages = builtins.attrValues {
     inherit (pkgs)
+       ast-grep
        cargo
        clippy
        emmylua-ls
@@ -13,6 +14,7 @@
        go
        gopls
        harper
+       kulala-fmt
        nil
        nodejs
        pyrefly

@@ -1,17 +1,3 @@
--- Show file explorer.
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
-
--- Arguments list management command
--- vim.keymap.set("n", "<leader>a", "<CMD>$argadd | argdedupe <CR>")
-
--- It is 0-based index but the first index always correspond
--- to the first argument passed nvim cli command and usually
--- it is the folder name (since I am used to nvim .)
--- vim.keymap.set("n", "<C-j>", "<CMD>execute 'edit' argv(1)<CR>")
--- vim.keymap.set("n", "<C-k>", "<CMD>execute 'edit' argv(2)<CR>")
--- vim.keymap.set("n", "<C-l>", "<CMD>execute 'edit' argv(3)<CR>")
--- vim.keymap.set("n", "<C-;>", "<CMD>execute 'edit' argv(4)<CR>")
-
 -- Yank to system clipboard
 vim.keymap.set("n", "<leader>Y", '"+y$')
 vim.keymap.set({ "n", "x" }, "<leader>y", '"+y')
@@ -19,10 +5,6 @@ vim.keymap.set({ "n", "x" }, "<leader>y", '"+y')
 -- Move line/block up and down
 -- vim.keymap.set("v","<S-j>", ":m '>+1<CR>gv=gv")
 -- vim.keymap.set("v","<S-k>", ":m '<-2<CR>gv=gv")
-
--- fzf keybindings
---
---
 
 -- Join the line below without moving my cursor.
 vim.keymap.set("n", "<S-j>", "mzJ`z")
@@ -59,3 +41,6 @@ vim.keymap.set("n", "<C-W><", "15<C-W><")
 vim.keymap.set("n", "<C-W>>", "15<C-W>>")
 vim.keymap.set("n", "<C-W>+", "3<C-W>+")
 vim.keymap.set("n", "<C-W>-", "3<C-W>-")
+
+-- toggle undotree
+vim.keymap.set("n", "<leader>u", require("undotree").open)

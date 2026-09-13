@@ -20,6 +20,9 @@ vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 -- Highlight syntax please
 vim.cmd("syntax on")
 
+-- Activate builtin undotree
+vim.cmd("packadd nvim.undotree")
+
 -- Be smart about my indentation
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2

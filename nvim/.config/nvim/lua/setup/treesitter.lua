@@ -1,48 +1,36 @@
--- https://github.com/vrischmann/tree-sitter-templ
-local treesitter_parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-treesitter_parser_config.templ = {
-  install_info = {
-    url = "https://github.com/vrischmann/tree-sitter-templ.git",
-    files = { "src/parser.c", "src/scanner.c" },
-    branch = "master",
-  },
+require('nvim-treesitter').install {
+  "go",
+  "rust",
+  "python",
+  "lua",
+  "javascript",
+  "typescript",
+  "templ",
 }
-vim.treesitter.language.register("templ", "templ")
 
-require("nvim-treesitter.configs").setup({
-  -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = {
-   "go",
-   "rust",
-   "python",
-   "lua",
-   "javascript",
-   "typescript",
- },
+-- 2. Register kulala_http as a custom language for nvim-treesitter (main/rewritten branch).
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TSUpdate",
+  callback = function()
+    require("nvim-treesitter.parsers").kulala_http = {
+      install_info = {
+        url = "https://github.com/mistweaverco/tree-sitter-kulala-http",
+        -- src/parser.c is pre-generated in the repo, so `generate` is not needed.
+        queries = "queries/kulala_http", -- matches the parser name, copied as-is
+      },
+    }
+  end,
+})
 
+-- 3. Use kulala for these files
+-- See opts.lsp.enforce_external_script_naming_convention
+-- to restrict LSP capabilities to *.http, *.http.js, *.http.ts and *.http.lua files.
+vim.treesitter.language.register('kulala_http', {"http", "rest", "javascript", "lua"})
 
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
-
-  -- Automatically install missing parsers when entering buffer
-  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-  auto_install = false,
-  -- indent = {
-  --   enable = true
-  -- },
-  highlight = {
-    enable = true,
-    -- Fore some reason, neovim crashes when treesitter is enabled for html
-    -- files so disable as temporary fix till it gets fixed
-    -- disable = function(lang, buf)
-    --   if lang == "go" or  lang == "c" then
-    --     return true
-    --   end
-    -- end,
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
+-- 4. We need to manually start treesitter for those files
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "http", "rest" },
+  callback = function()
+    vim.treesitter.start()
+  end,
 })

@@ -7,18 +7,10 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    tag = "v0.9.3",
+    branch = "main",
     pin = true,
     config = function()
       require("setup.treesitter")
-    end,
-  },
-  {
-    "mbbill/undotree",
-    pin = true,
-    tag = "rel_6.1",
-    config = function()
-      require("setup.undotree")
     end,
   },
   {
@@ -108,8 +100,7 @@ return {
   },
   {
     "mistweaverco/kulala.nvim",
-    lazy = true,
-    ft = { "http", "rest" },
+    event = { "SessionLoadPost", "VimLeavePre" },
     config = function()
       require("setup.kulala")
     end,

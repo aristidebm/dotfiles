@@ -27,7 +27,6 @@ in
 
     users.users.aristide.packages = builtins.attrValues ({
       inherit (pkgs)
-        ast-grep
         atuin
         bat
         cloudflared
@@ -56,9 +55,14 @@ in
         tabiew
         tokei
         tree
+        remind
         ttyper
         yt-dlp
         zed-editor
+        telegram-desktop
+        keepassxc
+        obs-studio
+        tor-browser
       ;
     } // {
       inherit
@@ -96,13 +100,11 @@ in
         nsxiv
         playerctl
         quickshell
-        remind
         rsync
         satty
         sesh
         slurp
         tmux
-        tor-browser
         unzip
         vifm
         vim
