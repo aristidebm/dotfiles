@@ -1073,13 +1073,14 @@ For templates use C-c C-, Much easier than org-tempo
       (org-edit-src-content-indentation 4) ; Set src block automatic indent to 4 instead of 2.
       (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
       (org-directory "~/Documents/Notes/personal/")
-      (org-agenda-files '("learning-inbox.org"))
+      (org-default-notes-file (expand-file-name "notes.org" org-directory))
+      (org-agenda-files '("notes.org" "learning/backlog.org"))
       ;; For more information on templates read this
       ;; https://orgmode.org/manual/Template-elements.html
       (org-capture-templates
-        `(("l" "Learning idea"
+        `(("l" "Learning"
             entry
-            (file+headline "learning-inbox.org" "Learning Inbox")
+            (file+headline "learning/backlog.org" "Learning Inbox")
             ,(concat
                 "* TODO %^{What do you want to learn/do?} :learning:\n"
                 "  SCHEDULED: %(format-time-string \"<%Y-%m-%d>\" (time-add (current-time) (days-to-time 3)))\n"
@@ -1102,7 +1103,23 @@ For templates use C-c C-, Much easier than org-tempo
                 "** Decision\n"
                 "%?")
             :prepend t
-            :empty-lines 1)))
+            :empty-lines 1)
+          ("t" "Todo" entry (file+headline org-default-notes-file "Todos")
+              "* TODO %?\n%u\n%a\n"
+            :prepend t
+            :clock-in t
+            :clock-resume t)
+          ("m" "Meeting" entry (file+headline org-default-notes-file "Meetings")
+              "* MEETING with %? :MEETING:\n%t"
+            :prepend t
+            :clock-in t
+            :clock-resume t)
+          ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
+              "* %? :IDEA: \n%t"
+            :prepend t
+            :clock-in t
+            :clock-resume t)
+         ))
       :config
       (add-to-list 'org-src-lang-modes '("go" . go-ts)) ; This has to be done for org syntax to work with Golang
       (add-to-list 'org-src-lang-modes '("rust" . rust-ts)) ; This has to be done for org syntax to work with Rust
@@ -1110,6 +1127,9 @@ For templates use C-c C-, Much easier than org-tempo
       :hook
       (org-mode . org-indent-mode)) ; Indent text
 #+end_src
+
+#+RESULTS:
+| org-tempo-setup | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | toc-org-mode | org-indent-mode | #[nil ((add-hook 'after-save-hook #'start/org-babel-tangle-config)) (t)] |
 
 #+begin_src emacs-lisp
     (use-package toc-org

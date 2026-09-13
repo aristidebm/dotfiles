@@ -110,6 +110,11 @@ Credit to Emacs From Scratch for this one!"
   ;; (prog-mode . display-fill-column-indicator-mode) ; Display line length indicator
   (prog-mode . whitespace-mode)
   :config
+  ;; Disable lockfiles entirely (Doom Emacs default style)
+  (setq create-lockfiles nil)
+ ;; Mimic Doom by organizing other backups into a central cache folder
+  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory ".local/cache/backups/")))
+     auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory ".local/cache/autosave/") t)))
   ;; Move customization variables to a separate file and load it, avoid filling up init.el with unnecessary variables
   (setq custom-file (locate-user-emacs-file "custom-vars.el"))
   (load custom-file 'noerror 'nomessage)
@@ -384,6 +389,7 @@ Credit to Emacs From Scratch for this one!"
   (if (> corfu--index -1)
       (corfu-complete)
     (yas-next-field-or-maybe-expand)))
+
 (use-package emacs
   :after (yasnippet corfu)
   :bind
@@ -447,7 +453,7 @@ Credit to Emacs From Scratch for this one!"
 (use-package typescript-ts-mode :ensure nil :mode "\\.ts\\'")
 (use-package tsx-ts-mode :ensure nil :mode "\\.tsx\\'")
 (use-package yaml-ts-mode :ensure nil :mode ("\\.yaml\\'" "\\.yml\\'"))
-(use-package nix-ts-mode :ensure t :mode "\\.nix\\'")
+(use-package nix-ts-mode :ensure nil :mode "\\.nix\\'")
 
 (use-package org
   :ensure nil
@@ -466,13 +472,14 @@ Credit to Emacs From Scratch for this one!"
   (org-edit-src-content-indentation 4) ; Set src block automatic indent to 4 instead of 2.
   (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
   (org-directory "~/Documents/Notes/personal/")
-  (org-agenda-files '("learning-inbox.org"))
+  (org-default-notes-file (expand-file-name "notes.org" org-directory))
+  (org-agenda-files '("notes.org" "learning/backlog.org"))
   ;; For more information on templates read this
   ;; https://orgmode.org/manual/Template-elements.html
   (org-capture-templates
-    `(("l" "Learning idea"
+    `(("l" "Learning"
         entry
-        (file+headline "learning-inbox.org" "Learning Inbox")
+        (file+headline "learning/backlog.org" "Learning Inbox")
         ,(concat
             "* TODO %^{What do you want to learn/do?} :learning:\n"
             "  SCHEDULED: %(format-time-string \"<%Y-%m-%d>\" (time-add (current-time) (days-to-time 3)))\n"
@@ -495,7 +502,23 @@ Credit to Emacs From Scratch for this one!"
             "** Decision\n"
             "%?")
         :prepend t
-        :empty-lines 1)))
+        :empty-lines 1)
+      ("t" "Todo" entry (file+headline org-default-notes-file "Todos")
+          "* TODO %?\n%u\n%a\n"
+        :prepend t
+        :clock-in t
+        :clock-resume t)
+      ("m" "Meeting" entry (file+headline org-default-notes-file "Meetings")
+          "* MEETING with %? :MEETING:\n%t"
+        :prepend t
+        :clock-in t
+        :clock-resume t)
+      ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
+          "* %? :IDEA: \n%t"
+        :prepend t
+        :clock-in t
+        :clock-resume t)
+     ))
   :config
   (add-to-list 'org-src-lang-modes '("go" . go-ts)) ; This has to be done for org syntax to work with Golang
   (add-to-list 'org-src-lang-modes '("rust" . rust-ts)) ; This has to be done for org syntax to work with Rust
