@@ -3,11 +3,16 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
+    mangowm = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
+    mangowm,
    ...
   }:
 
@@ -20,6 +25,7 @@
       inherit system;
       modules = [
         ./configuration.nix
+        mangowm.nixosModules.mango
       ];
     };
     packages.${system}.default = pkgs.callPackage ./profiles/default.nix { };
