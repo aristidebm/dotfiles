@@ -1,0 +1,22 @@
+
+[font]
+size = 20.0
+
+[window.padding]
+x = 20
+# y = 10
+
+[window]
+dynamic_padding = true
+
+[keyboard]
+bindings = [
+    { key = "K", mods = "Control|Shift", action = "IncreaseFontSize" },
+    { key = "J", mods = "Control|Shift", action = "DecreaseFontSize" },
+]
+
+[general]
+import = [
+    "~/.config/alacritty/themes/rose-pine.toml"
+]
+
