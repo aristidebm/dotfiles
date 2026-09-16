@@ -498,7 +498,7 @@ vnoremap w :view<cr>gv
 nnoremap gb :file &<cr>l
 
 " fuzzy find directory
-nnoremap <Space>pf :FZFfind<CR>
+nnoremap <Space>ff :FZFfind<CR>
 
 " Interaction with system clipboard
  if has('win')

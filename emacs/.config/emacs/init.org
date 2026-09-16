@@ -214,7 +214,7 @@ Most of the performance tweaks are there.
 We can configure things before the GUI or other packages are loaded.
 
 ** Auto-tangle Configuration file
-Auto-Tangle Org configuration file for better startup times, it refreshes the package-quickstart file.
+Auto-Org configuration file for better startup times, it refreshes the package-quickstart file.
 We'll cover package quickstart in the package manager section later.
 
 If you like to auto tangle an Org file, don't forget to add the following line to the top of your Org document:
@@ -1059,7 +1059,7 @@ For templates use C-c C-, Much easier than org-tempo
     (use-package org
       :ensure nil
       :custom-face
-      (org-document-title ((t (:height 1.8 :weight bold))))
+      (org-document-title ((t (:height 1.7 :weight bold))))
       (org-level-1 ((t (:inherit outline-1 :height 1.6))))
       (org-level-2 ((t (:inherit outline-2 :height 1.5))))
       (org-level-3 ((t (:inherit outline-3 :height 1.4))))
