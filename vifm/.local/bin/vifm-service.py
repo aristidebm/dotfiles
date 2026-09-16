@@ -23,9 +23,9 @@ from urllib.parse import unquote
 def open_file_manager(uri, select=False):
     # This uses the vifmrun wrapper from vifmimg (which support image previews).
     # If this is not desired, vifm can be used directly instead.
-    # args = ['st', '-e', 'vifm']
     vifm_path = os.path.expanduser('~/.nix-profile/bin/vifm')
-    args = ['wezterm', 'start', '--', vifm_path]
+    # args = ['wezterm', 'start', '--', vifm_path]
+    args = ['alacritty', '-e', vifm_path]
     if select:
         args.append('--select')
 
