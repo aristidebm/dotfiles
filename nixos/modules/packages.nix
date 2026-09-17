@@ -39,30 +39,31 @@ in
         glow
         gum
         jujutsu
+        keepassxc
         lsd
         ncdu
         neovim
         nix-direnv
+        obs-studio
+        onlyoffice-desktopeditors
         pandoc
         pastel
         pgcli
         qpdf
+        remind
         ripgrep
         sqlite-interactive
         starship
         steelix
         stow
         tabiew
+        telegram-desktop
         tokei
+        tor-browser
         tree
-        remind
         ttyper
         yt-dlp
         zed-editor
-        telegram-desktop
-        keepassxc
-        obs-studio
-        tor-browser
       ;
     } // {
       inherit
@@ -76,6 +77,7 @@ in
 
     environment.systemPackages = builtins.attrValues ({
       inherit (pkgs)
+        alacritty
         aria2
         brightnessctl
         brotli
@@ -92,6 +94,7 @@ in
         grim
         inxi
         jq
+        kanata
         libnotify
         mpc
         mpd
@@ -108,7 +111,7 @@ in
         unzip
         vifm
         vim
-        wezterm
+        wf-recorder
         wget
         wireshark-cli
         wl-copy

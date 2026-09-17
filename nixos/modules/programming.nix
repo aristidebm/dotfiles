@@ -17,12 +17,14 @@
        kulala-fmt
        nil
        nodejs
+       opencode
        pyrefly
        python314
        rust-analyzer
        rustc
        rustfmt
        sleek
+       silicon
        tinymist
        typescript-language-server
        typst
