@@ -114,7 +114,7 @@ in
         wf-recorder
         wget
         wireshark-cli
-        wl-copy
+        wl-clipboard
         zoxide
         zrok
       ;
