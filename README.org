@@ -1,0 +1,4 @@
+* Links
+  It can be interesting to re-organise my setup around specialisation, this is what
+  mitchell does for example, but I don't actually a need for that https://github.com/mitchellh/nixos-config/tree/main/modules/specialization
+  [[https://saylesss88.github.io/flakes/specialisations_4.6.html][Specialisation]]
