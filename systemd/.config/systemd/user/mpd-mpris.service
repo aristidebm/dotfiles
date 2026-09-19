@@ -7,7 +7,8 @@ Description=mpd-mpris: An implementation of the MPRIS protocol for MPD
 After=mpd.service
 
 [Service]
-ExecStart=%h/.nix-profile/bin/mpd-mpris --no-instance
+ExecStart=/run/current-system/sw/bin/mpd --no-instance
+; ExecStart=%h/.nix-profile/bin/mpd-mpris --no-instance
 Restart=on-failure
 Type=dbus
 BusName=org.mpris.MediaPlayer2.mpd

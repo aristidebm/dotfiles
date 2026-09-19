@@ -6,8 +6,8 @@ After=network.target sound.target
 
 [Service]
 Type=notify
-ExecStart=%h/.nix-profile/bin/mpd --systemd %h/.config/mpd/mpd.conf
-; ExecStart=/run/current-system/sw/bin/mpd --systemd %h/.config/mpd/mpd.conf
+ExecStart=/run/current-system/sw/bin/mpd --systemd %h/.config/mpd/mpd.conf
+; ExecStart=%h/.nix-profile/bin/mpd --systemd %h/.config/mpd/mpd.conf
 Restart=on-failure
 
 # Enable this setting to ask systemd to watch over MPD, see
