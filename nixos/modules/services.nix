@@ -13,7 +13,11 @@
       enable = true;
       keyboards = {
           default = {
-              configFile = "../../kanata/.config/kanata/keymaps.kbd";
+              # NOTE: It must not a be a string, it has to be a path
+              # so that it can be copied inside the nix store
+              # It is safe to be copied inside the nix store, don't
+              # do this with sensitive information
+              configFile = ../../kanata/.config/kanata/keymaps.kbd;
           };
       };
   };
