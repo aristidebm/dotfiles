@@ -6,6 +6,8 @@
     ./modules/packages.nix
     ./modules/services.nix
     ./modules/mango.nix
+    ./modules/dbus.nix
+    ./modules/containers.nix
   ];
 
   home = {
