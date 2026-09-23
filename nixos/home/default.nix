@@ -8,6 +8,7 @@
     ./modules/mango.nix
     ./modules/dbus.nix
     ./modules/containers.nix
+    ./modules/portal.nix
   ];
 
   home = {

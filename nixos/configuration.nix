@@ -9,13 +9,20 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./modules/default.nix
-      ./overlays/default.nix
     ];
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
   # system.copySystemConfiguration = true;
+
+  # Required by home-manager's xdg.portal assertion when
+  # home-manager.useUserPackages is enabled, so portal definitions and
+  # desktop-entry files from the user profile get linked into the system env.
+  environment.pathsToLink = [
+    "/share/xdg-desktop-portal"
+    "/share/applications"
+  ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
