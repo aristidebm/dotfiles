@@ -43,7 +43,7 @@
 ;;; FONTS
 ;; Startup about 0.01 faster
 (set-face-attribute 'default nil
-                    :font "JetBrains Mono" ; Set your favorite type of font or download JetBrains Mono
+                    :font "Iosevka Nerd Font" ; Set your favorite type of font or download JetBrains Mono
                     :height 160
                     :weight 'medium)
 ;; This sets the default font on all graphical frames created after restarting Emacs.

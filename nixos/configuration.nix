@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./modules/default.nix
+      ./overlays/default.nix
     ];
 
   # Copy the NixOS configuration file and link it from the resulting system

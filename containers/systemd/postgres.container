@@ -1,6 +1,7 @@
 # vim: ft=ini
 [Unit]
 Description=PostgreSQL database
+After=valkey.service
 
 [Container]
 Image=docker.io/library/postgres:17-alpine

@@ -458,7 +458,7 @@ Credit to Emacs From Scratch for this one!"
 (use-package org
   :ensure nil
   :custom-face
-  (org-document-title ((t (:height 1.8 :weight bold))))
+  (org-document-title ((t (:height 1.7 :weight bold))))
   (org-level-1 ((t (:inherit outline-1 :height 1.6))))
   (org-level-2 ((t (:inherit outline-2 :height 1.5))))
   (org-level-3 ((t (:inherit outline-3 :height 1.4))))

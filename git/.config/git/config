@@ -36,7 +36,7 @@
 	show-contribution = "!git-show-contribution"
     split = add -p
     # repo = "!$BROWSER $(git remote get-url origin | sed -E \"s|git@([^:]+):|https://\\1/|; s|\\.git$||\")"
-    open = "!com.brave.Browser $(git remote get-url origin | sed -E \"s|git@([^:]+):|https://\\1/|; s|\\.git$||\") 2> /dev/null"
+    open = "!firefox $(git remote get-url origin | sed -E \"s|git@([^:]+):|https://\\1/|; s|\\.git$||\") 2> /dev/null"
     mr = ""
 	delta = !git diff | delta
     ; review = !sh -c 'git diff -U10 "$@" | git-hunk-review > review-$(date +%Y%m%d-%H%M%S).diff' -

@@ -108,6 +108,7 @@ in
         sesh
         slurp
         tmux
+        zip
         unzip
         vifm
         vim

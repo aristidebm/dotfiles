@@ -44,15 +44,15 @@
   };
 
   # Podman containers
-  # environment.etc."${quadletDir}/valkey.container".source =
-  #   ../../containers/systemd/valkey.container;
+  environment.etc."${quadletDir}/valkey.container".source =
+    ../../containers/systemd/valkey.container;
 
-  # environment.etc."${quadletDir}/workstation.network".source =
-  #   ../../containers/systemd/workstation.network;
+  environment.etc."${quadletDir}/workstation.network".source =
+    ../../containers/systemd/workstation.network;
 
-  # environment.etc."${quadletDir}/postgres.container".source =
-  #   ../../containers/systemd/postgres.container;
+  environment.etc."${quadletDir}/postgres.container".source =
+    ../../containers/systemd/postgres.container;
 
-  # environment.etc."${quadletDir}/postgres.volume".source =
-  #   ../../containers/systemd/postgres.volume;
+  environment.etc."${quadletDir}/postgres.volume".source =
+    ../../containers/systemd/postgres.volume;
 }
