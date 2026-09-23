@@ -6,8 +6,7 @@
       ./fonts.nix
       ./locale.nix
       ./network.nix
-      ./packages.nix
-      ./programming.nix
+      ./programs.nix
       ./services.nix
       ./settings.nix
       ./users.nix

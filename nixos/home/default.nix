@@ -3,6 +3,7 @@
 {
   imports = [
     ./modules/nixpkgs.nix
+    ./modules/packages.nix
   ];
 
   home = {

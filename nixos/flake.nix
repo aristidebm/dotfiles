@@ -14,7 +14,6 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     home-manager,
     mangowm,
@@ -56,7 +55,6 @@
         mangowm.nixosModules.mango
       ];
     };
-    packages.${system}.default = pkgs.callPackage ./profiles/default.nix { };
     formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
   };
 }
