@@ -4,6 +4,7 @@
   imports = [
     ./modules/nixpkgs.nix
     ./modules/packages.nix
+    ./modules/programming.nix
     ./modules/services.nix
     ./modules/mango.nix
     ./modules/dbus.nix

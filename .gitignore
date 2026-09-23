@@ -62,3 +62,4 @@ zed/.local/bin/*
 !zed/.local/bin/zed-live-grep
 scripts/.local/bin/tmux_flower_api.sh
 jj/.config/jj/repos/
+TASK*

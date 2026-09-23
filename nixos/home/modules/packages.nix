@@ -1,11 +1,11 @@
 { pkgs, ... }:
 
 let
-  habits = pkgs.callPackage ../packages/custom/habits.nix { };
-  dbcli = pkgs.callPackage ../packages/custom/dbcli.nix { };
-  typer = pkgs.callPackage ../packages/custom/typer.nix { };
-  pomodoro = pkgs.callPackage ../packages/custom/pomodoro.nix { };
-  apic = pkgs.callPackage ../packages/custom/apic.nix { };
+  habits = pkgs.callPackage ./custom/habits.nix { };
+  dbcli = pkgs.callPackage ./custom/dbcli.nix { };
+  typer = pkgs.callPackage ./custom/typer.nix { };
+  pomodoro = pkgs.callPackage ./custom/pomodoro.nix { };
+  apic = pkgs.callPackage ./custom/apic.nix { };
 
   mpv = pkgs.mpv.override {
     scripts = builtins.attrValues {
@@ -29,9 +29,6 @@ let
       ;
     };
   };
-
-  # Needed by the stowed vifm dbus service (vifm-service.py).
-  pythonEnv = pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ]);
 in
 {
   home.packages = [
@@ -101,37 +98,6 @@ in
     pkgs.tor-browser
     pkgs.ttyper
 
-    # programming toolchains / LSP
-    pkgs.ast-grep
-    pkgs.cargo
-    pkgs.clippy
-    pkgs.emmylua-ls
-    pkgs.fabric-ai
-    pkgs.gcc
-    pkgs.gh
-    pkgs.glab
-    pkgs.gnumake
-    pkgs.go
-    pkgs.go_1_27
-    pkgs.gopls
-    pkgs.harper
-    pkgs.kulala-fmt
-    pkgs.nil
-    pkgs.nodejs
-    pkgs.opencode
-    pkgs.pyrefly
-    pkgs.python314
-    pkgs.rust-analyzer
-    pkgs.rustc
-    pkgs.rustfmt
-    pkgs.rustup
-    pkgs.sleek
-    pkgs.silicon
-    pkgs.tinymist
-    pkgs.typescript-language-server
-    pkgs.typst
-    pkgs.uv
-
     # databases
     pkgs.pgcli
     pkgs.sqlite-interactive
@@ -167,8 +133,5 @@ in
     # overridden builds
     mpv
     zathura-full
-
-    # python env for the vifm dbus service
-    pythonEnv
   ];
 }
