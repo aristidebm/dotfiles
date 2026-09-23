@@ -9,6 +9,7 @@
     ./modules/dbus.nix
     ./modules/containers.nix
     ./modules/portal.nix
+    ./modules/specialisation.nix
   ];
 
   home = {
