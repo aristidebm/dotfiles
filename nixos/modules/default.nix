@@ -11,6 +11,5 @@
       ./settings.nix
       ./users.nix
       ./virtualisation.nix
-      ./wm.nix
     ];
 }

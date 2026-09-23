@@ -4,6 +4,8 @@
   imports = [
     ./modules/nixpkgs.nix
     ./modules/packages.nix
+    ./modules/services.nix
+    ./modules/mango.nix
   ];
 
   home = {

@@ -52,7 +52,6 @@
             users.aristide = import ./home;
           };
         }
-        mangowm.nixosModules.mango
       ];
     };
     formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
