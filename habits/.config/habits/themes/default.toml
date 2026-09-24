@@ -1,0 +1,17 @@
+name = "Default"
+author = "Habits Team"
+
+[colors]
+header = "#87CEEB"
+habit_name = "#00CED1"
+habit_selected_fg = "#FFFFFF"
+habit_selected_bg = "#696969"
+completed = "#32CD32"
+missed = "#DC143C"
+untracked = "#708090"
+today = "#32CD32"
+note_bg = "#2F4F4F"
+db_path = "#708090"
+prompt = "#87CEEB"
+error = "#DC143C"
+success = "#32CD32"

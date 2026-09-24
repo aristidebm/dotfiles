@@ -1,0 +1,17 @@
+name = "Dark"
+author = "Habits Team"
+
+[colors]
+header = "#FF6B6B"
+habit_name = "#4ECDC4"
+habit_selected_fg = "#000000"
+habit_selected_bg = "#FFFFFF"
+completed = "#45B7D1"
+missed = "#FFA07A"
+untracked = "#778899"
+today = "#45B7D1"
+note_bg = "#2F4F4F"
+db_path = "#778899"
+prompt = "#FF6B6B"
+error = "#FFA07A"
+success = "#45B7D1"
