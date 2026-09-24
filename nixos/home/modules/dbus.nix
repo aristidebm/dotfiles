@@ -6,7 +6,7 @@
   # Runtime for the stowed vifm-service.py (shebang `#!/usr/bin/env python`,
   # imports dbus + gi). hiPrio so its bin/python (with dbus/gi) wins over the
   # bare python314 from modules/programming.nix in the merged profile.
-  home.packages = [ (pkgs.hiPrio (pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ]))) ];
+  home.packages = [ (lib.hiPrio (pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ]))) ];
 
   xdg.dataFile = {
     # Lets apps (e.g. editors' "open in file manager") talk to vifm via the
