@@ -3,7 +3,9 @@
 {
   imports = [
     ./modules/nixpkgs.nix
+    ./modules/nix.nix
     ./modules/packages.nix
+    ./modules/fonts.nix
     ./modules/programming.nix
     ./modules/services.nix
     ./modules/mango.nix

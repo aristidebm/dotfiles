@@ -1,9 +1,7 @@
-{ ... }:
+{ lib, pkgs, ... }:
 
 {
-  zramSwap = {
-    enable = true;
-  };
+  nix.package = lib.mkDefault pkgs.nix;
 
   nix.gc = {
     automatic = true;

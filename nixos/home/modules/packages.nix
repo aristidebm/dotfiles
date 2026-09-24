@@ -31,107 +31,111 @@ let
   };
 in
 {
-  home.packages = [
-    # CLI toolkit
-    pkgs.atuin
-    pkgs.aria2
-    pkgs.bat
-    pkgs.brotli
-    pkgs.btop
-    pkgs.cloudflared
-    pkgs.curl
-    pkgs.dasel
-    pkgs.direnv
-    pkgs.fd
-    pkgs.figlet
-    pkgs.fx
-    pkgs.fzf
-    pkgs.gawk
-    pkgs.git
-    pkgs.glow
-    pkgs.gnugrep
-    pkgs.gnused
-    pkgs.gopass
-    pkgs.gron
-    pkgs.gum
-    pkgs.inxi
-    pkgs.jq
-    pkgs.jujutsu
-    pkgs.just
-    pkgs.lsd
-    pkgs.ncdu
-    pkgs.nix-direnv
-    pkgs.pandoc
-    pkgs.pastel
-    pkgs.qpdf
-    pkgs.remind
-    pkgs.ripgrep
-    pkgs.rsync
-    pkgs.starship
-    pkgs.steelix
-    pkgs.stow
-    pkgs.tabiew
-    pkgs.tmux
-    pkgs.tokei
-    pkgs.tree
-    pkgs.unzip
-    pkgs.vifm
-    pkgs.wget
-    pkgs.zip
-    pkgs.zoxide
-    pkgs.zrok
+  home.packages = builtins.attrValues ({
+    inherit (pkgs)
+      # CLI toolkit
+      atuin
+      aria2
+      bat
+      brotli
+      btop
+      cloudflared
+      curl
+      dasel
+      direnv
+      fd
+      figlet
+      fx
+      fzf
+      gawk
+      git
+      glow
+      gnugrep
+      gnused
+      gopass
+      gron
+      gum
+      inxi
+      jq
+      jujutsu
+      just
+      lsd
+      ncdu
+      nix-direnv
+      pandoc
+      pastel
+      qpdf
+      remind
+      ripgrep
+      rsync
+      starship
+      steelix
+      stow
+      tabiew
+      tmux
+      tokei
+      tree
+      unzip
+      vifm
+      wget
+      zip
+      zoxide
+      zrok
 
-    # terminals / editors
-    pkgs.alacritty
-    pkgs.emacs
-    pkgs.neovim
-    pkgs.vim
-    pkgs.zed-editor
+      # terminals / editors
+      alacritty
+      emacs
+      neovim
+      vim
+      zed-editor
 
-    # system / productivity
-    pkgs.fastfetch
-    pkgs.keepassxc
-    pkgs.obs-studio
-    pkgs.onlyoffice-desktopeditors
-    pkgs.sesh
-    pkgs.telegram-desktop
-    pkgs.tor-browser
-    pkgs.ttyper
+      # system / productivity
+      fastfetch
+      keepassxc
+      obs-studio
+      onlyoffice-desktopeditors
+      sesh
+      telegram-desktop
+      tor-browser
+      ttyper
 
-    # databases
-    pkgs.pgcli
-    pkgs.sqlite-interactive
+      # databases
+      pgcli
+      sqlite-interactive
 
-    # media / screen
-    pkgs.brightnessctl
-    pkgs.ffmpeg-full
-    pkgs.grim
-    pkgs.libnotify
-    pkgs.mpc
-    pkgs.mpd
-    pkgs.mpd-mpris
-    pkgs.nsxiv
-    pkgs.playerctl
-    pkgs.quickshell
-    pkgs.satty
-    pkgs.slurp
-    pkgs.wf-recorder
-    pkgs.wireshark-cli
-    pkgs.wl-clipboard
-    pkgs.yt-dlp
+      # media / screen
+      brightnessctl
+      ffmpeg-full
+      grim
+      libnotify
+      mpc
+      mpd
+      mpd-mpris
+      nsxiv
+      playerctl
+      quickshell
+      satty
+      slurp
+      wf-recorder
+      wireshark-cli
+      wl-clipboard
+      yt-dlp
 
-    # keyboard remapping
-    pkgs.kanata
+      # keyboard remapping
+      kanata
+    ;
+  } // {
+    inherit
+      # custom tools (packaged from aristidebm repos)
+      apic
+      dbcli
+      habits
+      pomodoro
+      typer
 
-    # custom tools (packaged from aristidebm repos)
-    apic
-    dbcli
-    habits
-    pomodoro
-    typer
-
-    # overridden builds
-    mpv
-    zathura-full
-  ];
+      # overridden builds
+      mpv
+      zathura-full
+    ;
+  });
 }

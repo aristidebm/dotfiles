@@ -32,6 +32,7 @@
       modules = [
         mangowm.hmModules.mango
         ./home
+        ./home/standalone.nix
       ];
     };
 
@@ -54,6 +55,6 @@
         }
       ];
     };
-    formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+    formatter.x86_64-linux = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
   };
 }
