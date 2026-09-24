@@ -1,0 +1,17 @@
+name = "Custom"
+author = "Test User"
+
+[colors]
+header = "#FF5733"
+habit_name = "#33FF57"
+habit_selected_fg = "#FFFFFF"
+habit_selected_bg = "#3357FF"
+completed = "#FF33A1"
+missed = "#A133FF"
+untracked = "#33FFF5"
+today = "#FF3333"
+note_bg = "#5733FF"
+db_path = "#F5FF33"
+prompt = "#33FF33"
+error = "#FF3333"
+success = "#33FF33"

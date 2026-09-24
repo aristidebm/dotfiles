@@ -1,0 +1,17 @@
+name = "Monochrome"
+author = "Habits Team"
+
+[colors]
+header = "#FFFFFF"
+habit_name = "#FFFFFF"
+habit_selected_fg = "#000000"
+habit_selected_bg = "#FFFFFF"
+completed = "#FFFFFF"
+missed = "#FFFFFF"
+untracked = "#FFFFFF"
+today = "#FFFFFF"
+note_bg = "#000000"
+db_path = "#FFFFFF"
+prompt = "#FFFFFF"
+error = "#FFFFFF"
+success = "#FFFFFF"

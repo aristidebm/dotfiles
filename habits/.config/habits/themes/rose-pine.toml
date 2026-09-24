@@ -1,0 +1,19 @@
+name = "Rosé Pine"
+author = "Habits Team"
+
+[colors]
+header = "#C3A6E6"         # Iris (primary accent)
+habit_name = "#C3A6E6"     # Iris (primary accent)
+habit_selected_fg = "#191724"  # Base (primary dark)
+habit_selected_bg = "#C3A6E6"  # Iris
+completed = "#C3A6E6"      # Iris
+missed = "#191724"         # Base
+untracked = "#26233A"      # Overlay
+today = "#C3A6E6"          # Iris
+note_bg = "#26233A"        # Overlay
+note_fg = "#FFFFFF"        # White
+db_path = "#C3A6E6"        # Iris
+prompt = "#C3A6E6"         # Iris
+error = "#191724"          # Base
+success = "#C3A6E6"        # Iris
+empty = "#FFFFFF"          # White

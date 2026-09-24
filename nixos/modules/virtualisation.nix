@@ -4,9 +4,6 @@
   ...
  }:
 
- let
-  quadletDir = "containers/systemd/users/1000";
- in
 {
   virtualisation = {
     docker.enable = lib.mkForce false;
@@ -42,17 +39,4 @@
    # linger = false;
    extraGroups = [ "libvirtd" ];
   };
-
-  # Podman containers
-  environment.etc."${quadletDir}/valkey.container".source =
-    ../../containers/systemd/valkey.container;
-
-  environment.etc."${quadletDir}/workstation.network".source =
-    ../../containers/systemd/workstation.network;
-
-  environment.etc."${quadletDir}/postgres.container".source =
-    ../../containers/systemd/postgres.container;
-
-  environment.etc."${quadletDir}/postgres.volume".source =
-    ../../containers/systemd/postgres.volume;
 }

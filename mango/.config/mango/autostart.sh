@@ -7,5 +7,3 @@ systemctl --user start graphical-session.target
 dbus-update-activation-environment --systemd PATH
 
 battery &
-
-emacs --daemon &

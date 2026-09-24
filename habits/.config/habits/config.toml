@@ -1,0 +1,15 @@
+[db]
+  path = "/home/aristide/.local/state/habits/habits.db"
+
+[views]
+  [views.weekly]
+    missed = "⛌"
+    completed = "🗸"
+    untracked = "○"
+  [views.monthly]
+    missed = "⛌"
+    completed = "🗸"
+    untracked = "○"
+
+[theme]
+  name = "default"
