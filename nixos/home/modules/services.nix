@@ -1,5 +1,20 @@
 { pkgs, ... }:
 
+# User services as raw systemd units. Candidate migration: nixpkgs "modular
+# services" under home.services (https://nix-community.github.io/home-manager/
+# usage/modular-services.html) -- it maps the same schema and would auto-restart
+# mpd/kanata when their config files change.
+#
+# Blocked by an upstream nixpkgs bug at the current pin: lib/services/service.nix
+# computes `process.reloadCommand` as `(lib.mkIf ... != null)` (misplaced paren),
+# so ANY home.services entry fails evaluation with "attempt to call something
+# which is not a function but a Boolean: true".
+#   Introduced in: https://github.com/NixOS/nixpkgs/pull/535695
+#   Fixed in:      https://github.com/NixOS/nixpkgs/pull/540857
+#                  (commit ae9994806ca939447a8a6adc4f94d12cbdf06e01)
+# Revisit once the nixpkgs input is bumped past that fix, then migrate
+# mpd-mpris and kanata first (smallest surface).
+
 {
   systemd.user.services = {
     mpd = {
