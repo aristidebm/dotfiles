@@ -5,6 +5,10 @@
 { ... }:
 
 {
+  # Overwrite the legacy manual ~/.config/containers/registries.conf (mirror
+  # config, backed up to registries.conf.bak) now that HM generates this file.
+  xdg.configFile."containers/registries.conf".force = true;
+
   services.podman = {
     enable = true;
 

@@ -29,23 +29,13 @@
     chooser_cmd = ${pkgs.slurp}/bin/slurp -f 'Monitor: %o' -d
   '';
 
-  # D-Bus session activation for the portal daemon and the wlr backend: the
-  # session bus scans ~/.local/share/dbus-1/services, so pointing Exec at the
-  # store paths starts them on demand on any system.
-  xdg.dataFile = {
-    "dbus-1/services/org.freedesktop.portal.Desktop.service" = {
-      text = ''
-        [D-BUS Service]
-        Name=org.freedesktop.portal.Desktop
-        Exec=${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal
-      '';
-    };
-    "dbus-1/services/org.freedesktop.impl.portal.wlr.service" = {
-      text = ''
-        [D-BUS Service]
-        Name=org.freedesktop.impl.portal.wlr
-        Exec=${pkgs.xdg-desktop-portal-wlr}/libexec/xdg-desktop-portal-wlr
-      '';
-    };
-  };
+  # D-Bus session activation for the portal daemon and its backends:
+  # dbus.packages links each package's share/dbus-1/services files under
+  # ~/.local/share/dbus-1/services, so the session bus starts them on demand
+  # without hand-written activation entries.
+  dbus.packages = [
+    pkgs.xdg-desktop-portal
+    pkgs.xdg-desktop-portal-gtk
+    pkgs.xdg-desktop-portal-wlr
+  ];
 }

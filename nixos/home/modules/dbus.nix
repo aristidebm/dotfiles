@@ -13,6 +13,7 @@
     # org.freedesktop.FileManager1 interface. The launcher script is stowed at
     # ~/.local/bin/vifm-service.py.
     "dbus-1/services/vifm.service" = {
+      force = true;
       text = ''
         # vim:ft=ini
         [D-BUS Service]

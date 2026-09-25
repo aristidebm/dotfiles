@@ -10,4 +10,8 @@
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # The pre-HM-managed ~/.config/nix/nix.conf (with max-jobs = auto, the Nix
+  # default) must be overwritten on first activation.
+  xdg.configFile."nix/nix.conf".force = true;
 }
