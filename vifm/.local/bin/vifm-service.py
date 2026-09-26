@@ -13,19 +13,19 @@ https://www.freedesktop.org/wiki/Specifications/file-manager-interface/
 """
 
 import dbus
-import os
 import subprocess
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 from urllib.parse import unquote
+import shutil
 
 def open_file_manager(uri, select=False):
-    # This uses the vifmrun wrapper from vifmimg (which support image previews).
-    # If this is not desired, vifm can be used directly instead.
-    vifm_path = os.path.expanduser('~/.nix-profile/bin/vifm')
+    vifm = shutil.which("vifm")
+    terminal = shutil.which("alacritty")
+
     # args = ['wezterm', 'start', '--', vifm_path]
-    args = ['alacritty', '-e', vifm_path]
+    args = [terminal, '-e', vifm]
     if select:
         args.append('--select')
 
@@ -62,7 +62,9 @@ def main() -> None:
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
     session_bus = dbus.SessionBus()
-    dbus.service.BusName("org.freedesktop.FileManager1", session_bus)
+    # _ = has to be done so that the Cpython refcounter will not delete
+    # this object
+    _ = dbus.service.BusName("org.freedesktop.FileManager1", session_bus)
     FmObject(session_bus, '/org/freedesktop/FileManager1')
     mainloop = GLib.MainLoop()
     mainloop.run()
@@ -72,8 +74,6 @@ if __name__ == '__main__':
 
 # For debugging
 # dbus-send --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file:///home/" string:""
-
 # grep -R FileManager1 /usr/share/dbus-1/services
 # busctl --user status org.freedesktop.FileManager1
 # systemctl --user show-environment | grep PATH
-
