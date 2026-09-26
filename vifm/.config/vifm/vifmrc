@@ -122,11 +122,13 @@ set dotfiles
 " :mark mark /full/directory/path [filename]
 
 mark h ~/
-mark t /tmp/
 mark d ~/Downloads/
 mark D ~/Documents/
-mark a ~/Projects/
-mark b ~/.local/bin/
+mark p ~/Projects/
+mark P ~/Pictures/
+mark m ~/Music/
+mark v ~/Videos/
+mark t /tmp/
 
 " ------------------------------------------------------------------------------
 " Commands
