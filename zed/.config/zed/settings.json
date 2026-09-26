@@ -23,17 +23,8 @@
   "git_panel": {
     "dock": "left",
   },
-  "ui_font_size": 12.0,
-  "ssh_connections": [
-    {
-      "host": "essunCemex",
-      "projects": [
-        {
-          "paths": ["/home/deployer"],
-        },
-      ],
-    },
-  ],
+  "ui_font_size": 22.0,
+  "ssh_connections": [],
   "base_keymap": "SublimeText",
   "project_panel": {
     "dock": "right",
@@ -58,7 +49,7 @@
   // "show_completions_on_input": false,
   "theme": {
     "mode": "light",
-    "light": "One Dark",
+    "light": "Rosé Pine",
     "dark": "One Dark",
   },
   // not available yet but announced in this post https://zed.dev/blog/disable-ai-features
@@ -90,8 +81,8 @@
   "double_click_in_multibuffer": "open",
   "cursor_blink": false,
   "cursor_shape": "bar",
-  "buffer_font_size": 14.0,
-  "buffer_font_family": "Iosevka",
+  "buffer_font_size": 22.0,
+  "buffer_font_family": "Iosevka Nerd Font",
   // "buffer_font_family": "VictorMono Nerd Font",
   "buffer_font_weight": 500,
   // "buffer_font_weight": 400,
@@ -117,7 +108,7 @@
     "pyrefly": {},
   },
   "terminal": {
-    "font_family": "Iosevka",
+    "font_family": "Iosevka Nerd Font",
     "dock": "right",
     "shell": "system",
   },

@@ -4,7 +4,6 @@
   {
     "bindings": {
       "ctrl-[": ["workspace::SendKeystrokes", "escape"],
-      "ctrl-`": "workspace::ToggleRightDock",
     },
   },
   {
@@ -111,4 +110,38 @@
       // work when no editor exists.
     },
   },
+  // {
+  //   "context": "Workspace",
+  //   "unbind": {
+  //     "ctrl-t": "project_symbols::Toggle"
+  //   }
+  // },
+  {
+    "bindings": {
+      "ctrl-.": "terminal_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-t": "project_symbols::Toggle"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-`": "terminal_panel::Toggle"
+    }
+  },
+  {
+    "bindings": {
+      "ctrl-`": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-shift-e": "project_panel::ToggleFocus"
+    }
+  }
 ]

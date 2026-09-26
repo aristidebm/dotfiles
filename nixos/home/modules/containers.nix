@@ -2,12 +2,24 @@
 # support: user-level containers that start with the session (linger keeps
 # them alive). The .container/.network/.volume units are generated from here
 # and written to ~/.config/containers/systemd/ by home-manager.
-{ ... }:
+{ pkgs, lib, ... }:
 
 {
-  # Overwrite the legacy manual ~/.config/containers/registries.conf (mirror
-  # config, backed up to registries.conf.bak) now that HM generates this file.
-  xdg.configFile."containers/registries.conf".force = true;
+  xdg.configFile."containers/registries.conf".source = lib.mkForce (
+    pkgs.writeText "registries.conf" ''
+      unqualified-search-registries = ["docker.io"]
+
+      # I have an issue downloading image via cloudfront (docker.io)
+      # I have to use google mirror to be able to download them
+      [[registry]]
+      location = "docker.io"
+
+      [[registry.mirror]]
+      location = "mirror.gcr.io"
+    ''
+  );
+
+  # https://raw.githubusercontent.com/nix-community/home-manager/7b4c5ec4bedaf1e062bbc1bcaeddbc6bd242aa1b/modules/services/podman/default.nix
 
   services.podman = {
     enable = true;
@@ -28,7 +40,7 @@
 
     containers.postgres = {
       description = "PostgreSQL database";
-      image = "docker.io/library/postgres:17-alpine";
+      image = "docker.io/pgvector/pgvector:pg17-trixie";
       network = "workstation.network";
       volumes = [ "postgres.volume:/var/lib/postgresql/data" ];
       environment = {
