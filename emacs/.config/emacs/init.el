@@ -105,6 +105,8 @@ Credit to Emacs From Scratch for this one!"
     '((display-buffer-reuse-window display-buffer-same-window
         display-buffer-in-previous-window
         display-buffer-use-some-window)))
+  (org-clock-persist 'history)
+  (org-clock-persistence-insinuate)
   :hook
   (prog-mode . hs-minor-mode) ; Enable folding hide/show globally
   ;; (prog-mode . display-fill-column-indicator-mode) ; Display line length indicator
@@ -304,17 +306,16 @@ Credit to Emacs From Scratch for this one!"
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   :config
-  (load-theme 'modus-operandi t) ; We need to add t to trust this package
+  ;; (load-theme 'modus-operandi t) ; We need to add t to trust this package
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
-(use-package auto-dark
-:ensure t
-:custom
-(auto-dark-themes '((modus-vivendi)
-                    (modus-operandi)))
-:config
-(auto-dark-mode 1))
+(use-package circadian
+  :ensure nil
+  :config
+  (setq circadian-themes '(("8:00" . 'modus-operandi)
+                         ("19:30" . 'modus-vivendi)))
+(circadian-setup))
 
 (add-to-list 'default-frame-alist '(alpha-background . 90)) ; For all new frames henceforth
 
@@ -473,7 +474,7 @@ Credit to Emacs From Scratch for this one!"
   (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
   (org-directory "~/Documents/Notes/personal/")
   (org-default-notes-file (expand-file-name "notes.org" org-directory))
-  (org-agenda-files '("notes.org" "learning/backlog.org"))
+  (org-agenda-files '("notes.org" "habits.org" "learning/backlog.org"))
   ;; For more information on templates read this
   ;; https://orgmode.org/manual/Template-elements.html
   (org-capture-templates
@@ -547,7 +548,13 @@ Credit to Emacs From Scratch for this one!"
   :after ox)
 
 (use-package org-tempo
+  :ensure nil
   :after org)
+
+(use-package org-habit
+  :ensure nil
+  :after org
+)
 
 (use-package eat
   :defer t

@@ -5,7 +5,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(async auto-dark cape corfu diff-hl diminish doom-modeline
+   '(async auto-dark cape circadian corfu diff-hl diminish doom-modeline
            doom-themes eat embark-consult evil-collection
            evil-commentary evil-surround exec-path-from-shell general
            helpful hl-todo indent-guide magit marginalia mason

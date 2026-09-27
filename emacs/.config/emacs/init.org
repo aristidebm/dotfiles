@@ -23,7 +23,7 @@
   - [[#undo][Undo]]
 - [[#appearance][Appearance]]
   - [[#set-theme][Set Theme]]
-  - [[#auto-dark][Auto-Dark]]
+  - [[#circadian][Circadian]]
   - [[#transparency][Transparency]]
   - [[#doom-modeline][Doom Modeline]]
   - [[#nerd-icons][Nerd Icons]]
@@ -426,6 +426,8 @@ Only works with package.el.
         '((display-buffer-reuse-window display-buffer-same-window
             display-buffer-in-previous-window
             display-buffer-use-some-window)))
+      (org-clock-persist 'history)
+      (org-clock-persistence-insinuate)
       :hook
       (prog-mode . hs-minor-mode) ; Enable folding hide/show globally
       ;; (prog-mode . display-fill-column-indicator-mode) ; Display line length indicator
@@ -725,21 +727,22 @@ Use consult-theme to easily try out themes (*Epilepsy* Warning).
       (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
       (doom-themes-enable-italic t) ; if nil, italics is universally disabled
       :config
-      (load-theme 'modus-operandi t) ; We need to add t to trust this package
+      ;; (load-theme 'modus-operandi t) ; We need to add t to trust this package
       ;; Corrects (and improves) org-mode's native fontification.
       (doom-themes-org-config))
 #+end_src
 
-** Auto-Dark
+** Circadian
+
+For more information on how to setup circadian in different ways, you can check [[https://github.com/guidoschmidt/circadian.el#usage--configuration][Circadian Usage & Configuration]]
 
 #+begin_src emacs-lisp
-    (use-package auto-dark
-    :ensure t
-    :custom
-    (auto-dark-themes '((modus-vivendi)
-                        (modus-operandi)))
+    (use-package circadian
+    :ensure nil
     :config
-    (auto-dark-mode 1))
+    (setq circadian-themes '(("8:00" . 'modus-operandi)
+                           ("19:30" . 'modus-vivendi)))
+  (circadian-setup))
 #+end_src
 
 ** Transparency
@@ -797,7 +800,7 @@ More [[https://docs.projectile.mx/projectile/projectile_vs_project.html][reasons
 
 You can also create a [[https://github.com/theprimeagen/tmux-sessionizer][tmux-sessionizer]] like [[https://github.com/MiniApollo/config/blob/main/emacs/init.org#project-sessionizer][setup]] to easily search your work directories.
 It's useful if you don't use standard project structures (or there is none).
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp tangle: no
     (use-package projectile
       :hook (after-init . projectile-mode)
       :config
@@ -1074,7 +1077,7 @@ For templates use C-c C-, Much easier than org-tempo
       (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
       (org-directory "~/Documents/Notes/personal/")
       (org-default-notes-file (expand-file-name "notes.org" org-directory))
-      (org-agenda-files '("notes.org" "learning/backlog.org"))
+      (org-agenda-files '("notes.org" "habits.org" "learning/backlog.org"))
       ;; For more information on templates read this
       ;; https://orgmode.org/manual/Template-elements.html
       (org-capture-templates
@@ -1193,8 +1196,22 @@ Org-tempo allows for ‘<s’ followed by TAB to expand to a begin_src tag.  Oth
 
 #+begin_src emacs-lisp
     (use-package org-tempo
+      :ensure nil
       :after org)
 #+end_src
+
+
+****  Org Habit
+Org-habit is not a separate package that need to be installed from (m)epla but a builtin module that just need to be enabled.
+For more information check [[https://orgmode.org/manual/Tracking-your-habits.html][Tracking Your Habits]]
+
+#+begin_src emacs-lisp
+    (use-package org-habit
+      :ensure nil
+      :after org
+    )
+#+end_src
+
 ** Terminal
 *** Eat
 Eat(Emulate A Terminal) is a terminal emulator within Emacs.
