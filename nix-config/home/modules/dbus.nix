@@ -4,7 +4,7 @@
 
 {
   # Runtime for the stowed vifm-service.py (shebang `#!/usr/bin/env python`, imports dbus + gi).
-  home.packages = [ pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ]) ];
+  home.packages = [ (pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ])).python ];
 
   systemd.user.services.vifm-filemanager = {
     Unit = {
