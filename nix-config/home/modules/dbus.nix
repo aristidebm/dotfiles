@@ -2,9 +2,16 @@
 # ~/.local/bin/vifm-service.py; the python env provides its runtime.
 { pkgs, lib, config, ... }:
 
+let
+  # Note: on a `withPackages` result `.python` is the *unwrapped* base
+  # interpreter (nixpkgs python/wrapper.nix re-exports it via passthru), so it
+  # must not be used here. Reference the env itself.
+  pythonEnv = pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ]);
+  vifmService = "${config.home.homeDirectory}/.local/bin/vifm-service.py";
+in
 {
-  # Runtime for the stowed vifm-service.py (shebang `#!/usr/bin/env python`, imports dbus + gi).
-  home.packages = [ (pkgs.python3.withPackages (ps: [ ps.dbus-python ps.pygobject3 ])).python ];
+  # Runtime for the stowed vifm-service.py (imports dbus + gi).
+  home.packages = [ pythonEnv ];
 
   systemd.user.services.vifm-filemanager = {
     Unit = {
@@ -13,7 +20,9 @@
     Service = {
       Type = "dbus";
       BusName = "org.freedesktop.FileManager1";
-      ExecStart = "${config.home.homeDirectory}/.local/bin/vifm-service.py";
+      # Call the interpreter explicitly instead of relying on the script's
+      # `#!/usr/bin/env python` shebang resolving to the env on PATH.
+      ExecStart = "${pythonEnv}/bin/python ${vifmService}";
     };
   };
 

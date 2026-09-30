@@ -3,6 +3,7 @@
 # set -xeuo pipefail
 
 BLOGS=(
+    "[AI]huyenchip.com https://huyenchip.com/blog/"
     "fasterthanli.me https://fasterthanli.me/articles"
     "jvns.ca https://jvns.ca/"
     "lucumr.pocoo.org https://lucumr.pocoo.org/"
@@ -93,4 +94,4 @@ printf "%s\n" "${BLOGS[@]}" | fzf \
        --height 50% --tmux 90%,70% \
       --layout reverse \
       --no-separator \
-      --bind="enter:execute-silent(xdg-open {2} 2> /dev/null)"
+      --bind="enter:execute-silent(firefox {2} 2> /dev/null)"

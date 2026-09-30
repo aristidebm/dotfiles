@@ -81,6 +81,7 @@ in
       zip
       zoxide
       zrok
+      poppler-utils
 
       # terminals / editors
       alacritty

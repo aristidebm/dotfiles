@@ -12,6 +12,8 @@
         "x86_64-darwin"
       ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
+      # eachPackage = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+      # eachPackage pkgs: { default = pkgs.mkShell {...}}
     in
     {
       devShells = forAllSystems (system:
