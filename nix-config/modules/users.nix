@@ -11,7 +11,7 @@
          # Don't forget to set a password with ‘passwd’.
          isNormalUser = true;
          description = "Main User Account";
-         extraGroups = [ "wheel" ];
+         extraGroups = ["wheel" "wireshark"];
          linger = true;
          shell = pkgs.zsh;
        };

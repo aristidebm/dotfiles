@@ -63,3 +63,11 @@ zed/.local/bin/*
 scripts/.local/bin/tmux_flower_api.sh
 jj/.config/jj/repos/
 TASK*
+vifm/*
+!vifm/.config/
+vifm/.config/vifm/*
+!vifm/.config/vifm/vifmrc
+!vifm/.config/vifm/vifm-help.txt
+!vifm/.config/vifm/plugins/
+!vifm/.config/vifm/scripts/
+!vifm/.config/vifm/colors/

@@ -16,6 +16,8 @@ if executable('nvim')
     set vicmd=nvim
 elseif executable('vim')
     set vicmd=vim
+elseif executable('vis')
+    set vicmd=vis
 elseif executable('elvis')
     set vicmd=elvis\ -G\ termcap
 elseif executable('vile')
@@ -98,7 +100,7 @@ set nohlsearch
 set incsearch
 
 " Try to leave some space from cursor to upper/lower border in lists
-set scrolloff=8
+" set scrolloff=8
 
 " Don't do too many requests to slow file systems
 if !has('win')
@@ -169,7 +171,7 @@ command! taz tar -cvzf %a.tar.gz %f %m
 " [useful resource](https://wiki.vifm.info/index.php/Main_Page)
 "
 command! FZFfind : set noquickview
-                \| let $FZF_PICK = term('sh ~/.local/bin/fuzzy-picker.sh')
+                \| let $FZF_PICK = term('sh ~/.local/bin/fuzzy-picker.sh %d')
                 \| if $FZF_PICK != ''
                 \|     execute system('[ -f "$FZF_PICK" ] && echo goto || echo cd') fnameescape($FZF_PICK)
                 " Variation that do not enter the directory
@@ -211,6 +213,7 @@ command! FZFfind : set noquickview
 " You can also add %CLEAR if you want to clear screen before running FUSE
 " program.  There is also %FOREGROUND, which is useful for entering passwords.
 
+
 " Pdf
 filextype {*.pdf},<application/pdf> zathura %c %i, apvlv %c, xpdf %c
 fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %c -
@@ -238,12 +241,12 @@ filetype {*.mid,*.kar}
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
          \*.aac,*.mpga},
         \<audio/*>
-       \ {Play using MPlayer}
-       \ mplayer %f,
        \ {Play using mpv}
        \ mpv --no-video %f %s,
        \ {Play using ffplay}
        \ ffplay -nodisp -hide_banner -autoexit %c,
+       \ {Play using MPlayer}
+       \ mplayer %f,
 fileviewer {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
            \*.aac,*.mpga},
           \<audio/*>
@@ -270,10 +273,10 @@ fileviewer {*.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
 
 " Web
 filextype {*.xhtml,*.html,*.htm},<text/html>
-        \ {Open with qutebrowser}
-        \ qutebrowser %f %i,
         \ {Open with firefox}
         \ firefox %f &,
+        \ {Open with qutebrowser}
+        \ qutebrowser %f %i,
 filetype {*.xhtml,*.html,*.htm},<text/html> links, lynx
 
 " Object
@@ -303,9 +306,10 @@ filextype {.kra}
 filextype {.blend}
         \ {Open in Blender}
         \ blender %c,
-filextype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
+filextype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},
+        \<image/*>
         \ {View in nsxiv}
-        \ nsxiv %f,
+        \ nsxiv -t -o %f,
         \ {View in gpicview}
         \ gpicview %c,
         \ {View in shotwell}
@@ -349,10 +353,20 @@ filetype {*.asc},<application/pgp-signature>
        \ !!gpg --verify %c,
 
 " Torrent
-filetype {*.torrent},<application/x-bittorrent> ktorrent %f &
-fileviewer {*.torrent},<application/x-bittorrent>
+filetype {*.torrent},
+      \<application/x-bittorrent>
+      \ {Download with aria2c}
+      \ aria2c -c %f &,
+      \ {Download with Ktorrent}
+      \ ktorrent %f &,
+fileviewer {*.torrent,*.metalink},
+         \<application/x-bittorrent>
+         \ {View with aria2c}
+         \ aria2c --show-files=true %c,
+         \ {View with dumptorrent}
          \ dumptorrent -v %c,
-         \ transmission-show %c
+         \ {View with transmission-show}
+         \ transmission-show %c,
 
 " FuseZipMount
 filetype {*.zip,*.jar,*.war,*.ear,*.oxt,*.apkg},
@@ -404,14 +418,19 @@ filetype {*.7z},<application/x-7z-compressed>
        \ FUSE_MOUNT|fuse-7z %SOURCE_FILE %DESTINATION_DIR,
 fileviewer {*.7z},<application/x-7z-compressed> 7z l %c
 
-" Office files
-filextype {*.odt,*.doc,*.docx,*.xls,*.xlsx,*.odp,*.pptx,*.ppt},
-         \<application/vnd.openxmlformats-officedocument.*,
-         \application/msword,
-         \application/vnd.ms-excel>
-         \ {Play using TabWriter}
+" Tabular files
+filextype {*.xls,*.xlsx,*.csv},
+         \<text/csv,application/vnd.ms-excel>
+         \ {Open using TabWriter}
          \ tw %f,
-         \ {Play using OnlyOffice}
+         \ {Open using OnlyOffice}
+         \ onlyoffice-desktopeditors %f &
+
+" Office files
+filextype {*.odt,*.doc,*.docx,*.odp,*.pptx,*.ppt},
+         \<application/vnd.openxmlformats-officedocument.*,
+         \application/msword>
+         \ {Open using OnlyOffice}
          \ onlyoffice-desktopeditors %f &
         "\ echo 'Note: using onlyoffice-desktopeditors `'.%f.'` as an editor'
         " \ libreoffice %f &
@@ -429,6 +448,8 @@ filextype *.pro qtcreator %f &
 
 " Directories
 filextype */
+        \ {View in vifm}
+        \ vifm %f &,
         \ {View in thunar}
         \ Thunar %f &,
 
@@ -539,16 +560,8 @@ nnoremap <Space>ff :FZFfind<CR>
  endif
 
 " Mappings for faster renaming
-" nnoremap I cw<c-a>
-" nnoremap cc cw<c-u>
-" nnoremap A cw
  nnoremap ciw cW
  nnoremap ciW cw
-
-" As above, but without the file extension
-" nnoremap I cW<c-a>
-" nnoremap cc cW<c-u>
-" nnoremap A cW
 
 " Open console in current directory
 " if $DISPLAY && executable('xterm')
@@ -558,26 +571,10 @@ nnoremap <Space>ff :FZFfind<CR>
 " endif
 "
 " Open editor to edit vifmrc and apply settings after returning to vifm
-nnoremap ,c :write | edit $MYVIFMRC | restart full<cr>
+nnoremap <Space>fc :write | edit $MYVIFMRC | restart full<cr>
 
-" " Open gvim to edit vifmrc
-" if $DISPLAY && executable('gvim')
-"     nnoremap ,C :!gvim --remote-tab-silent $MYVIFMRC &<cr>
-" endif
-"
-" Toggle wrap setting on ,w key
-" nnoremap ,w :set wrap!<cr>
-
-" Example of standard two-panel file managers mappings
-" nnoremap <f3> :!less %f<cr>
-" nnoremap <f4> :edit<cr>
-" nnoremap <f5> :copy<cr>
-" nnoremap <f6> :move<cr>
-" nnoremap <f7> :mkdir<space>
-" nnoremap <f8> :delete<cr>
-
-nnoremap A :mkdir<space>
-nnoremap a :touch<space>
+nnoremap % :touch<Space>
+nnoremap A :mkdir<Space>
 
 " Midnight commander alike mappings
 " Open current directory in the other pane
@@ -598,7 +595,10 @@ nnoremap a :touch<space>
 " let $PATH = $HOME.'/bin/fuse:'.$PATH
 
 " Block particular shortcut
-" nnoremap <left> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+nnoremap <up> <nop>
+nnoremap <down> <nop>
 
 " Export IPC name of current instance as environment variable and use it to
 " communicate with the instance later.
@@ -610,7 +610,7 @@ nnoremap a :touch<space>
 " let $VIFM_SERVER_NAME = v:servername
 
 " Activate screen/tmux support
-" screen!
+ screen!
 
 " ----------------------------------------------------------------------
 "  Custom config
