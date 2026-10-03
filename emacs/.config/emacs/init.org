@@ -649,8 +649,12 @@ Note: The Leader key is what you will press when you want to access your keybind
             "o" '(:ignore t :wk "Org")
             "o a" '(org-agenda :wk "[O]rg [A]genda")
             "o c" '(org-capture :wk "[O]rg [C]apture")
+            "o d" '(org-deadline :wk "[O]rg [D]eadline")
+            "o e" '(org-set-effort :wk "[O]rg set [E]ffort")
+            "o p" '(org-priority :wk "[O]rg [P]riority")
+            "o s" '(org-schedule :wk "[O]rg [S]chedule")
+            "o t" '(org-timestamp :wk "[O]rg [T]imestamp")
             "o x" '(org-export-dispatch :wk "[O]rg e[X]port")
-            "o t" '(org-timestamp :w "[O]rg [T]imestamp")
           )
        )
 
