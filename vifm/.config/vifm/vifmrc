@@ -117,6 +117,10 @@ colorscheme afterglow
 " Show dotfiles by default (you can za to sh
 set dotfiles
 
+" Line numbers
+set number
+set relativenumber
+
 " ------------------------------------------------------------------------------
 " Bookmarks
 " ------------------------------------------------------------------------------
@@ -158,7 +162,7 @@ command! zip zip -r %c.zip %f %m
 command! unzip unzip %c -d %c:r %m
 command! run !! ./%f
 command! make !!make %a
-command! mkcd :mkdir %a | cd %a
+command! mkcd :mkdir! %a | cd %a
 command! vgrep vim "+grep %a"
 command! reload :write | restart full
 command! tar tar -cvf %a.tar %f %m
@@ -574,7 +578,7 @@ nnoremap <Space>ff :FZFfind<CR>
 nnoremap <Space>fc :write | edit $MYVIFMRC | restart full<cr>
 
 nnoremap % :touch<Space>
-nnoremap A :mkdir<Space>
+nnoremap A :mkdir!<Space>
 
 " Midnight commander alike mappings
 " Open current directory in the other pane
