@@ -37,4 +37,7 @@
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
   };
+
+  # needed by vifm-:media command
+  services.udisks2.enable = true;
 }

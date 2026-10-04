@@ -59,7 +59,6 @@ in
       jq
       jujutsu
       just
-      lsd
       ncdu
       nix-direnv
       pandoc
@@ -82,6 +81,7 @@ in
       zoxide
       zrok
       poppler-utils
+      zeal
 
       # terminals / editors
       alacritty
