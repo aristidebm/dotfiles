@@ -12,33 +12,14 @@ This is a simple daemon implementing freedesktop.org's file manager interface
 https://www.freedesktop.org/wiki/Specifications/file-manager-interface/
 """
 
-import dbus
+import shutil
 import subprocess
+import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 from urllib.parse import unquote
-import shutil
 
-def open_file_manager(uri, select=False):
-    vifm = shutil.which("vifm")
-    terminal = shutil.which("alacritty")
-
-    # args = ['wezterm', 'start', '--', vifm_path]
-    args = [terminal, '-e', vifm]
-    if select:
-        args.append('--select')
-
-    path = unquote(str(uri)).removeprefix('file://')
-    args.append(path)
-
-    subprocess.Popen(
-        args,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=None,
-        start_new_session=True,
-    )
 
 class FmObject(dbus.service.Object):
 
@@ -58,9 +39,27 @@ class FmObject(dbus.service.Object):
     def Exit(self):
         mainloop.quit()
 
+def open_file_manager(uri, select=False):
+    vifm = shutil.which("vifm")
+    terminal = shutil.which("alacritty")
+    args = [terminal, '-e', vifm]
+
+    if select:
+        args.append('--select')
+
+    path = unquote(str(uri)).removeprefix('file://')
+    args.append(path)
+
+    subprocess.Popen(
+        args,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=None,
+        start_new_session=True,
+    )
+
 def main() -> None:
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
     session_bus = dbus.SessionBus()
     # _ = has to be done so that the Cpython refcounter will not delete
     # this object
