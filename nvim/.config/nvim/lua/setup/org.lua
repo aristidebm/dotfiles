@@ -56,11 +56,11 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 vim.keymap.set("n", "<leader>oa", function()
-  require("orgmode").action("org_agenda")
+  vim.cmd("Org agenda")
 end, { desc = "[O]rg [A]genda" })
 
 vim.keymap.set("n", "<leader>oc", function()
-  require("orgmode").action("org_capture")
+  vim.cmd("Org capture")
 end, { desc = "[O]rg [C]apture" })
 
 vim.keymap.set("n", "<leader>ot", function()
