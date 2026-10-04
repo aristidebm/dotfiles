@@ -1081,7 +1081,7 @@ For templates use C-c C-, Much easier than org-tempo
       (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
       (org-directory "~/Documents/Notes/personal/")
       (org-default-notes-file (expand-file-name "notes.org" org-directory))
-      (org-agenda-files '("notes.org" "habits.org" "Learning/backlog.org"))
+      (org-agenda-files '("notes.org" "habits.org" "Todo.org" "Learning/backlog.org"))
       ;; For more information on templates read this
       ;; https://orgmode.org/manual/Template-elements.html
       (org-capture-templates

@@ -285,8 +285,12 @@ Credit to Emacs From Scratch for this one!"
      "o" '(:ignore t :wk "Org")
      "o a" '(org-agenda :wk "[O]rg [A]genda")
      "o c" '(org-capture :wk "[O]rg [C]apture")
+     "o d" '(org-deadline :wk "[O]rg [D]eadline")
+     "o e" '(org-set-effort :wk "[O]rg set [E]ffort")
+     "o p" '(org-priority :wk "[O]rg [P]riority")
+     "o s" '(org-schedule :wk "[O]rg [S]chedule")
+     "o t" '(org-timestamp :wk "[O]rg [T]imestamp")
      "o x" '(org-export-dispatch :wk "[O]rg e[X]port")
-     "o t" '(org-timestamp :w "[O]rg [T]imestamp")
    )
 )
 
@@ -474,7 +478,7 @@ Credit to Emacs From Scratch for this one!"
   (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
   (org-directory "~/Documents/Notes/personal/")
   (org-default-notes-file (expand-file-name "notes.org" org-directory))
-  (org-agenda-files '("notes.org" "habits.org" "learning/backlog.org"))
+  (org-agenda-files '("notes.org" "habits.org" "Todo.org" "Learning/backlog.org"))
   ;; For more information on templates read this
   ;; https://orgmode.org/manual/Template-elements.html
   (org-capture-templates
