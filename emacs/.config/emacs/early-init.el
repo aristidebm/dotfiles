@@ -42,6 +42,7 @@
 
 ;;; FONTS
 ;; Startup about 0.01 faster
+(add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-16"))
 (set-face-attribute 'default nil
                     :font "Iosevka Nerd Font" ; Set your favorite type of font or download JetBrains Mono
                     :height 160
