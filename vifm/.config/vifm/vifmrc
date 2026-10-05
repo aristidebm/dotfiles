@@ -614,7 +614,7 @@ nnoremap <down> <nop>
 " let $VIFM_SERVER_NAME = v:servername
 
 " Activate screen/tmux support
- screen!
+"screen!
 
 " ----------------------------------------------------------------------
 "  Custom config
