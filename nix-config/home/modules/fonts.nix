@@ -19,7 +19,7 @@
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = [ "Iosevka Nerd Font" "JetBrainsMono Nerd Font" "Noto Sans CJK SC" ];
+      monospace = [ "Iosevka Nerd Font" "JetBrainsMono Nerd Font" "DejaVu Sans Mono" "Noto Sans CJK SC" ];
       sansSerif = [ "DejaVu Sans" "Noto Sans CJK SC" ];
       serif     = [ "DejaVu Serif" "Noto Serif CJK SC" ];
       emoji     = [ "Noto Color Emoji" ];
