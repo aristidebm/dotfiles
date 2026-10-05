@@ -18,6 +18,7 @@ require("arglist")
 require("path")
 require("keymaps")
 require("commands")
+require("vifm")
 require("setup.lazy")
 
 -- Lsp configuration

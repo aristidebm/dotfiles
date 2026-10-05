@@ -30,12 +30,12 @@ return {
       require("setup.silicon")
     end,
   },
-  {
-    "stevearc/oil.nvim",
-    config = function()
-      require("setup.oil")
-    end,
-  },
+  -- {
+  --   "stevearc/oil.nvim",
+  --   config = function()
+  --     require("setup.oil")
+  --   end,
+  -- },
   {
     "FabijanZulj/blame.nvim",
     lazy = false,
@@ -56,33 +56,6 @@ return {
       require("setup.lsp")
     end,
   },
-  -- { -- Autocompletion
-  --   "hrsh7th/nvim-cmp",
-  --   event = "InsertEnter",
-  --   dependencies = {
-  --     {
-  --       "L3MON4D3/LuaSnip",
-  --       -- follow latest release.
-  --       version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-  --       -- optional: provides snippets for the snippet source
-  --       -- dependencies = 'rafamadriz/friendly-snippets',
-  --       config = function()
-  --         require("setup.luasnip")
-  --       end,
-  --     },
-  --     -- Adds other completion capabilities.
-  --     --  nvim-cmp does not ship with all sources by default. They are split
-  --     --  into multiple repos for maintenance purposes.
-  --     "hrsh7th/cmp-nvim-lsp",
-  --     "hrsh7th/cmp-path",
-  --     "hrsh7th/cmp-nvim-lsp-signature-help",
-  --     "hrsh7th/cmp-buffer",
-  --     "saadparwaiz1/cmp_luasnip",
-  --   },
-  --   config = function()
-  --     require("setup.cmp")
-  --   end,
-  -- },
   {
     'saghen/blink.cmp',
     -- use a release tag to download pre-built binaries

@@ -41,6 +41,3 @@ vim.keymap.set("n", "<C-W><", "15<C-W><")
 vim.keymap.set("n", "<C-W>>", "15<C-W>>")
 vim.keymap.set("n", "<C-W>+", "3<C-W>+")
 vim.keymap.set("n", "<C-W>-", "3<C-W>-")
-
--- toggle undotree
-vim.keymap.set("n", "<leader>u", require("undotree").open)
