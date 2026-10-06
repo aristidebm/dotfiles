@@ -3,12 +3,12 @@ import Quickshell
 import "AppLauncher"
 import "ActivateLinux"
 import "NotificationServer"
-import "MusicPlayer"
+import "MprisPlayer"
 
 ShellRoot {
     id: self
     AppLauncher {}
     // ActivateLinux {}
     NotificationServer {}
-    MusicPlayer {}
+    MprisPlayer {}
 }
