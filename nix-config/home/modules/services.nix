@@ -33,21 +33,11 @@
       };
     };
 
-    mpd-mpris = {
-      Unit = {
-        Description = "mpd-mpris: an implementation of the MPRIS protocol for MPD";
-        After = [ "mpd.service" ];
-      };
-      Service = {
-        Type = "dbus";
-        BusName = "org.mpris.MediaPlayer2.mpd";
-        ExecStart = "${pkgs.mpd-mpris}/bin/mpd-mpris --no-instance";
-        Restart = "on-failure";
-      };
-      Install = {
-        WantedBy = [ "default.target" ];
-      };
-    };
+    # mpd-mpris is intentionally absent here: the package itself ships both a
+    # systemd unit (lib/systemd/user) and an XDG autostart entry which
+    # systemd-xdg-autostart-generator starts. Adding another unit here used to
+    # create a second instance (org.mpris.MediaPlayer2.mpd.instance<pid>) and
+    # made MPD appear twice in MPRIS clients.
 
     emacs = {
       Unit = {
