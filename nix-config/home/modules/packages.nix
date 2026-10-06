@@ -6,6 +6,7 @@ let
   typer = pkgs.callPackage ./custom/typer.nix { };
   pomodoro = pkgs.callPackage ./custom/pomodoro.nix { };
   apic = pkgs.callPackage ./custom/apic.nix { };
+  deja = pkgs.callPackage ./custom/deja-vu.nix { };
 
   mpv = pkgs.mpv.override {
     scripts = builtins.attrValues {
@@ -133,6 +134,7 @@ in
       habits
       pomodoro
       typer
+      deja
 
       # overridden builds
       mpv

@@ -65,6 +65,8 @@
               mangowm.hmModules.mango
               voxtype.homeManagerModules.default
             ];
+            backupFileExtension = "backup";
+            # backupCommand = "";
             users.aristide = import ./home;
           };
         }

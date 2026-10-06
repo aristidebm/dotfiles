@@ -44,3 +44,11 @@ if command -v dcg &>/dev/null && command -v jq &>/dev/null; then
     printf '\033[1;33m[dcg] Hook missing from ~/.claude/settings.json — run: dcg install\033[0m\n'
   fi
 fi
+
+# Home manager, sessionVariables should normally be automatically sourced by home-manager
+# it is in charge of my shell configuration, but I don't want that since it is not portable
+# on system without home-manager and the shell installed my home-manager cannot be set as login shell
+# without tricks
+if [ -f "/etc/profiles/per-user/aristide/etc/profile.d/hm-session-vars.sh" ]; then
+  source "/etc/profiles/per-user/aristide/etc/profile.d/hm-session-vars.sh"
+fi
