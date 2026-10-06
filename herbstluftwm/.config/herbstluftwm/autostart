@@ -30,7 +30,7 @@ hc keybind $Mod-Shift-r reload
 hc keybind $Mod-Shift-Return spawn "${TERMINAL:-st}" # use your $TERMINAL with xterm as fallback
 hc keybind $Mod-d spawn quickshell ipc call AppLauncher toggle
 hc keybind $Mod-c spawn quickshell ipc call NotificationServer toggleCenter
-hc keybind $Mod-m spawn quickshell ipc call MusicPlayer toggle
+hc keybind $Mod-m spawn quickshell ipc call mpris toggle
 hc keybind $Mod-o spawn ~/.local/bin/scratchpad
 
 # basic movement in tiling and floating mode
@@ -192,7 +192,7 @@ hc rule class=qutebrowser tag=2
 hc rule title~"scratchpad" floating=on floatplacement=center floating_geometry=1600x750
 hc rule title~"AppLauncher" floating=on floatplacement=center floating_geometry=1600x750
 hc rule title~"NotificationCenter" floating=on floatplacement=center floating_geometry=1600x750
-hc rule title~"MusicPlayer" floating=on floatplacement=center floating_geometry=700x300
+hc rule title~"MprisPlayer" floating=on floatplacement=center floating_geometry=460x260
 hc rule class=zen tag=2
 hc rule focus=on # normally focus new clients
 hc rule floatplacement=center
