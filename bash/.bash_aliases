@@ -7,7 +7,3 @@ alias pass='gopass'
 # cava custom color does not work
 # in tmux (https://github.com/karlstav/cava/issues/339)
 alias cava="TERM=st-256color cava"
-
-function mkcd() {
-    mkdir -p $1 && cd $1
-}

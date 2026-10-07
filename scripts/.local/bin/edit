@@ -1,0 +1,88 @@
+#!/usr/bin/env zsh
+
+# edit [-e EDITOR_COMMAND] <path>
+#
+# Editor, first match wins:
+#   -e "cmd args"   one-off, may contain arguments (quotes are honoured)
+#   $EDIT_EDITOR    persistent override for this function only
+#   $VISUAL, $EDITOR, then vi
+#
+# Examples:
+#   edit ~/notes/todo.org
+#   edit -e "emacsclient -t -a ''" ~/notes/todo.org
+#   edit -e nvim /tmp/project/
+edit() {
+  local editor=${EDIT_EDITOR:-${VISUAL:-${EDITOR:-vi}}}
+
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -e|--editor)
+        if [ $# -lt 2 ]; then
+          echo "edit: $1 requires an argument" >&2
+          return 2
+        fi
+        editor=$2
+        shift 2
+        ;;
+      --) shift; break ;;
+      -*) echo "edit: unknown option: $1" >&2; return 2 ;;
+      *) break ;;
+    esac
+  done
+
+  if [ $# -ne 1 ]; then
+    echo "usage: edit [-e EDITOR_COMMAND] <path>" >&2
+    return 2
+  fi
+
+  local target=$1
+  local -a cmd
+  local reply need prompt dir
+
+  # Split the editor string into words, honouring quotes.
+  cmd=( "${(@Q)${(z)editor}}" )
+  if (( ${#cmd} == 0 )) || ! command -v "${cmd[1]}" >/dev/null 2>&1; then
+    echo "edit: editor not found: $editor" >&2
+    return 127
+  fi
+
+  if [ ! -e "$target" ]; then
+    need=
+    case $target in
+      */)
+        # Directory intent: `edit /path/to/`
+        if [ -e "${target%/}" ]; then
+          echo "edit: ${target%/} exists but is not a directory" >&2
+          return 1
+        fi
+        need=$target
+        prompt="$target does not exist. Create the directory? [y/N] "
+        ;;
+      *)
+        # File intent: `edit /path/to/file`. The editor creates the file
+        # itself, so only a missing parent directory needs a prompt.
+        dir=$(dirname -- "$target")
+        if [ ! -d "$dir" ]; then
+          need=$dir
+          prompt="$target does not exist. Create the directory $dir? [y/N] "
+        fi
+        ;;
+    esac
+
+    if [ -n "$need" ]; then
+      printf '%s' "$prompt"
+      read -r reply
+      case $reply in
+        [yY]|[yY][eE][sS]) ;;
+        *) echo "Aborted."; return 1 ;;
+      esac
+      mkdir -p -- "$need" || return 1
+    fi
+  fi
+
+  "${cmd[@]}" "$target"
+}
+
+edit "$@"
+
+# vim:ft=sh
