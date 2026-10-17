@@ -6,7 +6,10 @@ family = "Iosevka Nerd Font"
 style = "Regular"
 
 [window.padding]
-x = 5
+x = 2
+
+[colors.cursor]
+cursor = "#FFFFFF"
 
 [window]
 dynamic_padding = true
