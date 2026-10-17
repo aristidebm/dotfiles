@@ -5,7 +5,8 @@ if [ -z $REMOTE ]; then
     exit 1
 fi
 
-ssh -t $REMOTE tmux new -A -s "aristide@$REMOTE"
+ssh -t $REMOTE tmux new -A -s "aristide@$REMOTE" \; set-window-option -g mode-keys vi \; set-option -g status-keys vi
+# ssh -t $REMOTE tmux new -A -s "username@$REMOTE"
 
 # # Add three more windows
 # tmux split-window -h
