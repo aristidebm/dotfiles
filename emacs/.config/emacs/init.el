@@ -54,6 +54,7 @@ Credit to Emacs From Scratch for this one!"
   (electric-indent-mode t)  ; Turn off the weird indenting that Emacs does by default.
   (confirm-kill-emacs nil) ; No need for a confirmation when killing emacs
   ;; (initial-buffer-choice ) ;
+  (ring-bell-function 'ignore) ; Do not ring bell when I reach the edges of the buffer
 
   (blink-cursor-mode nil)     ; Don't blink cursor
   (global-auto-revert-mode t) ; Automatically reload file and show changes if the file has changed
@@ -114,6 +115,8 @@ Credit to Emacs From Scratch for this one!"
   :config
   ;; Disable lockfiles entirely (Doom Emacs default style)
   (setq create-lockfiles nil)
+  ;; Disable line wrapping
+  (setq truncate-lines t)
  ;; Mimic Doom by organizing other backups into a central cache folder
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory ".local/cache/backups/")))
      auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory ".local/cache/autosave/") t)))
@@ -142,18 +145,17 @@ Credit to Emacs From Scratch for this one!"
   :custom
   (evil-want-keybinding nil)    ; Disable evil bindings in other modes (It's not consistent and not good)
   (evil-want-C-u-scroll t)      ; Set C-u to scroll up
-  (evil-want-C-i-jump nil)      ; Disables C-i jump
   (evil-undo-system 'undo-redo) ; C-r to redo
   (evil-want-fine-undo t)
   (evil-vsplit-window-right t)
   (evil-split-window-below t)
   (evil-want-clipboard nil)
+  (setq evil-want-C-i-jump t)
   ;; (evil-respect-visual-line-mode t) ; Move in wrap lines
   ;; Unmap keys in 'evil-maps. If not done, org-return-follows-link will not work
   :bind (:map evil-motion-state-map
               ("SPC" . nil)
-              ("RET" . nil)
-              ("TAB" . nil)))
+              ("RET" . nil)))
 
 (use-package evil-collection
   :after evil
@@ -212,7 +214,7 @@ Credit to Emacs From Scratch for this one!"
 (use-package general
   :after (evil)
   :config
-  (general-evil-setup)
+  (general-evil-setup t)
   (general-auto-unbind-keys)
 
   (general-define-key
@@ -220,6 +222,17 @@ Credit to Emacs From Scratch for this one!"
     "C-k" #'ignore
     "C-j" #'ignore
     "RET" #'ignore
+    "-"   #'dired-jump
+  )
+
+  (general-define-key
+    :states 'normal
+    :keymaps 'eglot-mode-map
+    "gd"  #'xref-find-definitions
+    "grr" #'xref-find-references
+    "gri" #'eglot-find-implementation
+    "grn" #'eglot-rename
+    "gra" #'eglot-code-actions
   )
 
   (general-define-key
@@ -256,41 +269,41 @@ Credit to Emacs From Scratch for this one!"
   (start/leader-keys
     "f" '(:ignore t :wk "Find")
     ;; "f f" '(find-file :wk "[F]ind [F]iles")
-    "f f" '(consult-fd :wk "[F]ind [F]iles")
-    "f r" '(consult-recent-file :wk "[F]ind [R]ecents")
-    "f b" '(consult-buffer :wk "[F]ind [B]uffers")
-    "f c" '(start/open-init-file :wk "[F]ind [C]onfig")
-    "f n" '(start/open-notes :wk "[F]ind [N]otes")
-    "f s" '(scratch-buffer :wk "[F]ind [S]cratch")
+    "ff" '(consult-fd :wk "[F]ind [F]iles")
+    "fr" '(consult-recent-file :wk "[F]ind [R]ecents")
+    "fb" '(consult-buffer :wk "[F]ind [B]uffers")
+    "fc" '(start/open-init-file :wk "[F]ind [C]onfig")
+    "fn" '(start/open-notes :wk "[F]ind [N]otes")
+    "fs" '(scratch-buffer :wk "[F]ind [S]cratch")
    )
 
   (start/leader-keys
     "s"   '(:ignore t :wk "Search")
-    "s f" '(consult-ripgrep :wk "[S]earch [F]iles")
-    "s d" '(flymake-show-buffer-diagnostics :wk "[S]earch [D]iagnostic")
-    "s i" '(consult-imenu :wk "[S]earch [I]menu")
-    "s c" '(describe-command :wk "[S]earch [C]ommands")
-    "s m" '(consult-man :wk "[S]earch [M]anual")
-    "s o" '(consult-outline :wk "[S]earch [O]utline")
-    "s w" '(start/consult-ripgrep-word-at-point :wk "[S]earch [w]ord")
-    "s W" '(start/consult-ripgrep-WORD-at-point :wk "[S]earch [W]ord"))
+    "sf" '(consult-ripgrep :wk "[S]earch [F]iles")
+    "sd" '(flymake-show-buffer-diagnostics :wk "[S]earch [D]iagnostic")
+    "si" '(consult-imenu :wk "[S]earch [I]menu")
+    "sc" '(describe-command :wk "[S]earch [C]ommands")
+    "sm" '(consult-man :wk "[S]earch [M]anual")
+    "so" '(consult-outline :wk "[S]earch [O]utline")
+    "sw" '(start/consult-ripgrep-word-at-point :wk "[S]earch [w]ord")
+    "sW" '(start/consult-ripgrep-WORD-at-point :wk "[S]earch [W]ord"))
 
   (start/leader-keys
     "g" '(:ignore t :wk "Git")
-    "g s" '(magit-status :wk "[G]it [S]tatus")
-    "g b" '(magit-blame :wk "[G]it [B]lame")
+    "gs" '(magit-status :wk "[G]it [S]tatus")
+    "gb" '(magit-blame :wk "[G]it [B]lame")
   )
 
   (start/leader-keys
      "o" '(:ignore t :wk "Org")
-     "o a" '(org-agenda :wk "[O]rg [A]genda")
-     "o c" '(org-capture :wk "[O]rg [C]apture")
-     "o d" '(org-deadline :wk "[O]rg [D]eadline")
-     "o e" '(org-set-effort :wk "[O]rg set [E]ffort")
-     "o p" '(org-priority :wk "[O]rg [P]riority")
-     "o s" '(org-schedule :wk "[O]rg [S]chedule")
-     "o t" '(org-timestamp :wk "[O]rg [T]imestamp")
-     "o x" '(org-export-dispatch :wk "[O]rg e[X]port")
+     "oa" '(org-agenda :wk "[O]rg [A]genda")
+     "oc" '(org-capture :wk "[O]rg [C]apture")
+     "od" '(org-deadline :wk "[O]rg [D]eadline")
+     "oe" '(org-set-effort :wk "[O]rg set [E]ffort")
+     "op" '(org-priority :wk "[O]rg [P]riority")
+     "os" '(org-schedule :wk "[O]rg [S]chedule")
+     "ot" '(org-timestamp :wk "[O]rg [T]imestamp")
+     "ox" '(org-export-dispatch :wk "[O]rg e[X]port")
    )
 )
 
@@ -310,16 +323,9 @@ Credit to Emacs From Scratch for this one!"
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   :config
-  ;; (load-theme 'modus-operandi t) ; We need to add t to trust this package
+  (load-theme 'doom-one t) ; We need to add t to trust this package
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
-(use-package circadian
-  :ensure nil
-  :config
-  (setq circadian-themes '(("8:00" . 'modus-operandi)
-                         ("19:30" . 'modus-vivendi)))
-(circadian-setup))
 
 (add-to-list 'default-frame-alist '(alpha-background . 90)) ; For all new frames henceforth
 
@@ -477,12 +483,34 @@ Credit to Emacs From Scratch for this one!"
   (org-edit-src-content-indentation 4) ; Set src block automatic indent to 4 instead of 2.
   (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
   (org-directory "~/Documents/Notes/personal/")
-  (org-default-notes-file (expand-file-name "notes.org" org-directory))
-  (org-agenda-files '("notes.org" "habits.org" "Todo.org" "Learning/backlog.org"))
+  (org-default-notes-file (expand-file-name "refile.org" org-directory))
+  (org-agenda-files '("refile.org" "Learning/backlog.org"))
   ;; For more information on templates read this
   ;; https://orgmode.org/manual/Template-elements.html
   (org-capture-templates
-    `(("l" "Learning"
+    `(("c" "Interruption task" entry (file+headline org-default-notes-file "Interruptions")
+       "* %?
+       :PROPERTIES:
+       :CAPTURED: %U
+       :END:
+       "
+       :clock-in t
+       :clock-resume t
+       :prepend t)
+      ("h" "Habit" entry (file+headline org-default-notes-file "Habits")
+        "* TODO %^{Habit} :habit:
+        SCHEDULED: <%<%Y-%m-%d %a> %^{Repeat|.+1d|+1d|++1d|.+1w|+1w}>
+        :PROPERTIES:
+        :STYLE:    habit
+        :END:"
+        :prepend t
+        :immediate-finish t)
+      ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
+        "* %? :idea: \n%t"
+        :prepend t
+        :clock-in t
+        :clock-resume t)
+      ("l" "Learning"
         entry
         (file+headline "learning/backlog.org" "Learning Inbox")
         ,(concat
@@ -508,18 +536,13 @@ Credit to Emacs From Scratch for this one!"
             "%?")
         :prepend t
         :empty-lines 1)
-      ("t" "Todo" entry (file+headline org-default-notes-file "Todos")
-          "* TODO %?\n%u\n%a\n"
-        :prepend t
-        :clock-in t
-        :clock-resume t)
       ("m" "Meeting" entry (file+headline org-default-notes-file "Meetings")
-          "* MEETING with %? :MEETING:\n%t"
+        "* MEETING with %^{Subject} :meeting:
+        SCHEDULED: %^T"
         :prepend t
-        :clock-in t
-        :clock-resume t)
-      ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
-          "* %? :IDEA: \n%t"
+        :immediate-finish t)
+      ("t" "Task" entry (file+headline org-default-notes-file "Tasks")
+          "* TODO %?\n%u\n%a\n"
         :prepend t
         :clock-in t
         :clock-resume t)
@@ -619,7 +642,7 @@ Credit to Emacs From Scratch for this one!"
   :config
    (with-eval-after-load 'evil
         (evil-make-overriding-map corfu-map))
-  :bind
+   :bind
   (:map corfu-map
     ("C-y" . corfu-insert))
   ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
