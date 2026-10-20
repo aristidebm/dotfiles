@@ -57,6 +57,7 @@
        nil
        nodejs
        opencode
+       claude-code
        pyrefly
        rust-analyzer
        rustc
