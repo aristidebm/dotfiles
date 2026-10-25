@@ -1245,6 +1245,13 @@ For more information check [[https://orgmode.org/manual/Tracking-your-habits.htm
       :after org
     )
 #+end_src
+**** Org Mermaid
+#+begin_src emacs-lisp
+(use-package ob-mermaid
+  :ensure t
+  :config
+  (setq ob-mermaid-cli-path "mmdc"))
+#+end_src
 
 ** Terminal
 *** Eat

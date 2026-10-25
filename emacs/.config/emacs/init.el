@@ -323,7 +323,7 @@ Credit to Emacs From Scratch for this one!"
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
   (doom-themes-enable-italic t) ; if nil, italics is universally disabled
   :config
-  (load-theme 'doom-one t) ; We need to add t to trust this package
+  (load-theme 'doom-nord t) ; We need to add t to trust this package
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
@@ -582,6 +582,11 @@ Credit to Emacs From Scratch for this one!"
   :ensure nil
   :after org
 )
+
+(use-package ob-mermaid
+  :ensure t
+  :config
+  (setq ob-mermaid-cli-path "mmdc"))
 
 (use-package eat
   :defer t

@@ -43,6 +43,7 @@
      inherit(pkgs)
        # programming toolchains / LSP
        ast-grep
+       mermaid-cli
        cargo
        clippy
        emmylua-ls
