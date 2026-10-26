@@ -2,6 +2,12 @@
 autoload -Uz compinit
 compinit
 
+# Disable the openSUSE prompt theme system
+autoload -U promptinit && promptinit
+prompt off
+
+PROMPT='%n@%m %1~ %# '
+
 # set emacs keybinding
 bindkey -e
 

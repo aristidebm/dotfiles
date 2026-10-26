@@ -75,6 +75,7 @@ in
       tmux
       tokei
       tree
+      unrar
       unzip
       vifm
       wget
@@ -100,6 +101,7 @@ in
       telegram-desktop
       tor-browser
       ttyper
+      xdg-utils
 
       # databases
       pgcli

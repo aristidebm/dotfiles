@@ -7,5 +7,6 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     (import ../overlays/mango-portal-fix.nix)
+    (import ../overlays/uv-emudhra-fix.nix)
   ];
 }
