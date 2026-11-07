@@ -27,7 +27,7 @@ bindkey "^X^E" edit-command-line
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
 # source starship prompt
-# command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # source the zoxide
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"

@@ -42,6 +42,7 @@
   home.packages = builtins.attrValues {
      inherit(pkgs)
        # programming toolchains / LSP
+       devenv
        ast-grep
        mermaid-cli
        cargo

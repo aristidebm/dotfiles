@@ -12,6 +12,9 @@
 # environment variables
 [[ -f "$HOME/.xprofile" ]] && source "$HOME/.xprofile"
 
+# source devenv
+command -v devenv >/dev/null 2>&1 && eval "$(devenv direnvrc)"
+
 # Options
 
 # set -o vi
