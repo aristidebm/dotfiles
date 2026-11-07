@@ -18,9 +18,9 @@
            helpful hl-todo indent-guide magit marginalia mason
            nerd-icons-completion nerd-icons-corfu nerd-icons-dired
            nerd-icons-ibuffer nix-mode nix-ts-mode ob-mermaid
-           orderless org-modern org-superstar org-tempo ox-pandoc
-           projectile rainbow-delimiters sideline-flymake toc-org
-           vertico ws-butler yasnippet-capf yasnippet-snippets))
+           orderless org-modern org-superstar org-tempo ox-hugo
+           ox-pandoc projectile rainbow-delimiters sideline-flymake
+           toc-org vertico ws-butler yasnippet-capf yasnippet-snippets))
  '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -1,333 +1,189 @@
 ;; -*- lexical-binding: t; -*-
 
 (defun start/org-babel-tangle-config ()
-  "Automatically tangle our init.org config file and refresh `package-quickstart'.
-Credit to Emacs From Scratch for this one!"
-  (interactive)
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
-    ;; Dynamic scoping to the rescue
+  "Tangle init.org and refresh `package-quickstart' after saving it."
+  (when (and buffer-file-name
+             (file-equal-p buffer-file-name
+                           (expand-file-name "init.org" user-emacs-directory)))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle)
       (package-quickstart-refresh))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'start/org-babel-tangle-config)))
+(add-hook 'org-mode-hook
+          (lambda () (add-hook 'after-save-hook #'start/org-babel-tangle-config nil t)))
 
 (defun start/display-startup-time ()
   "Display Emacs startup time and number of garbage collections."
-  (interactive)
-  (message "Emacs loaded in %s with %d garbage collections."
-           (format "%.2f seconds"
-                   (float-time
-                    (time-subtract after-init-time before-init-time)))
+  (message "Emacs loaded in %.2f seconds with %d garbage collections."
+           (float-time (time-subtract after-init-time before-init-time))
            gcs-done))
 
 (add-hook 'emacs-startup-hook #'start/display-startup-time)
 
-(require 'use-package-ensure) ; Load use-package-always-ensure
-(setq use-package-always-ensure t) ; Always ensures that a package is installed
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/") ; Sets default package repositories
-                         ("elpa" . "https://elpa.gnu.org/packages/")
-                         ("nongnu" . "https://elpa.nongnu.org/nongnu/"))) ; For Eat Terminal
+(setq package-archives '(("melpa"  . "https://melpa.org/packages/")
+                         ("elpa"   . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/"))) ; eat
 
-(setq package-quickstart t) ; For blazingly fast startup times, this line makes startup miles faster
+(setq package-quickstart t)
 
 (use-package async
-  :defer t
+  :hook ((after-init . async-bytecomp-package-mode)
+         (after-init . dired-async-mode))
   :custom
-  (dired-async-mode t)
-  (async-bytecomp-package-mode t)
-  (async-bytecomp-allowed-packages '(all))
-  (async-package-do-action t))
+  (async-bytecomp-allowed-packages '(all)))
 
 (use-package emacs
   :custom
-  ;; Still needed for terminals
-  (menu-bar-mode nil)         ; Disable the menu bar
-  (scroll-bar-mode nil)       ; Disable the scroll bar
-  (tool-bar-mode nil)         ; Disable the tool bar
-  (tab-bar-mode nil)         ; Disable the  bar
+  ;; UI
+  (menu-bar-mode nil)
+  (scroll-bar-mode nil)
+  (tool-bar-mode nil)
+  (tab-bar-mode nil)
+  (inhibit-startup-screen t)
+  (ring-bell-function 'ignore)
+  (blink-cursor-mode nil)
+  (global-display-line-numbers-mode t)
+  (display-line-numbers-type 'relative)
+  (global-hl-line-mode t)
+  (truncate-lines t)
+  (whitespace-style '(face tabs tab-mark trailing))
 
-  (inhibit-startup-screen t)  ; Disable welcome screen
-  (delete-selection-mode t)   ; Select text and delete it by typing.
-  (electric-indent-mode t)  ; Turn off the weird indenting that Emacs does by default.
-  (confirm-kill-emacs nil) ; No need for a confirmation when killing emacs
-  ;; (initial-buffer-choice ) ;
-  (ring-bell-function 'ignore) ; Do not ring bell when I reach the edges of the buffer
-
-  (blink-cursor-mode nil)     ; Don't blink cursor
-  (global-auto-revert-mode t) ; Automatically reload file and show changes if the file has changed
-  (recentf-mode t) ; Enable recent file mode
-  ;; (use-short-answers t)   ; Since Emacs 29, `yes-or-no-p' will use `y-or-n-p'
-
-  ;; (dired-kill-when-opening-new-dired-buffer t) ; Dired doesn't create new buffer
-  ;; (dired-mouse-drag-files t) ; Enable Drag and Drop support in dired (Only works in X11)
-
-  ;; (context-menu-mode t) ; Right-click menu
-  ;; (savehist-mode t) ; Enables save history mode
-
-  ;; (global-visual-line-mode t)           ; Enable line wrapping (NOTE: breaks vundo)
-  (global-display-line-numbers-mode t)  ; Display line numbers
-  (display-line-numbers-type 'relative) ; Relative line numbers
-  (global-hl-line-mode t)               ; Highlight current line
-
-  (native-comp-async-report-warnings-errors 'silent) ; Don't show native comp errors
-  (warning-minimum-level :error) ; Only show errors in warnings buffer
-
-  (mouse-wheel-progressive-speed nil) ; Disable progressive speed when scrolling
-  (scroll-conservatively 10) ; Smooth scrolling
-  ;; (scroll-margin 8) ; I don't need it makes zt, zb works akwardl
-
-  ;; (pixel-scroll-precision-mode t) ; Precise pixel scrolling. i.e. smooth scrolling (GUI only)
-  ;; (pixel-scroll-precision-use-momentum nil)
-
-  (indent-tabs-mode nil) ; Only use spaces for indentation
+  ;; Editing
+  (delete-selection-mode t)
+  (indent-tabs-mode nil)
   (tab-width 4)
-  (sgml-basic-offset 4) ; Set Html mode indentation to 4
-  (c-ts-mode-indent-offset 4) ; Fix weird indentation in c-ts (C, C++)
-  (go-ts-mode-indent-offset 4) ; Fix weird indentation in go-ts
+  (sgml-basic-offset 4)
+  (c-ts-mode-indent-offset 4)
+  (go-ts-mode-indent-offset 4)
+  (global-auto-revert-mode t)
+  (recentf-mode t)
+  (confirm-kill-emacs nil)
 
-  ;; Do not use clipboard as primary register
+  ;; Scrolling
+  (mouse-wheel-progressive-speed nil)
+  (scroll-conservatively 10)
+
+  ;; Clipboard is separate from the kill ring (evil registers stay clean)
   (select-enable-clipboard nil)
   (select-enable-primary nil)
 
-  ;; (display-fill-column-indicator-column 80) ; Set line length indicator to 80 characters
-  (whitespace-style '(face tabs tab-mark trailing))
-
-  (make-backup-files nil) ; Stop creating ~ backup files
-  (auto-save-default nil) ; Stop creating # auto save files
+  ;; Files
+  (make-backup-files nil)
+  (auto-save-default nil)
+  (create-lockfiles nil)
   (delete-by-moving-to-trash t)
-  (use-file-dialog nil)   ;; No file dialog
-  (use-dialog-box nil)    ;; No dialog box
-  ;; do not change the current layout to show a new buffer
-  ;; open in an entire plain window
+  (use-file-dialog nil)
+  (use-dialog-box nil)
+  (custom-file (locate-user-emacs-file "custom-vars.el"))
+
+  ;; Warnings
+  (native-comp-async-report-warnings-errors 'silent)
+  (warning-minimum-level :error)
+
+  ;; Open buffers in the current window instead of rearranging the layout
   (display-buffer-base-action
-    '((display-buffer-reuse-window display-buffer-same-window
-        display-buffer-in-previous-window
-        display-buffer-use-some-window)))
-  (org-clock-persist 'history)
-  (org-clock-persistence-insinuate)
+   '((display-buffer-reuse-window display-buffer-same-window
+      display-buffer-in-previous-window display-buffer-use-some-window)))
   :hook
-  (prog-mode . hs-minor-mode) ; Enable folding hide/show globally
-  ;; (prog-mode . display-fill-column-indicator-mode) ; Display line length indicator
+  (prog-mode . hs-minor-mode)
   (prog-mode . whitespace-mode)
   :config
-  ;; Disable lockfiles entirely (Doom Emacs default style)
-  (setq create-lockfiles nil)
-  ;; Disable line wrapping
-  (setq truncate-lines t)
- ;; Mimic Doom by organizing other backups into a central cache folder
-  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory ".local/cache/backups/")))
-     auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory ".local/cache/autosave/") t)))
-  ;; Move customization variables to a separate file and load it, avoid filling up init.el with unnecessary variables
-  (setq custom-file (locate-user-emacs-file "custom-vars.el"))
   (load custom-file 'noerror 'nomessage)
-  :bind (
-         ([escape] . keyboard-escape-quit) ; Makes Escape quit prompts (Minibuffer Escape)
-         ;; Zooming In/Out
-         ("C-+" . text-scale-increase)
-         ("C--" . text-scale-decrease)
-         ("<C-wheel-up>" . text-scale-increase)
-         ("<C-wheel-down>" . text-scale-decrease)))
+  :bind
+  ("<escape>" . keyboard-escape-quit)
+  ("C-+" . text-scale-increase)
+  ("C--" . text-scale-decrease)
+  ("<C-wheel-up>" . text-scale-increase)
+  ("<C-wheel-down>" . text-scale-decrease))
 
 (use-package evil
   :hook (after-init . evil-mode)
   :init
-  (setq evil-want-Y-yank-to-eol t)
-  (evil-mode)
+  (setq evil-want-keybinding nil        ; evil-collection handles other modes
+        evil-want-integration t
+        evil-want-C-u-scroll t
+        evil-want-C-i-jump t
+        evil-want-Y-yank-to-eol t
+        evil-want-fine-undo t
+        evil-undo-system 'undo-redo
+        evil-vsplit-window-right t
+        evil-split-window-below t)
   :config
-  (evil-set-initial-state 'eat-mode 'insert) ; Set initial state in eat terminal to insert mode
-  ;; (global-set-key [C-backspace] 'evil-delete-backward-word) ; Make C-backspace less aggressive
-  ;; Center cursor when jumping with C-d, C-u.
-  ;; (advice-add 'evil-scroll-down :after (lambda (&rest _) (recenter nil)))
-  ;; (advice-add 'evil-scroll-up :after (lambda (&rest _) (recenter nil)))
-  :custom
-  (evil-want-keybinding nil)    ; Disable evil bindings in other modes (It's not consistent and not good)
-  (evil-want-C-u-scroll t)      ; Set C-u to scroll up
-  (evil-undo-system 'undo-redo) ; C-r to redo
-  (evil-want-fine-undo t)
-  (evil-vsplit-window-right t)
-  (evil-split-window-below t)
-  (evil-want-clipboard nil)
-  (setq evil-want-C-i-jump t)
-  ;; (evil-respect-visual-line-mode t) ; Move in wrap lines
-  ;; Unmap keys in 'evil-maps. If not done, org-return-follows-link will not work
-  :bind (:map evil-motion-state-map
-              ("SPC" . nil)
-              ("RET" . nil)))
+  (evil-set-initial-state 'eat-mode 'insert)
+  :bind
+  (:map evil-motion-state-map
+   ("SPC" . nil)                 ; frees SPC: it becomes the leader prefix
+   ("RET" . nil)                 ; lets org-return-follows-link work
+   :map evil-normal-state-map
+   ("-"     . dired-jump)
+   ("RET"   . ignore)
+   ("C-j"   . ignore)
+   ("C-k"   . ignore)
+   ("C-S-v" . clipboard-yank)
+   :map evil-insert-state-map
+   ("C-p"   . completion-at-point)
+   ("C-S-v" . clipboard-yank)))
 
 (use-package evil-collection
   :after evil
+  :custom
+  ;; Frees `gr' so it can be a prefix (grr, grn, gra, gri, grt) like Neovim.
+  ;; Without this, evil-collection-eglot binds `gr' to a command in eglot-mode-map.
+  (evil-collection-want-find-usages-bindings nil)
   :config
-  ;; Setting where to use evil-collection)
-  ;; (setq evil-collection-mode-list '(org dired ibuffer magit corfu consult info (package-menu package) bookmark))
-  (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
+  (add-to-list 'evil-collection-mode-list 'help)
   (evil-collection-init))
 
 (use-package evil-commentary
   :after evil
-  :ensure nil
-  :config
-    (evil-commentary-mode))
+  :config (evil-commentary-mode))
 
 (use-package evil-surround
-:after evil
-:ensure nil
-:config
-    (global-evil-surround-mode 1))
+  :after evil
+  :config (global-evil-surround-mode 1))
 
 (defun start/open-init-file ()
-  "Open init.org configuration file."
+  "Open init.org."
   (interactive)
-  (find-file "~/.config/emacs/init.org"))
+  (find-file (expand-file-name "init.org" user-emacs-directory)))
 
 (defun start/open-notes ()
-  "Open a note file (*.org or *.md) from ~/Documents/Notes/personal/."
-   (interactive)
-   (let* ((dir (expand-file-name "~/Documents/Notes/personal/"))
-       (files (directory-files-recursively dir "\\.\\(org\\|md\\)\\'"))
-       (choice (consult--read
-                   files
-                   :prompt "Notes> "
-                   :category 'file
-                   :require-match t
-                   :sort t
-                   :state (consult--file-preview))))
-   (find-file choice)))
-
-(defun start/reload-config()
-  "Reload Emacs config."
+  "Pick a note (*.org or *.md) from ~/Documents/Notes/personal/."
   (interactive)
-  (load-file "~/.config/emacs/init.el"))
+  (let* ((dir (expand-file-name "~/Documents/Notes/personal/"))
+         (files (mapcar (lambda (f) (file-relative-name f dir))
+                        (directory-files-recursively dir "\\.\\(org\\|md\\)\\'")))
+         (choice (completing-read "Notes> " files nil t)))
+    (find-file (expand-file-name choice dir))))
 
-(defun start/consult-ripgrep-word-at-point ()
-    "Consult-ripgrep, pre-filled with the symbol under point."
-    (interactive)
-    (consult-ripgrep nil (thing-at-point 'symbol t)))
+(use-package emacs
+  :after evil
+  :bind
+  (:map evil-motion-state-map
+   ("SPC f c" . start/open-init-file)
+   ("SPC f n" . start/open-notes)
+   ("SPC f s" . scratch-buffer)
+   ("SPC s c" . describe-command)))
 
-(defun start/consult-ripgrep-WORD-at-point ()
-    "Consult-ripgrep, pre-filled with the WORD under point."
-    (interactive)
-    (consult-ripgrep nil (thing-at-point 'word t)))
-
-(use-package general
-  :after (evil)
-  :config
-  (general-evil-setup t)
-  (general-auto-unbind-keys)
-
-  (general-define-key
-    :states 'normal
-    "C-k" #'ignore
-    "C-j" #'ignore
-    "RET" #'ignore
-    "-"   #'dired-jump
-  )
-
-  (general-define-key
-    :states 'normal
-    :keymaps 'eglot-mode-map
-    "gd"  #'xref-find-definitions
-    "grr" #'xref-find-references
-    "gri" #'eglot-find-implementation
-    "grn" #'eglot-rename
-    "gra" #'eglot-code-actions
-  )
-
-  (general-define-key
-     :keymaps 'org-mode-map
-     "M-RET" nil
-     "C-RET" nil
-     "M-<return>" #'org-insert-heading-respect-content
-     "C-<return>" #'org-meta-return)
-
-  (general-define-key
-    :states 'normal
-    :keymaps 'org-mode-map
-    "RET" #'org-open-at-point ; in OrgMode and normal state, RET should follow link
-   )
-
-  (general-define-key
-    :states '(insert)
-    "C-p" #'completion-at-point
-  )
-
-  (general-define-key
-    :states '(normal insert)
-    "C-S-v" #'clipboard-yank
-  )
-
-  ;; Set up 'SPC' as the leader key
-  (general-create-definer start/leader-keys
-    ;;:states '(normal insert visual motion emacs)
-    :states '(normal) ;
-    :keymaps 'override
-    :prefix "SPC"
-  )
-
-  (start/leader-keys
-    "f" '(:ignore t :wk "Find")
-    ;; "f f" '(find-file :wk "[F]ind [F]iles")
-    "ff" '(consult-fd :wk "[F]ind [F]iles")
-    "fr" '(consult-recent-file :wk "[F]ind [R]ecents")
-    "fb" '(consult-buffer :wk "[F]ind [B]uffers")
-    "fc" '(start/open-init-file :wk "[F]ind [C]onfig")
-    "fn" '(start/open-notes :wk "[F]ind [N]otes")
-    "fs" '(scratch-buffer :wk "[F]ind [S]cratch")
-   )
-
-  (start/leader-keys
-    "s"   '(:ignore t :wk "Search")
-    "sf" '(consult-ripgrep :wk "[S]earch [F]iles")
-    "sd" '(flymake-show-buffer-diagnostics :wk "[S]earch [D]iagnostic")
-    "si" '(consult-imenu :wk "[S]earch [I]menu")
-    "sc" '(describe-command :wk "[S]earch [C]ommands")
-    "sm" '(consult-man :wk "[S]earch [M]anual")
-    "so" '(consult-outline :wk "[S]earch [O]utline")
-    "sw" '(start/consult-ripgrep-word-at-point :wk "[S]earch [w]ord")
-    "sW" '(start/consult-ripgrep-WORD-at-point :wk "[S]earch [W]ord"))
-
-  (start/leader-keys
-    "g" '(:ignore t :wk "Git")
-    "gs" '(magit-status :wk "[G]it [S]tatus")
-    "gb" '(magit-blame :wk "[G]it [B]lame")
-  )
-
-  (start/leader-keys
-     "o" '(:ignore t :wk "Org")
-     "oa" '(org-agenda :wk "[O]rg [A]genda")
-     "oc" '(org-capture :wk "[O]rg [C]apture")
-     "od" '(org-deadline :wk "[O]rg [D]eadline")
-     "oe" '(org-set-effort :wk "[O]rg set [E]ffort")
-     "op" '(org-priority :wk "[O]rg [P]riority")
-     "os" '(org-schedule :wk "[O]rg [S]chedule")
-     "ot" '(org-timestamp :wk "[O]rg [T]imestamp")
-     "ox" '(org-export-dispatch :wk "[O]rg e[X]port")
-   )
-)
-
-;; Fix general.el leader key not working instantly in messages buffer with evil mode
-;;(use-package emacs
-;;  :after (evil general)
-;;  :ghook ('after-init-hook
-;;          (lambda (&rest _)
-;;            (when-let ((messages-buffer (get-buffer "*Messages*")))
-;;              (with-current-buffer messages-buffer
-;;                (evil-normalize-keymaps))))
-;;          nil nil t))
+(use-package flymake
+  :ensure nil
+  :after evil
+  :bind
+  (:map evil-motion-state-map
+   ("SPC s d" . flymake-show-buffer-diagnostics)))
 
 (use-package doom-themes
   :custom
-  ;; Global settings (defaults)
-  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
-  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
   :config
-  (load-theme 'doom-nord t) ; We need to add t to trust this package
-  ;; Corrects (and improves) org-mode's native fontification.
+  (load-theme 'modus-vivendi t)
   (doom-themes-org-config))
 
-(add-to-list 'default-frame-alist '(alpha-background . 90)) ; For all new frames henceforth
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; Transparency in terminal
 (defun start/tui-enable-transparency ()
@@ -335,11 +191,11 @@ Credit to Emacs From Scratch for this one!"
   (unless (display-graphic-p (selected-frame))
     (set-face-background 'default "unspecified-bg" (selected-frame))))
 
-(add-hook 'window-setup-hook 'start/tui-enable-transparency)
+(add-hook 'window-setup-hook #'start/tui-enable-transparency)
 
 (use-package doom-modeline
   :custom
-  (doom-modeline-height 25) ; Set modeline height
+  (doom-modeline-height 25)
   :hook (after-init . doom-modeline-mode))
 
 (use-package nerd-icons :defer t)
@@ -350,124 +206,117 @@ Credit to Emacs From Scratch for this one!"
 (use-package nerd-icons-ibuffer
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
-(use-package projectile
-  :hook (after-init . projectile-mode)
-  :config
-  (projectile-mode)
-  :custom
-  ;; (projectile-auto-discover nil) ; Disable auto search for better startup times. Search with a keybind
-  ;; (projectile-run-use-comint-mode t) ; Interactive run dialog when running projects inside emacs (like giving input)
-  (projectile-switch-project-action #'projectile-dired) ; Open dired when switching to a project
-  (projectile-project-search-path '("~/Projects/" "~/work/" ("~/github" . 1)))) ; . 1 means only search the first subdirectory level for projects
-
 (use-package eglot
-  :ensure nil ; Don't install eglot because it's now built-in
-  :hook ((c-mode c++-mode ; Autostart lsp servers for a given mode
-                  lua-mode ; Lua-mode needs to be installed
-                  python-mode python-ts-mode
-                  go-mode go-ts-mode
-                  rust-ts-mode)
-         . eglot-ensure)
+  :ensure nil
+  :hook ((c-ts-mode c++-ts-mode python-ts-mode go-ts-mode
+          rust-ts-mode lua-ts-mode) . eglot-ensure)
   :custom
-  ;; Good default
-  (eglot-events-buffer-size 0) ; No event buffers (LSP server logs)
-  (eglot-autoshutdown t) ; Shutdown unused servers.
-  (eglot-report-progress nil) ; Disable LSP server logs (Don't show lsp messages at the bottom, java)
-  ;; Manual lsp servers
+  (eglot-events-buffer-config '(:size 0)) ; no LSP event log (replaces obsolete eglot-events-buffer-size)
+  (eglot-autoshutdown t)
+  (eglot-report-progress nil)
   :config
-  ; Adds our lua lsp server to eglot's server list
-  (dolist (entry `(
-            ((go-mode go-ts-mode) . ("gopls" "serve"))
-            (python-mode . ("pyrefly" "lsp"))
-            ((rust-mode rust-ts-mode) . ("rust-analyzer"))))
-    (add-to-list 'eglot-server-programs entry)))
+  ;; gopls and rust-analyzer are already Eglot defaults; pyrefly is the custom one.
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) . ("pyrefly" "lsp")))
+
+  (evil-define-key* 'normal eglot-mode-map
+    "grn" #'eglot-rename
+    "grr" #'xref-find-references
+    "gri" #'eglot-find-implementation
+    "grt" #'eglot-find-typeDefinition
+    "gO"  #'consult-imenu
+    "]d"  #'flymake-goto-next-error
+    "[d"  #'flymake-goto-prev-error)
+  (evil-define-key* '(normal visual) eglot-mode-map
+    "gra" #'eglot-code-actions))
 
 (use-package sideline-flymake
   :hook (flymake-mode . sideline-mode)
   :custom
-  (sideline-flymake-display-mode 'line) ; Show errors on the current line
+  (sideline-flymake-display-mode 'line)
   (sideline-backends-right '(sideline-flymake)))
 
-(use-package yasnippet-snippets
-  ;; :custom
-  ;; (yas-key-syntaxes '("w_" "w_." "^ ")) ; Fixes prefixes that have characters like: !,@ etc.
-  :hook (prog-mode . yas-minor-mode))
-
 (defun start/corfu-yas-tab-handler ()
-  "Prioritize corfu over yasnippet when yasnippet is active."
+  "Prioritize Corfu over Yasnippet when both are active."
   (interactive)
-  ;; There is no direct way to get if corfu is currently displayed so we watch the completion index
   (if (> corfu--index -1)
       (corfu-complete)
     (yas-next-field-or-maybe-expand)))
 
-(use-package emacs
-  :after (yasnippet corfu)
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
   :bind
   (:map yas-keymap
-        ("TAB" . start/corfu-yas-tab-handler)))
+   ("TAB" . start/corfu-yas-tab-handler)))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
 
 (setq treesit-language-source-alist
-          '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-            (c "https://github.com/tree-sitter/tree-sitter-c")
-            (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-            (css "https://github.com/tree-sitter/tree-sitter-css")
-            (go "https://github.com/tree-sitter/tree-sitter-go")
-            (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-            (html "https://github.com/tree-sitter/tree-sitter-html")
-            (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-            (json "https://github.com/tree-sitter/tree-sitter-json")
-            (make "https://github.com/alemuller/tree-sitter-make")
-            (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-            (python "https://github.com/tree-sitter/tree-sitter-python")
-            (rust "https://github.com/tree-sitter/tree-sitter-rust")
-            (nix "https://github.com/nix-community/tree-sitter-nix")
-            (toml "https://github.com/tree-sitter/tree-sitter-toml")
-            (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-            (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+        (c "https://github.com/tree-sitter/tree-sitter-c")
+        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+        (css "https://github.com/tree-sitter/tree-sitter-css")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (make "https://github.com/alemuller/tree-sitter-make")
+        (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (nix "https://github.com/nix-community/tree-sitter-nix")
+        (toml "https://github.com/tree-sitter/tree-sitter-toml")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-    (defun start/install-treesit-grammars ()
-      "Install missing treesitter grammars."
-      (interactive)
-      (dolist (grammar treesit-language-source-alist)
-        (let ((lang (car grammar)))
-          (unless (treesit-language-available-p lang)
-            (treesit-install-language-grammar lang)))))
+(defun start/install-treesit-grammars ()
+  "Install missing tree-sitter grammars."
+  (interactive)
+  (dolist (grammar treesit-language-source-alist)
+    (let ((lang (car grammar)))
+      (unless (treesit-language-available-p lang)
+        (treesit-install-language-grammar lang)))))
 
-    ;; Call this function to install missing grammars
-    (add-hook 'after-init-hook #'start/install-treesit-grammars)
+(add-hook 'after-init-hook #'start/install-treesit-grammars)
 
-    ;; Optionally, add any additional mode remappings not covered by defaults
-    (setq major-mode-remap-alist
-          '((yaml-mode . yaml-ts-mode)
-            (sh-mode . bash-ts-mode)
-            (c-mode . c-ts-mode)
-            (c++-mode . c++-ts-mode)
-            (css-mode . css-ts-mode)
-            (python-mode . python-ts-mode)
-            (go-mode . go-ts-mode)
-            (nix-mode . nix-ts-mode)
-            (mhtml-mode . html-ts-mode)
-            (javascript-mode . js-ts-mode)
-            (js-json-mode . json-ts-mode)
-            (typescript-mode . typescript-ts-mode)
-            (conf-toml-mode . toml-ts-mode)))
+(setq major-mode-remap-alist
+      '((yaml-mode . yaml-ts-mode)
+        (sh-mode . bash-ts-mode)
+        (c-mode . c-ts-mode)
+        (c++-mode . c++-ts-mode)
+        (css-mode . css-ts-mode)
+        (python-mode . python-ts-mode)
+        (go-mode . go-ts-mode)
+        (nix-mode . nix-ts-mode)
+        (mhtml-mode . html-ts-mode)
+        (javascript-mode . js-ts-mode)
+        (js-json-mode . json-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (conf-toml-mode . toml-ts-mode)))
 
 (setq treesit-font-lock-level 3)
 
-;; Or if there is no built in mode
-(use-package go-mod-ts-mode :ensure nil :mode "\\.mod\\'")
-(use-package go-ts-mode :ensure nil :mode "\\.go\\'")
-(use-package lua-ts-mode :ensure nil :mode "\\.lua\\'")
-(use-package rust-ts-mode :ensure nil :mode "\\.rs\\'")
-(use-package typescript-ts-mode :ensure nil :mode "\\.ts\\'")
-(use-package tsx-ts-mode :ensure nil :mode "\\.tsx\\'")
-(use-package yaml-ts-mode :ensure nil :mode ("\\.yaml\\'" "\\.yml\\'"))
-(use-package nix-ts-mode :ensure nil :mode "\\.nix\\'")
+;; Modes with no classic equivalent to remap. These are all built in
+;; (several live inside another file, e.g. tsx-ts-mode is in typescript-ts-mode.el),
+;; so a plain auto-mode-alist entry is enough.
+(dolist (entry '(("go\\.mod\\'"        . go-mod-ts-mode)
+                 ("\\.go\\'"           . go-ts-mode)
+                 ("\\.lua\\'"          . lua-ts-mode)
+                 ("\\.rs\\'"           . rust-ts-mode)
+                 ("\\.ts\\'"           . typescript-ts-mode)
+                 ("\\.tsx\\'"          . tsx-ts-mode)
+                 ("\\.ya?ml\\'"        . yaml-ts-mode)))
+  (add-to-list 'auto-mode-alist entry))
+
+(use-package nix-ts-mode
+  :mode "\\.nix\\'")
 
 (use-package org
   :ensure nil
+  :after evil
   :custom-face
   (org-document-title ((t (:height 1.7 :weight bold))))
   (org-level-1 ((t (:inherit outline-1 :height 1.6))))
@@ -479,80 +328,97 @@ Credit to Emacs From Scratch for this one!"
   (org-level-7 ((t (:inherit outline-7 :height 1.0))))
   (org-level-8 ((t (:inherit outline-8 :height 1.0))))
   :custom
-  (org-export-backends '(ascii html icalendar latex odt org)) ;org backend is required by ox-pandoc
-  (org-edit-src-content-indentation 4) ; Set src block automatic indent to 4 instead of 2.
-  (org-return-follows-link t)   ; Sets RETURN key in org-mode to follow links
+  (org-export-backends '(ascii html icalendar latex odt org)) ; org backend is required by ox-pandoc
+  (org-edit-src-content-indentation 4)
+  (org-return-follows-link t)
+  (org-clock-persist 'history)
   (org-directory "~/Documents/Notes/personal/")
   (org-default-notes-file (expand-file-name "refile.org" org-directory))
-  (org-agenda-files '("refile.org" "Learning/backlog.org"))
-  ;; For more information on templates read this
-  ;; https://orgmode.org/manual/Template-elements.html
+  ;; NOTE: lowercase "learning/" to match the capture template below.
+  (org-agenda-files '("refile.org" "learning/backlog.org"))
   (org-capture-templates
-    `(("c" "Interruption task" entry (file+headline org-default-notes-file "Interruptions")
-       "* %?
-       :PROPERTIES:
-       :CAPTURED: %U
-       :END:
-       "
-       :clock-in t
-       :clock-resume t
-       :prepend t)
-      ("h" "Habit" entry (file+headline org-default-notes-file "Habits")
-        "* TODO %^{Habit} :habit:
-        SCHEDULED: <%<%Y-%m-%d %a> %^{Repeat|.+1d|+1d|++1d|.+1w|+1w}>
-        :PROPERTIES:
-        :STYLE:    habit
-        :END:"
-        :prepend t
-        :immediate-finish t)
-      ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
-        "* %? :idea: \n%t"
-        :prepend t
-        :clock-in t
-        :clock-resume t)
-      ("l" "Learning"
-        entry
-        (file+headline "learning/backlog.org" "Learning Inbox")
-        ,(concat
-            "* TODO %^{What do you want to learn/do?} :learning:\n"
-            "  SCHEDULED: %(format-time-string \"<%Y-%m-%d>\" (time-add (current-time) (days-to-time 3)))\n"
-            "  :PROPERTIES:\n"
-            "  :CAPTURED: %U\n"
-            "  :END:\n"
-            "\n"
-            "** Why do I want this?\n"
-            "\n"
-            "** Why now?\n"
-            "\n"
-            "** What specific outcome do I expect?\n"
-            "\n"
-            "** What happens if I don't do it?\n"
-            "\n"
-            "** What will I give up by doing it?\n"
-            "\n"
-            "** What is the smallest experiment I can run?\n"
-            "\n"
-            "** Decision\n"
-            "%?")
-        :prepend t
-        :empty-lines 1)
-      ("m" "Meeting" entry (file+headline org-default-notes-file "Meetings")
-        "* MEETING with %^{Subject} :meeting:
-        SCHEDULED: %^T"
-        :prepend t
-        :immediate-finish t)
-      ("t" "Task" entry (file+headline org-default-notes-file "Tasks")
-          "* TODO %?\n%u\n%a\n"
-        :prepend t
-        :clock-in t
-        :clock-resume t)
-     ))
+   `(("c" "Interruption task" entry (file+headline org-default-notes-file "Interruptions")
+      "* %?
+           :PROPERTIES:
+           :CAPTURED: %U
+           :END:
+           "
+      :clock-in t
+      :clock-resume t
+      :prepend t)
+     ("h" "Habit" entry (file+headline org-default-notes-file "Habits")
+      "* TODO %^{Habit} :habit:
+            SCHEDULED: <%<%Y-%m-%d %a> %^{Repeat|.+1d|+1d|++1d|.+1w|+1w}>
+            :PROPERTIES:
+            :STYLE:    habit
+            :END:"
+      :prepend t
+      :immediate-finish t)
+     ("i" "Idea" entry (file+headline org-default-notes-file "Ideas")
+      "* %? :idea: \n%t"
+      :prepend t
+      :clock-in t
+      :clock-resume t)
+     ("l" "Learning"
+      entry
+      (file+headline "learning/backlog.org" "Learning Inbox")
+      ,(concat
+        "* TODO %^{What do you want to learn/do?} :learning:\n"
+        "  SCHEDULED: %(format-time-string \"<%Y-%m-%d>\" (time-add (current-time) (days-to-time 3)))\n"
+        "  :PROPERTIES:\n"
+        "  :CAPTURED: %U\n"
+        "  :END:\n"
+        "\n"
+        "** Why do I want this?\n"
+        "\n"
+        "** Why now?\n"
+        "\n"
+        "** What specific outcome do I expect?\n"
+        "\n"
+        "** What happens if I don't do it?\n"
+        "\n"
+        "** What will I give up by doing it?\n"
+        "\n"
+        "** What is the smallest experiment I can run?\n"
+        "\n"
+        "** Decision\n"
+        "%?")
+      :prepend t
+      :empty-lines 1)
+     ("m" "Meeting" entry (file+headline org-default-notes-file "Meetings")
+      "* MEETING with %^{Subject} :meeting:
+            SCHEDULED: %^T"
+      :prepend t
+      :immediate-finish t)
+     ("t" "Task" entry (file+headline org-default-notes-file "Tasks")
+      "* TODO %?\n%u\n%a\n"
+      :prepend t
+      :clock-in t
+      :clock-resume t)))
   :config
-  (add-to-list 'org-src-lang-modes '("go" . go-ts)) ; This has to be done for org syntax to work with Golang
-  (add-to-list 'org-src-lang-modes '("rust" . rust-ts)) ; This has to be done for org syntax to work with Rust
-  (add-to-list 'org-src-lang-modes '("nix" . nix-ts)) ; This has to be done for org syntax to work with Rust
+  (add-to-list 'org-src-lang-modes '("go" . go-ts))
+  (add-to-list 'org-src-lang-modes '("rust" . rust-ts))
+  (add-to-list 'org-src-lang-modes '("nix" . nix-ts))
+  (org-clock-persistence-insinuate)
+  ;; RET follows links in normal state
+  (evil-define-key 'normal org-mode-map (kbd "RET") #'org-open-at-point)
   :hook
-  (org-mode . org-indent-mode)) ; Indent text
+  (org-mode . org-indent-mode)
+  :bind
+  (:map org-mode-map
+   ("M-RET" . nil)
+   ("C-RET" . nil)
+   ("M-<return>" . org-insert-heading-respect-content)
+   ("C-<return>" . org-meta-return)
+   :map evil-motion-state-map
+   ("SPC o a" . org-agenda)
+   ("SPC o c" . org-capture)
+   ("SPC o d" . org-deadline)
+   ("SPC o e" . org-set-effort)
+   ("SPC o p" . org-priority)
+   ("SPC o s" . org-schedule)
+   ("SPC o t" . org-time-stamp)
+   ("SPC o x" . org-export-dispatch)))
 
 (use-package toc-org
   :commands toc-org-enable
@@ -564,14 +430,12 @@ Credit to Emacs From Scratch for this one!"
   (org-modern-table t)
   (org-modern-table-vertical 1)
   :hook ((org-mode . org-modern-mode)
-      (org-agenda-finalize . org-modern-agenda)))
+         (org-agenda-finalize . org-modern-agenda)))
 
 (use-package ox-pandoc
-  :ensure nil
   :after ox)
 
 (use-package ox-hugo
-  :ensure nil
   :after ox)
 
 (use-package org-tempo
@@ -580,81 +444,68 @@ Credit to Emacs From Scratch for this one!"
 
 (use-package org-habit
   :ensure nil
-  :after org
-)
+  :after org)
 
 (use-package ob-mermaid
-  :ensure t
-  :config
-  (setq ob-mermaid-cli-path "mmdc"))
+  :defer t
+  :custom
+  (ob-mermaid-cli-path "mmdc"))
 
 (use-package eat
   :defer t
-  :hook ('eshell-load-hook #'eat-eshell-mode))
+  :hook (eshell-load . eat-eshell-mode))
 
 (use-package exec-path-from-shell
   :hook (after-init . exec-path-from-shell-initialize))
 
-;; (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-
-;; (require 'start-multiFileExample)
-
-;; (start/hello)
-
 (use-package transient
   :defer t
-  :config
-  (define-key transient-map (kbd "<escape>") 'transient-quit-one)) ; Make escape quit magit prompts
+  :bind
+  (:map transient-map
+   ("<escape>" . transient-quit-one)))
 
 (use-package magit
-  :defer t
-  :custom (magit-diff-refine-hunk (quote all)) ; Shows inline diff
+  :after evil
+  :custom
+  (magit-diff-refine-hunk 'all)
   :config
-  (setopt magit-format-file-function #'magit-format-file-nerd-icons)) ; Magit nerd icons
+  (setopt magit-format-file-function #'magit-format-file-nerd-icons)
+  :bind
+  (:map evil-motion-state-map
+   ("SPC g s" . magit-status)
+   ("SPC g b" . magit-blame)))
 
 (use-package diff-hl
   :hook ((dired-mode         . diff-hl-dired-mode-unless-remote)
          (magit-post-refresh . diff-hl-magit-post-refresh)
-         (after-init . global-diff-hl-mode)))
+         (after-init         . global-diff-hl-mode)))
 
 (use-package corfu
-  ;; Optional customizations
+  :hook (after-init . global-corfu-mode)
   :custom
-  (corfu-cycle t)                ; Enable cycling for `corfu-next/previous'
-  (corfu-auto nil)               ; Enable auto completion
-  (corfu-auto-prefix 2)          ; Minimum length of prefix for auto completion.
-  (corfu-popupinfo-mode t)       ; Enable popup information
-  (corfu-popupinfo-delay 0.5)    ; Lower popup info delay to 0.5 seconds from 2 seconds
-
-  (corfu-separator ?\s)          ; Orderless field separator, Use M-SPC to enter separator
-  ;; (corfu-quit-at-boundary nil)   ; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ; Disable current candidate preview
-  (corfu-preselect 'prompt)         ; Preselect the prompt
-  (corfu-on-exact-match nil)     ; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ; Use scroll margin
-
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  (corfu-on-exact-match nil)
+  (corfu-preview-current t)               ; insert the candidate without confirmation
   (completion-ignore-case t)
-  ;; Emacs 30 and newer: Disable Ispell completion function.
-  ;; Try `cape-dict' as an alternative.
-  (text-mode-ispell-word-completion nil)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
+  (text-mode-ispell-word-completion nil)  ; Emacs 30: disable Ispell completion function
   (tab-always-indent 'complete)
-
-  (corfu-preview-current t) ; insert completion without confirmation
   :config
-   (with-eval-after-load 'evil
-        (evil-make-overriding-map corfu-map))
-   :bind
+  (with-eval-after-load 'evil
+    (evil-make-overriding-map corfu-map))
+  :bind
   (:map corfu-map
-    ("C-y" . corfu-insert))
-  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
-  ;; be used globally (M-/).  See also the customization variable
-  ;; `global-corfu-modes' to exclude certain modes.
-  :init
-  (global-corfu-mode))
+   ("C-y" . corfu-insert)))
+
+;; Ships with Corfu (no separate install). `corfu-popupinfo-mode' must be
+;; enabled by calling it; setting the variable in :custom does nothing.
+(use-package corfu-popupinfo
+  :ensure nil
+  :after corfu
+  :custom
+  (corfu-popupinfo-delay 0.5)
+  :config
+  (corfu-popupinfo-mode))
 
 (use-package nerd-icons-corfu
   :after corfu
@@ -663,71 +514,34 @@ Credit to Emacs From Scratch for this one!"
 (use-package yasnippet-capf :defer t)
 
 (defun start/setup-capfs ()
-  "Configure completion backends."
-  ;; Take care when adding Capfs to the list since each of the Capfs adds a small runtime cost.
-  (let ((merge-backends (list
-                         ;; Snippy-capf needed to be first, so characters like !,@, etc. Works with Snippy.
-                         ;; When cape-capf-super combines multiple completion functions, it uses the prefix boundaries of the first capf.
-                         ;; Other capf have different prefix boundaries.
-                         ;;#'snippy-capf       ; Vscode Snippets
-                         #'yasnippet-capf    ; Yasnippet snippets
-                         ;; #'cape-abbrev       ; Complete abbreviation
-                         #'cape-dabbrev      ; Complete word from current buffers
-                         #'cape-keyword      ; Keyword completion
-                         ;; #'cape-line         ; Complete entire line from current buffer
-                         ;; #'cape-history      ; Complete from Eshell, Comint or minibuffer history
-                         ;; #'cape-dict         ; Dictionary completion (Needs Dictionary file installed)
-                         ;; #'cape-tex          ; Complete Unicode char from TeX command, e.g. \hbar
-                         ;; #'cape-sgml         ; Complete Unicode char from SGML entity, e.g., &alpha
-                         ;; #'cape-rfc1345      ; Complete Unicode char using RFC 1345 mnemonics
-                         ))
-        (separate-backends (list
-                            #'cape-file ; Path completion
-                            #'cape-elisp-block ; Complete elisp Org or Markdown mode
-                            )))
-
-    ;; Remove keyword and snippet completion in git commits
+  "Configure completion backends for the current buffer."
+  (let ((merge-backends (list #'yasnippet-capf   ; yasnippet snippets
+                              #'cape-dabbrev     ; words from current buffers
+                              #'cape-keyword))   ; language keywords
+        (separate-backends (list #'cape-file          ; paths
+                                 #'cape-elisp-block))) ; elisp in Org/Markdown
+    ;; No keywords or snippets in git commit messages
     (when (bound-and-true-p git-commit-mode)
-      (dolist (backend '(cape-keyword snippy-capf yasnippet-capf))
+      (dolist (backend '(cape-keyword yasnippet-capf))
         (setq merge-backends (remq backend merge-backends))))
-
-    ;; Add Elisp symbols only in Elisp modes
+    ;; Elisp symbols only in Elisp modes
     (when (derived-mode-p 'emacs-lisp-mode 'ielm-mode)
-      (setq merge-backends (cons #'cape-elisp-symbol merge-backends))) ; Emacs Lisp code (functions, variables)
-
-    ;; Add Eglot to the front of the list if it's active
+      (setq merge-backends (cons #'cape-elisp-symbol merge-backends)))
+    ;; LSP candidates when Eglot manages the buffer
     (when (bound-and-true-p eglot--managed-mode)
       (setq merge-backends (append merge-backends (list #'eglot-completion-at-point))))
-
-    ;; Create the super-capf and set it buffer-locally
     (setq-local completion-at-point-functions
-                (append
-                 separate-backends
-                 (list (apply #'cape-capf-super merge-backends))))))
-(use-package cape
-  :after (corfu)
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.  The order of the functions matters, the
-  ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
+                (append separate-backends
+                        (list (apply #'cape-capf-super merge-backends))))))
 
-  ;; Separate function needed, because we use setq-local (everything is replaced)
-  (add-hook 'eglot-managed-mode-hook #'start/setup-capfs)
-  (add-hook 'prog-mode-hook #'start/setup-capfs)
-  (add-hook 'text-mode-hook #'start/setup-capfs)
-  (add-hook 'git-commit-setup-hook #'start/setup-capfs)) ; Fixes completion in magit commits
+(use-package cape
+  :after corfu
+  :hook ((eglot-managed-mode prog-mode text-mode git-commit-setup) . start/setup-capfs))
 
 (use-package vertico
   :hook (after-init . vertico-mode)
-  ;; Vim keybinds
-  ;; :bind (:map vertico-map
-  ;;            ("C-j" . vertico-next)
-  ;;            ("C-k" . vertico-previous)
-  ;;            ("C-u" . vertico-scroll-down)
-  ;;            ("C-d" . vertico-scroll-up))
   :custom
-  (vertico-cycle t)) ; Enable cycling for `vertico-next/previous'
+  (vertico-cycle t))
 
 (use-package marginalia
   :after vertico
@@ -747,68 +561,51 @@ Credit to Emacs From Scratch for this one!"
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-(use-package embark :defer t)
+(use-package embark
+  :bind
+  ("C-." . embark-act))
+
 (use-package embark-consult
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+(defun start/ripgrep-symbol ()
+  "Ripgrep for the symbol at point."
+  (interactive)
+  (consult-ripgrep nil (thing-at-point 'symbol t)))
+
+(defun start/ripgrep-word ()
+  "Ripgrep for the word at point."
+  (interactive)
+  (consult-ripgrep nil (thing-at-point 'word t)))
 
 (use-package consult
-  ;; Enable automatic preview at point in the *Completions* buffer. This is
-  ;; relevant when you use the default completion UI.
+  :after evil
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
-  ;; Optionally configure the register formatting. This improves the register
-  ;; preview for `consult-register', `consult-register-load',
-  ;; `consult-register-store' and the Emacs built-ins.
   (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
   (advice-add #'register-preview :override #'consult-register-window)
-
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
-
   :config
-  ;; Optionally configure preview. The default value
-  ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
-  ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
-  ;; (consult-customize
-  ;; consult-theme :preview-key '(:debounce 0.2 any)
-  ;; consult-ripgrep consult-git-grep consult-grep
-  ;; consult-bookmark consult-recent-file consult-xref
-  ;; consult--source-bookmark consult--source-file-register
-  ;; consult--source-recent-file consult--source-project-recent-file
-  ;; :preview-key "M-."
-  ;; :preview-key '(:debounce 0.4 any))
-
-  ;; By default `consult-project-function' uses `project-root' from project.el.
-  ;; Optionally configure a different project root function.
-   ;;;; 1. project.el (the default)
-  ;; (setq consult-project-function #'consult--default-project--function)
-   ;;;; 2. vc.el (vc-root-dir)
-  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
-   ;;;; 3. locate-dominating-file
-  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
-   ;;;; 4. projectile.el (projectile-project-root)
   (autoload 'projectile-project-root "projectile")
   (setq consult-project-function (lambda (_) (projectile-project-root)))
-   ;;;; 5. No project support
-  ;; (setq consult-project-function nil)
-  )
+  :bind
+  (:map evil-motion-state-map
+   ("SPC f f" . consult-fd)
+   ("SPC f r" . consult-recent-file)
+   ("SPC f b" . consult-buffer)
+   ("SPC s f" . consult-ripgrep)
+   ("SPC s i" . consult-imenu)
+   ("SPC s m" . consult-man)
+   ("SPC s o" . consult-outline)
+   ("SPC s w" . start/ripgrep-symbol)
+   ("SPC s W" . start/ripgrep-word)))
 
 (use-package helpful
   :bind
-  ;; Note that the built-in `describe-function' includes both functions
-  ;; and macros. `helpful-function' is functions only, so we provide
-  ;; `helpful-callable' as a drop-in replacement.
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
@@ -820,51 +617,43 @@ Credit to Emacs From Scratch for this one!"
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package hl-todo
-  :hook
-  ((prog-mode yaml-ts-mode) . hl-todo-mode)
+  :hook ((prog-mode yaml-ts-mode) . hl-todo-mode)
   :config
-  ;; From doom emacs
+  ;; From Doom Emacs
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces
-        '(;; For reminders to change or add something at a later date.
-          ("TODO" warning bold)
-          ;; For code (or code paths) that are broken, unimplemented, or slow,
-          ;; and may become bigger problems later.
-          ("FIXME" error bold)
-          ;; For code that needs to be revisited later, either to upstream it,
-          ;; improve it, or address non-critical issues.
-          ("REVIEW" font-lock-keyword-face bold)
-          ;; For code smells where questionable practices are used
-          ;; intentionally, and/or is likely to break in a future update.
-          ("HACK" font-lock-constant-face bold)
-          ;; For sections of code that just gotta go, and will be gone soon.
-          ;; Specifically, this means the code is deprecated, not necessarily
-          ;; the feature it enables.
+        '(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("HACK"       font-lock-constant-face bold)
           ("DEPRECATED" font-lock-doc-face bold)
-          ;; Extra keywords commonly found in the wild, whose meaning may vary
-          ;; from project to project.
-          ("NOTE" success bold)
-          ("BUG" error bold)
-          ("XXX" font-lock-constant-face bold))))
+          ("NOTE"       success bold)
+          ("BUG"        error bold)
+          ("XXX"        font-lock-constant-face bold))))
 
 (use-package indent-guide
-  :hook
-  (prog-mode . indent-guide-mode)
-  :config
-  (setq indent-guide-char "│")) ; Set the character used for the indent guide.
+  :hook (prog-mode . indent-guide-mode)
+  :custom
+  (indent-guide-char "│"))
 
 (use-package which-key
-  :ensure nil ; Don't install which-key because it's now built-in
+  :ensure nil
   :hook (after-init . which-key-mode)
   :diminish
   :custom
   (which-key-side-window-location 'bottom)
-  (which-key-sort-order #'which-key-key-order-alpha) ; Same as default, except single characters are sorted alphabetically
+  (which-key-sort-order #'which-key-key-order-alpha)
   (which-key-sort-uppercase-first nil)
-  (which-key-add-column-padding 1) ; Number of spaces to add to the left of each column
-  (which-key-min-display-lines 6)  ; Increase the minimum lines to display because the default is only 1
-  (which-key-idle-delay 0.3)       ; Set the time delay (in seconds) for the which-key popup to appear
-  (which-key-allow-imprecise-window-fit nil)) ; Fixes which-key window slipping out in Emacs Daemon
+  (which-key-add-column-padding 1)
+  (which-key-min-display-lines 6)
+  (which-key-idle-delay 0.3)
+  (which-key-allow-imprecise-window-fit nil)
+  :config
+  (which-key-add-key-based-replacements
+    "SPC f" "Find"
+    "SPC s" "Search"
+    "SPC g" "Git"
+    "SPC o" "Org"))
 
 (use-package ws-butler
   :hook (after-init . ws-butler-global-mode))
