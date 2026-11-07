@@ -6,18 +6,3 @@ if [ -z $REMOTE ]; then
 fi
 
 ssh -t $REMOTE tmux new -A -s "aristide@$REMOTE" \; set-window-option -g mode-keys vi \; set-option -g status-keys vi
-# ssh -t $REMOTE tmux new -A -s "username@$REMOTE"
-
-# # Add three more windows
-# tmux split-window -h
-# tmux split-window
-# tmux select-pane -t 1
-#
-# tmux setw synchronize-panes on
-# tmux send-keys "ssh $REMOTE" Enter
-#
-# # Create a window in copy mode
-# # so that synchronize-panes on won't
-# # be applied on it.
-# tmux split-window \; copy-mode
-# tmux select-pane -t 1
