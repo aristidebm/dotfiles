@@ -9,7 +9,6 @@
     ./modules/programming.nix
     ./modules/services.nix
     ./modules/mango.nix
-    ./modules/voxtype.nix
     ./modules/dbus.nix
     ./modules/containers.nix
     ./modules/portal.nix

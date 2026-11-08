@@ -85,7 +85,6 @@ in
       emacs
       neovim
       vim
-      zed-editor
 
       # system / productivity
       fastfetch
