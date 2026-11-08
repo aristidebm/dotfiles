@@ -86,16 +86,6 @@ return {
       require("nvim-surround").setup({})
     end,
   },
-  -- {
-  --   "ludovicchabant/vim-gutentags",
-  --   config = function() end,
-  -- },
-  {
-    "cbochs/grapple.nvim",
-    config = function()
-      require("setup.grapple")
-    end,
-  },
   {
     "vague-theme/vague.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -186,15 +176,4 @@ return {
    }
   }
  },
- {
-  'nvim-orgmode/orgmode',
-  event = 'VeryLazy',
-  ft = { 'org' },
-  dependencies = {
-    "akinsho/org-bullets.nvim"
-  },
-  config = function()
-    require("setup.org")
-  end,
- }
 }
