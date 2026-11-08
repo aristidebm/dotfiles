@@ -7,7 +7,11 @@
       "type": "registry"
     }
   },
-  "icon_theme": "Zed (Default)",
+  "icon_theme": {
+    "mode": "light",
+    "light": "Zed (Default)",
+    "dark": "Zed (Default)"
+  },
   "diff_view_style": "split",
   "outline_panel": {
     "dock": "left",
@@ -25,7 +29,7 @@
   },
   "ui_font_size": 22.0,
   "ssh_connections": [],
-  "base_keymap": "SublimeText",
+  "base_keymap": "Emacs",
   "project_panel": {
     "dock": "right",
   },
@@ -109,6 +113,7 @@
   },
   "terminal": {
     "font_family": "Iosevka Nerd Font",
+    "default_height": 9999,
     "dock": "right",
     "shell": "system",
   },

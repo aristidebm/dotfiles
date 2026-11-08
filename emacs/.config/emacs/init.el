@@ -49,6 +49,7 @@
   (display-line-numbers-type 'relative)
   (global-hl-line-mode t)
   (truncate-lines t)
+  (duplicate-line-final-position 1)
   (whitespace-style '(face tabs tab-mark trailing))
 
   ;; Editing
