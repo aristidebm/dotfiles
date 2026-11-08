@@ -30,12 +30,12 @@ return {
       require("setup.silicon")
     end,
   },
-  -- {
-  --   "stevearc/oil.nvim",
-  --   config = function()
-  --     require("setup.oil")
-  --   end,
-  -- },
+  {
+    "stevearc/oil.nvim",
+    config = function()
+      require("setup.oil")
+    end,
+  },
   {
     "FabijanZulj/blame.nvim",
     lazy = false,

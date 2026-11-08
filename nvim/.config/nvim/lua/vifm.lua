@@ -103,7 +103,7 @@ local function open_vifm(layout)
   vim.cmd.startinsert()
 end
 
-vim.keymap.set('n', '-', function() open_vifm('edit') end, { desc = 'Vifm (Current Window)' })
-vim.keymap.set('n', '<leader>vv', function() open_vifm('edit') end, { desc = 'Vifm (Current Window)' })
-vim.keymap.set('n', '<leader>vs', function() open_vifm('vsplit') end, { desc = 'Vifm (Vertical Split)' })
-vim.keymap.set('n', '<leader>vh', function() open_vifm('split') end, { desc = 'Vifm (Horizontal Split)' })
+-- vim.keymap.set('n', '-', function() open_vifm('edit') end, { desc = 'Vifm (Current Window)' })
+-- vim.keymap.set('n', '<leader>vv', function() open_vifm('edit') end, { desc = 'Vifm (Current Window)' })
+-- vim.keymap.set('n', '<leader>vs', function() open_vifm('vsplit') end, { desc = 'Vifm (Vertical Split)' })
+-- vim.keymap.set('n', '<leader>vh', function() open_vifm('split') end, { desc = 'Vifm (Horizontal Split)' })
