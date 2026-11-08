@@ -11,17 +11,12 @@
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    voxtype = {
-      url = "github:peteonrails/voxtype?ref=v1.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
     nixpkgs,
     home-manager,
     mangowm,
-    voxtype,
     ...
   }:
 
@@ -35,11 +30,9 @@
     homeConfigurations."aristide@x86_64-linux" = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit voxtype;
       };
       modules = [
         mangowm.hmModules.mango
-        voxtype.homeManagerModules.default
         ./home
         ./home/standalone.nix
       ];
@@ -58,12 +51,8 @@
             # Keep the user environment under ~/.nix-profile, which the
             # stowed scripts (vifm-service.py, ...) already reference.
             useUserPackages = true;
-            extraSpecialArgs = {
-              inherit voxtype;
-            };
             sharedModules = [
               mangowm.hmModules.mango
-              voxtype.homeManagerModules.default
             ];
             backupFileExtension = "backup";
             # backupCommand = "";

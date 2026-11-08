@@ -40,12 +40,12 @@ in
       bat
       brotli
       btop
+      lsof
       cloudflared
       curl
       dasel
       direnv
       fd
-      figlet
       fx
       fzf
       gawk
@@ -54,12 +54,9 @@ in
       gnugrep
       gnused
       gopass
-      gron
-      gum
       inxi
       jq
       jujutsu
-      just
       ncdu
       nix-direnv
       pandoc
@@ -69,11 +66,9 @@ in
       ripgrep
       rsync
       starship
-      steelix
       stow
       tabiew
       tmux
-      tokei
       tree
       unrar
       unzip
