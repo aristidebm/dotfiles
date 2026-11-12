@@ -2,7 +2,7 @@
   description = "Typescript Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=26.05";
   };
 
   outputs = { self, nixpkgs, ... }:

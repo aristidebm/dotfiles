@@ -41,6 +41,7 @@ in
       brotli
       btop
       lsof
+      bitwarden-cli
       cloudflared
       curl
       dasel
@@ -79,6 +80,12 @@ in
       zrok
       poppler-utils
       zeal
+      kubectl
+      openssl
+      # Linux development manual pages By default,
+      # NixOS excludes Linux kernel system call and C library manuals (sections 2 and 3)
+      # to keep the base system minimal
+      man-pages
 
       # terminals / editors
       alacritty
