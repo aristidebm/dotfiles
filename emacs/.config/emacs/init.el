@@ -49,7 +49,6 @@
   (display-line-numbers-type 'relative)
   (global-hl-line-mode t)
   (truncate-lines t)
-  (duplicate-line-final-position 1)
   (whitespace-style '(face tabs tab-mark trailing))
 
   ;; Editing
@@ -160,6 +159,21 @@
          (choice (completing-read "Notes> " files nil t)))
     (find-file (expand-file-name choice dir))))
 
+(defun start/reload-config()
+  "Reload Emacs config."
+  (interactive)
+  (load-file "~/.config/emacs/init.el"))
+
+(defun start/consult-ripgrep-word-at-point ()
+    "Consult-ripgrep, pre-filled with the symbol under point."
+    (interactive)
+    (consult-ripgrep nil (thing-at-point 'symbol t)))
+
+(defun start/consult-ripgrep-WORD-at-point ()
+    "Consult-ripgrep, pre-filled with the WORD under point."
+    (interactive)
+    (consult-ripgrep nil (thing-at-point 'word t)))
+
 (use-package emacs
   :after evil
   :bind
@@ -181,7 +195,7 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
   :config
-  (load-theme 'modus-vivendi t)
+  (load-theme 'modus-operandi t)
   (doom-themes-org-config))
 
 (add-to-list 'default-frame-alist '(alpha-background . 90))
@@ -315,11 +329,18 @@
 (use-package nix-ts-mode
   :mode "\\.nix\\'")
 
+(use-package eat
+  :defer t
+  :hook (eshell-load . eat-eshell-mode))
+
+(use-package exec-path-from-shell
+  :hook (after-init . exec-path-from-shell-initialize))
+
 (use-package org
   :ensure nil
   :after evil
   :custom-face
-  (org-document-title ((t (:height 1.7 :weight bold))))
+  (org-document-title ((t (:height 1.6 :weight bold))))
   (org-level-1 ((t (:inherit outline-1 :height 1.6))))
   (org-level-2 ((t (:inherit outline-2 :height 1.5))))
   (org-level-3 ((t (:inherit outline-3 :height 1.4))))
@@ -332,6 +353,7 @@
   (org-export-backends '(ascii html icalendar latex odt org)) ; org backend is required by ox-pandoc
   (org-edit-src-content-indentation 4)
   (org-return-follows-link t)
+  (org-startup-folded 'overview)
   (org-clock-persist 'history)
   (org-directory "~/Documents/Notes/personal/")
   (org-default-notes-file (expand-file-name "refile.org" org-directory))
@@ -451,13 +473,6 @@
   :defer t
   :custom
   (ob-mermaid-cli-path "mmdc"))
-
-(use-package eat
-  :defer t
-  :hook (eshell-load . eat-eshell-mode))
-
-(use-package exec-path-from-shell
-  :hook (after-init . exec-path-from-shell-initialize))
 
 (use-package transient
   :defer t
