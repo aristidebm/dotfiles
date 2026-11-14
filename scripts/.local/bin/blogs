@@ -3,6 +3,7 @@
 # set -xeuo pipefail
 
 BLOGS=(
+    "[Archi]milanjovanovic.tech https://milanjovanovic.tech/blog/"
     "[AI]huyenchip.com https://huyenchip.com/blog/"
     "fasterthanli.me https://fasterthanli.me/articles"
     "jvns.ca https://jvns.ca/"

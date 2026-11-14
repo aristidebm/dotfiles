@@ -3,12 +3,17 @@ import = ["$XDG_DATA_HOME/sesh/private.toml"]
 [[session]]
 name = "ssh"
 path = "~/.ssh"
-startup_command = "nvim config"
+startup_command = "nvim ."
 
 [[session]]
 name = "dotfiles"
 path = "~/Projects/personal/dotfiles/"
 startup_command = "nvim ."
+
+[[session]]
+name = "ostep"
+path = "~/Documents/Computers/Operating-Systems/OSTEP"
+startup_command = "emacsclient -c ~/Documents/Notes/personal/Learning/OSTEP/ & ; disown"
 
 [[session]]
 name = "default"

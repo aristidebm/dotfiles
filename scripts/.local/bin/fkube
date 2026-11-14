@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# vim: ft=sh
+#
+# fkube — interactive kubectl pod picker on top of fzf
+#
+# Usage: fkube [-n|--namespace NS]
+#
+# When --namespace is given, every kubectl call (get/exec/logs/delete) targets it,
+# otherwise they fall back to the current context's namespace.
+#
+# Keybindings:
+#   enter   kubectl exec -it POD -- sh
+#   ctrl-e  kubectl exec -it POD -- vim
+#   ctrl-l  kubectl logs -f POD
+#   ctrl-x  kubectl delete pod POD (asks for confirmation), then reload the list
+#   ctrl-y  yank POD name to the clipboard
+#   ctrl-r  reload the pod list
+#   ctrl-o  toggle a `kubectl describe pod` preview window
+#   ?       toggle this header
+#
+# Internal subcommands, used by the fzf binds above. The binds re-invoke this
+# script instead of inlining the commands, which keeps the jq/read quoting out
+# of the bind strings (they run under $SHELL -c, i.e. zsh here) and makes the
+# pieces testable on their own:
+#   fkube --list          [ns flags]  print "POD @ NAMESPACE" lines
+#   fkube --delete=POD    [ns flags]  confirm, then delete POD
+#   fkube --yank=TEXT     [ns flags]  copy TEXT to the clipboard
+
+set -euo pipefail
+
+SELF="$(readlink -f "${BASH_SOURCE[0]}")"
+
+MODE="pick"
+POD=""
+TEXT=""
+NS_NAME=""
+NS_ARGS=()
+NS_FLAG=""
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Interactive pod picker for kubectl, powered by fzf.
+
+Options:
+  -n, --namespace NS   Target namespace NS (default: the current context's one)
+  -h, --help           Show this help message and exit
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --list)
+            MODE="list"; shift ;;
+        --delete=*)
+            MODE="delete"; POD="${1#*=}"; shift ;;
+        --yank=*)
+            MODE="yank"; TEXT="${1#*=}"; shift ;;
+        -n|--namespace)
+            [[ $# -ge 2 ]] || { echo "$1 requires a value" >&2; exit 1; }
+            NS_NAME="$2"; shift 2 ;;
+        --namespace=*)
+            NS_NAME="${1#*=}"; shift ;;
+        -h|--help)
+            usage; exit 0 ;;
+        *)
+            echo "unknown option: $1" >&2; usage >&2; exit 1 ;;
+    esac
+done
+
+# Three representations of the same thing:
+#   NS_NAME  bare namespace name, for messages
+#   NS_ARGS  array, for direct kubectl calls
+#   NS_FLAG  flat string, for interpolation inside the fzf bind commands
+#            (safe: namespace names are DNS labels, no spaces or quotes)
+if [[ -n "$NS_NAME" ]]; then
+    NS_ARGS=(-n "$NS_NAME")
+    NS_FLAG="-n $NS_NAME"
+fi
+
+list_pods() {
+    kubectl "${NS_ARGS[@]}" get pods -o json \
+        | jq -r '.items[] | "\(.metadata.name) @ \(.metadata.namespace)"'
+}
+
+yank() {
+    # wl-copy/xclip fork to the background to keep owning the selection, so
+    # redirect their output to keep the daemon from holding inherited pipes open
+    if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]] && command -v wl-copy >/dev/null 2>&1; then
+        printf '%s' "$TEXT" | wl-copy > /dev/null 2>&1
+    else
+        printf '%s' "$TEXT" | xclip -selection clipboard > /dev/null 2>&1
+    fi
+}
+
+delete_pod() {
+    local answer=""
+    # -e: readline keybindings while answering; || true so ctrl-d (EOF) just aborts
+    read -rep "Delete pod '$POD' from namespace '${NS_NAME:-current}'? [y/N] " answer || true
+    if [[ "$answer" == y || "$answer" == Y ]]; then
+        kubectl "${NS_ARGS[@]}" delete pod "$POD"
+    fi
+}
+
+pick() {
+    list_pods | fzf \
+        --reverse \
+        --exact \
+        --scroll-off=8 \
+        --prompt="Pods > " \
+        --header="enter: sh ^e: vim ^l: logs ^x: delete ^y: yank ^r: reload ^o: describe" \
+        --preview="kubectl $NS_FLAG describe pod {1}" \
+        --preview-window="hidden,45%,border-sharp" \
+        --bind "enter:execute(kubectl $NS_FLAG exec -it {1} -- sh)" \
+        --bind "ctrl-e:execute(kubectl $NS_FLAG exec -it {1} -- vim .)" \
+        --bind "ctrl-l:execute(kubectl $NS_FLAG logs -f {1})" \
+        --bind "ctrl-x:execute(\"$SELF\" --delete={1} $NS_FLAG)+reload(\"$SELF\" --list $NS_FLAG)" \
+        --bind "ctrl-y:execute-silent(\"$SELF\" --yank={1})" \
+        --bind "ctrl-r:reload(\"$SELF\" --list $NS_FLAG)" \
+        --bind "ctrl-o:toggle-preview" \
+        --bind '?:toggle-header' \
+        2>/dev/tty
+}
+
+case "$MODE" in
+    list)   list_pods ;;
+    delete) delete_pod ;;
+    yank)   yank ;;
+    pick)   pick ;;
+esac
