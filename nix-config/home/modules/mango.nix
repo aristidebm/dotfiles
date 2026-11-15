@@ -1,5 +1,5 @@
 # Mango is configured declaratively here (package + session integration) but
-# its config files (~/.config/mango/{config.conf,autostart.sh}) are stowed.
+# its config files (~/.config/mango/{config.toml,autostart.sh}) are stowed.
 # Leaving settings/extraConfig/autostart_sh empty makes the module only install
 # the package and create the mango-session.target user unit.
 { ... }:

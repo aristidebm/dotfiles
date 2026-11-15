@@ -1,0 +1,61 @@
+[global]
+animations = 1
+animation_duration_open = 100
+animation_duration_close = 100
+animation_duration_move = 100
+tag_animation_direction = 0
+scroller_proportion_preset = [0.5, 0.8, 1.0]
+edge_scroller_pointer_focus = 0
+circle_layout = [
+    "scroller",
+    "vertical_scroller",
+    "monocle",
+    "deck",
+    "vertical_deck",
+    "tile",
+    "grid",
+    "center_tile",
+    "vertical_tile",
+    "right_tile",
+    "vertical_grid",
+    "dwindle",
+    "fair",
+    "vertical_fair",
+]
+border_px = 2
+root_color = "$black"
+border_color = "$border"
+drop_color = "$translucent_black"
+split_color = "$white"
+focus_color = "$white"
+maximized_screen_color = "$white"
+urgent_color = "$white"
+scratchpad_color = "$white"
+global_color = "$silver"
+overlay_color = "$gray"
+shadows_color = "$black"
+
+jump_label_decorate_fg_color = "$text"
+jump_label_decorate_bg_color = "$near_black"
+jump_label_decorate_focus_fg_color = "$black"
+jump_label_decorate_focus_bg_color = "$white"
+jump_label_decorate_border_color = "$muted"
+
+group_bar_button_color = "$text"
+group_bar_decorate_fg_color = "$text"
+group_bar_decorate_bg_color = "$near_black"
+group_bar_decorate_focus_fg_color = "$black"
+group_bar_decorate_focus_bg_color = "$white"
+group_bar_decorate_border_color = "$muted"
+
+tab_bar_decorate_fg_color = "$text"
+tab_bar_decorate_bg_color = "$near_black"
+tab_bar_decorate_focus_fg_color = "$black"
+tab_bar_decorate_focus_bg_color = "$white"
+tab_bar_decorate_border_color = "$muted"
+
+title_message_bar_decorate_fg_color = "$text"
+title_message_bar_decorate_bg_color = "$near_black"
+title_message_bar_decorate_focus_fg_color = "$black"
+title_message_bar_decorate_focus_bg_color = "$white"
+title_message_bar_decorate_border_color = "$muted"

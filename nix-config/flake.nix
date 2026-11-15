@@ -23,8 +23,22 @@
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    homeModules = {
+      default = ./home;
+      mango = mangowm.hmModules.mango;
+      standalone = {
+        imports = [
+          ./home
+          ./home/standalone.nix
+        ];
+      };
+    };
   in
   {
+    inherit homeModules;
+
+    nixosModules.default = ./configuration.nix;
+
     # Portable, standalone home-manager configuration for non-NixOS systems.
     # Shares ./home with the NixOS module below.
     homeConfigurations."aristide@x86_64-linux" = home-manager.lib.homeManagerConfiguration {
@@ -32,9 +46,8 @@
       extraSpecialArgs = {
       };
       modules = [
-        mangowm.hmModules.mango
-        ./home
-        ./home/standalone.nix
+        homeModules.mango
+        homeModules.standalone
       ];
     };
 
@@ -42,6 +55,7 @@
       inherit system;
       modules = [
         ./configuration.nix
+        ./hosts/workstation.nix
         home-manager.nixosModules.home-manager
         {
           home-manager = {
@@ -52,11 +66,11 @@
             # stowed scripts (vifm-service.py, ...) already reference.
             useUserPackages = true;
             sharedModules = [
-              mangowm.hmModules.mango
+              homeModules.mango
             ];
             backupFileExtension = "backup";
             # backupCommand = "";
-            users.aristide = import ./home;
+            users.aristide = homeModules.default;
           };
         }
       ];

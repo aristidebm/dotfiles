@@ -1,0 +1,53 @@
+[[rule.window_rule]]
+tags = 1
+app_id = "dev.zed.Zed"
+
+[[rule.window_rule]]
+tags = 2
+app_id = "org.qutebrowser.qutebrowser"
+
+[[rule.window_rule]]
+tags = 2
+app_id = "brave-browser"
+
+[[rule.window_rule]]
+tags = 2
+app_id = "firefox"
+
+[[rule.window_rule]]
+tags = 3
+app_id = "ONLYOFFICE"
+
+[[rule.window_rule]]
+tags = 4
+app_id = "org.telegram.desktop"
+
+[[rule.window_rule]]
+is_floating = 1
+width = 1600
+height = 750
+title = "AppLauncher"
+
+[[rule.window_rule]]
+is_floating = 1
+width = 1600
+height = 750
+title = "NotificationCenter"
+
+[[rule.window_rule]]
+is_floating = 1
+width = 460
+height = 260
+title = "MprisPlayer"
+
+[[rule.window_rule]]
+is_floating = 1
+app_id = "zenity"
+
+[[rule.tag_rule]]
+id = 1
+layout_name = "vertical_scroller"
+
+[[rule.tag_rule]]
+id = 2
+layout_name = "scroller"
