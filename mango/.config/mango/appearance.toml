@@ -22,6 +22,7 @@ circle_layout = [
     "fair",
     "vertical_fair",
 ]
+border_px = 2
 root_color = "$black"
 border_color = "$border"
 drop_color = "$translucent_black"
