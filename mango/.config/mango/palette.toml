@@ -1,0 +1,10 @@
+[var]
+black = "0x000000ff"
+near_black = "0x1a1a1aff"
+border = "0x2a2a2aff"
+muted = "0x555555ff"
+gray = "0x707070ff"
+silver = "0xbfbfbfff"
+text = "0xccccccff"
+white = "0xffffffff"
+translucent_black = "0x00000080"

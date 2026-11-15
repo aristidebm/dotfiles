@@ -7,6 +7,7 @@ focus_on_activate = 0
 enable_hotarea = 0
 
 source = [
+    "./palette.toml",
     "./appearance.toml",
     "./input.toml",
     "./rules.toml",
