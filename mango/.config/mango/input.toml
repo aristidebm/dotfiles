@@ -1,0 +1,7 @@
+[global]
+xkb_rules_options = "compose:caps"
+repeat_rate = 40
+repeat_delay = 300
+cursor_hide_on_keypress = 1
+mouse_natural_scrolling = 0
+trackpad_natural_scrolling = 0

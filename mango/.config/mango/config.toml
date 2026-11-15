@@ -1,0 +1,19 @@
+[global]
+scratchpad_width_ratio = 0.9
+scratchpad_height_ratio = 0.7
+tag_carousel = 1
+view_current_to_back = 0
+focus_on_activate = 0
+enable_hotarea = 0
+
+source = [
+    "./appearance.toml",
+    "./input.toml",
+    "./rules.toml",
+    "./keybinds.toml",
+]
+
+exec_once = [
+    "~/.config/mango/autostart.sh",
+    "quickshell -c ~/.config/quickshell/",
+]
