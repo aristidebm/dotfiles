@@ -46,3 +46,8 @@
 "SUPER+SHIFT+7" = "tagsilent,7"
 "SUPER+SHIFT+8" = "tagsilent,8"
 "SUPER+SHIFT+9" = "tagsilent,9"
+
+[mousebind.default]
+"SUPER+btn_left" = "moveresize,curmove"
+"SUPER+btn_right" = "moveresize,curresize"
+"btn_middle" = "togglemaximizescreen,0"
